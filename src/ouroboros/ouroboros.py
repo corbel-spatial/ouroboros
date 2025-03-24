@@ -2,13 +2,62 @@ from abc import abstractmethod
 from collections.abc import MutableSequence
 from pprint import pprint
 from os import PathLike
-from typing import overload, Iterable
+from typing import overload, Iterable, TypeVar
 from uuid import uuid4
 
 import arcpy
 import geojson
 from geomet import wkt
 from shapely import geometry as sg
+
+_T = TypeVar("_T")
+
+
+class _BaseClass(MutableSequence):
+    def insert(self, index, value):
+        pass
+
+    @overload
+    @abstractmethod
+    def __getitem__(self, index: int) -> _T:
+        ...
+
+    @overload
+    @abstractmethod
+    def __getitem__(self, index: slice) -> MutableSequence[_T]:
+        ...
+
+    def __getitem__(self, index):
+        pass
+
+    @overload
+    @abstractmethod
+    def __setitem__(self, index: int, value: _T) -> None:
+        ...
+
+    @overload
+    @abstractmethod
+    def __setitem__(self, index: slice, value: Iterable[_T]) -> None:
+        ...
+
+    def __setitem__(self, index, value):
+        pass
+
+    @overload
+    @abstractmethod
+    def __delitem__(self, index: int) -> None:
+        ...
+
+    @overload
+    @abstractmethod
+    def __delitem__(self, index: slice) -> None:
+        ...
+
+    def __delitem__(self, index):
+        pass
+
+    def __len__(self):
+        pass
 
 
 def get_memory_path():
@@ -21,7 +70,7 @@ def copy_to_memory(path: [str, PathLike]):
     return out_path
 
 
-class FeatureClass(MutableSequence):
+class FeatureClass(_BaseClass):
     """Wrapper class for more Pythonic manipulation of geodatabase feature classes."""
 
     def __init__(self, path: str, in_memory: bool = False):
@@ -58,16 +107,6 @@ class FeatureClass(MutableSequence):
             ic.insertRow(row)
         return
 
-    @overload
-    @abstractmethod
-    def __delitem__(self, index: int) -> None:
-        ...
-
-    @overload
-    @abstractmethod
-    def __delitem__(self, index: slice) -> None:
-        ...
-
     def __delitem__(self, index: int) -> None:
         """Delete the row at the given index."""
         with arcpy.da.UpdateCursor(self.path, [self._oid_name]) as uc:
@@ -77,16 +116,6 @@ class FeatureClass(MutableSequence):
                     return
             raise IndexError("Row index not found")
         return
-
-    @overload
-    @abstractmethod
-    def __getitem__(self, index: int) -> list:
-        ...
-
-    @overload
-    @abstractmethod
-    def __getitem__(self, index: slice) -> MutableSequence[list]:
-        ...
 
     def __getitem__(self, index: slice) -> list[list[any]]:
         """Return a list of rows for the given index or slice."""
@@ -99,16 +128,6 @@ class FeatureClass(MutableSequence):
 
     def __repr__(self):
         return self.path
-
-    @overload
-    @abstractmethod
-    def __setitem__(self, index: int, value: tuple[int, any]) -> None:
-        ...
-
-    @overload
-    @abstractmethod
-    def __setitem__(self, index: slice, value: Iterable[int]) -> None:
-        ...
 
     def __setitem__(self, row_idx, value: tuple[int, any]) -> None:
         """Change the value of a given row/column in the attribute table.
@@ -157,9 +176,9 @@ class FeatureClass(MutableSequence):
         """Return the ObjectID for a given row index."""
         if not isinstance(index, int):
             raise TypeError
-        item = self.__getitem__(index)
+        item = self.__getitem__(slice(index))
         idx = self._oid_index
-        return item[idx]
+        return item[idx][0]
 
     def get_rows(self):
         fields = self.get_fields()
@@ -208,7 +227,7 @@ class FeatureClass(MutableSequence):
         """Return and remove the row at the given index. Functionally the same as list.pop(index)"""
         if not isinstance(index, int):
             raise TypeError
-        item = self.__getitem__(index)
+        item = self.__getitem__(slice(index))
         oid = self.get_oid(index)
         self.remove(oid)
         return list(item)
