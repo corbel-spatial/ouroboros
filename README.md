@@ -1,6 +1,8 @@
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=FFD43B&labelColor=306998&color=FFD43B)]()
+[![arcpy 3.4](https://img.shields.io/badge/arcpy-3.4-blue?logo=arcgis&logoColor=fff)]()
 [![ArcGIS Pro 3.4](https://img.shields.io/badge/ArcGIS_Pro-3.4-blue?logo=arcgis&logoColor=fff)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
+[![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=pylint)]()
 
 # ouroboros
 A module that provides a wrapper class to manipulate arcpy feature classes in a more pythonic way.
