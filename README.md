@@ -29,9 +29,9 @@ proswap arcgispro-py3-ob
 ## Usage
 
 ```
-import ouroboros as ob
+from ouroboros import ouroboros as ob
 
-fc = ob.FeatureClass('C:\\Users\\zoot\\spam.gdb\\eggs')
+fc = ob.FeatureClass(r'C:\Users\zoot\spam.gdb\eggs_feature_class')
 ```
 
 ## Examples
