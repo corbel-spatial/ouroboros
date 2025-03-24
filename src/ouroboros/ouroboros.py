@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from collections.abc import MutableSequence
+from os import PathLike
 from typing import overload, Iterable
+from uuid import uuid4
 
 import arcpy
 import geojson
@@ -11,7 +13,7 @@ from shapely import geometry as sg
 class FeatureClass(MutableSequence):
     """Wrapper class for more Pythonic manipulation of geodatabase feature classes."""
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, in_memory: bool = False):
         """
         :param path: Path to a feature class inside a geodatabase, e.g., "C:\\Users\\zoot\\spam.gdb\\eggs"
         :type path: str
@@ -20,6 +22,12 @@ class FeatureClass(MutableSequence):
             raise FileNotFoundError(path)
 
         self.path = path
+
+        if in_memory is True:
+            mem_path = "memory\\fc_" + str(uuid4()).replace("-", "_")
+            arcpy.ExportFeatures_conversion(self.path, mem_path)
+            self.path = mem_path
+
         self.properties = self.describe()
 
         self._oid_name = self.properties["OIDFieldName"]
@@ -194,6 +202,11 @@ class FeatureClass(MutableSequence):
         if key is None:
             key = self.oid
         self.sort(key, ascending=False)
+
+    def save(self, out_path: [str, PathLike], overwrite_output=True):
+        with arcpy.EnvManager(overwriteOutput=overwrite_output):
+            arcpy.ExportFeatures_conversion(self.path, out_path)
+        return
 
     def sort(self, key: str = None, ascending: bool = True):
         if key is None:

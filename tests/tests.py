@@ -18,14 +18,21 @@ test_fcs = [test_points, test_polygons, test_polylines]
 
 @pytest.fixture
 def fc():
-    return ob.FeatureClass(test_points)
+    return ob.FeatureClass(test_points, in_memory=True)
 
 
 def test_instantiate_feature_class():
     for fp in test_fcs:
         fc_test = ob.FeatureClass(fp)
         assert isinstance(fc_test, ob.FeatureClass)
+    return True
 
+
+def test_instantiate_fc_in_memory():
+    for fp in test_fcs:
+        fc_test = ob.FeatureClass(fp, in_memory=True)
+        assert isinstance(fc_test, ob.FeatureClass)
+        assert fc_test.path.startswith("memory")
     return True
 
 
@@ -40,6 +47,11 @@ def test_describe_properties(fc):
 def test_len(fc):
     print(len(fc))
     assert isinstance(len(fc), int)
+    return True
+
+
+def test_save(fc):
+    fc.save(test_points + "2")
     return True
 
 
