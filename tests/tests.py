@@ -44,6 +44,14 @@ def test_describe_properties(fc):
     return True
 
 
+def test_head(fc):
+    print("\n")
+    fc.head()
+    print("\n")
+    fc.head(20)
+    return True
+
+
 def test_len(fc):
     print(len(fc))
     assert isinstance(len(fc), int)
@@ -52,6 +60,22 @@ def test_len(fc):
 
 def test_save(fc):
     fc.save(test_points + "2")
+    return True
+
+
+def test_sort(fc):
+    print("\n")
+    print(fc.get_fields())
+
+    fc.sort("textfield", ascending=True)
+    sort_asc = fc.head()
+
+    print("\n")
+
+    fc.sort("textfield", ascending=False)
+    sort_desc = fc.head()
+
+    assert sort_asc != sort_desc
     return True
 
 
