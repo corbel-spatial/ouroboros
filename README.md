@@ -19,7 +19,7 @@ A module that provides a wrapper class to manipulate arcpy feature classes in a 
 - In the [Python Command Prompt](https://developers.arcgis.com/python/latest/guide/install-and-set-up/#installation-using-python-command-prompt):
 
 ```
-conda create -n arcgispro-py3-ob arcpy=3.4.* geojson shapely -c Esri -c conda-forge --solver libmamba -y`
+conda create -n arcgispro-py3-ob arcpy=3.4.* geojson shapely -c Esri -c conda-forge --solver libmamba -y
 ```
 
 ```
