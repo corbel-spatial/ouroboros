@@ -1,6 +1,9 @@
 from abc import abstractmethod
 from collections.abc import MutableSequence
+from pprint import pprint
+from os import PathLike
 from typing import overload, Iterable
+from uuid import uuid4
 
 import arcpy
 import geojson
@@ -8,10 +11,20 @@ from geomet import wkt
 from shapely import geometry as sg
 
 
+def get_memory_path():
+    return "memory\\fc_" + str(uuid4()).replace("-", "_")
+
+
+def copy_to_memory(path: [str, PathLike]):
+    out_path = get_memory_path()
+    arcpy.ExportFeatures_conversion(path, out_path)
+    return out_path
+
+
 class FeatureClass(MutableSequence):
     """Wrapper class for more Pythonic manipulation of geodatabase feature classes."""
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, in_memory: bool = False):
         """
         :param path: Path to a feature class inside a geodatabase, e.g., "C:\\Users\\zoot\\spam.gdb\\eggs"
         :type path: str
@@ -19,7 +32,11 @@ class FeatureClass(MutableSequence):
         if not arcpy.Exists(path):
             raise FileNotFoundError(path)
 
-        self.path = path
+        if in_memory is True:
+            self.path = copy_to_memory(path)
+        else:
+            self.path = path
+
         self.properties = self.describe()
 
         self._oid_name = self.properties["OIDFieldName"]
@@ -34,7 +51,7 @@ class FeatureClass(MutableSequence):
         """
         Append a row to the feature class.
 
-        :param row: Row to add to the feature class.
+        :param row: The list of values to append; list length and order must match that of method get_fields()
         :type row: list[any]
         """
         with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
@@ -73,20 +90,7 @@ class FeatureClass(MutableSequence):
 
     def __getitem__(self, index: slice) -> list[list[any]]:
         """Return a list of rows for the given index or slice."""
-        fields = self.get_fields()
-        shape_index = self._shape_column_index
-        fields[shape_index] = "SHAPE@"
-
-        rows = list()
-        with arcpy.da.SearchCursor(self.path, fields) as sc:
-            for row in sc:
-                row = [i for i in row]
-                geom = row[shape_index]
-                try:
-                    row[shape_index] = geom.WKT
-                except AttributeError:
-                    pass
-                rows.append(row)
+        rows = self.get_rows()
         return rows[index]
 
     def __len__(self) -> int:
@@ -149,13 +153,38 @@ class FeatureClass(MutableSequence):
     def get_fields(self) -> list[str]:
         return [f.name for f in arcpy.ListFields(self.path)]
 
-    def oid(self, index: int) -> int:
+    def get_oid(self, index: int) -> int:
         """Return the ObjectID for a given row index."""
         if not isinstance(index, int):
             raise TypeError
         item = self.__getitem__(index)
         idx = self._oid_index
         return item[idx]
+
+    def get_rows(self):
+        fields = self.get_fields()
+        shape_index = self._shape_column_index
+        fields[shape_index] = "SHAPE@"
+
+        rows = list()
+        with arcpy.da.SearchCursor(self.path, fields) as sc:
+            for row in sc:
+                row = [i for i in row]
+                geom = row[shape_index]
+                try:
+                    row[shape_index] = geom.WKT
+                except AttributeError:
+                    pass
+                rows.append(row)
+        return rows
+
+    def head(self, n=10, silent=False):
+        if n > self.__len__():
+            n = self.__len__()
+        rows = self.get_rows()[0:n]
+        if silent is False:
+            pprint(rows)
+        return rows
 
     def index(self, objectid: int, start: int = 0, stop: int = -1) -> int:
         """Return the row index for a given ObjectID."""
@@ -180,7 +209,7 @@ class FeatureClass(MutableSequence):
         if not isinstance(index, int):
             raise TypeError
         item = self.__getitem__(index)
-        oid = self.oid(index)
+        oid = self.get_oid(index)
         self.remove(oid)
         return list(item)
 
@@ -190,16 +219,37 @@ class FeatureClass(MutableSequence):
         self.__delitem__(index)
         return
 
-    def reverse(self, key: str = None):
-        if key is None:
-            key = self.oid
-        self.sort(key, ascending=False)
+    def save(self, out_path: [str, PathLike], overwrite_output=True):
+        with arcpy.EnvManager(overwriteOutput=overwrite_output):
+            arcpy.ExportFeatures_conversion(self.path, out_path)
+        return
 
-    def sort(self, key: str = None, ascending: bool = True):
-        if key is None:
-            key = self.oid
-        print(self[0], key, ascending)
-        return NotImplemented  # TODO delete rows and append them sorted order
+    def sort(
+        self,
+        field_name: str,
+        ascending: bool = True,
+        out_path: [str, PathLike] = None,
+    ):
+        """Sort on field (cannot be ObjectID). If out_path is not specified then it will be sorted in place."""
+        if field_name == self._oid_name:
+            raise ValueError("Field name can't be same as ObjectID")
+
+        if ascending is True:
+            direction = "ASCENDING"
+        else:
+            direction = "DESCENDING"
+
+        if out_path is None:
+            mem_path = get_memory_path()
+            with arcpy.EnvManager(addOutputsToMap=False):
+                arcpy.Sort_management(self.path, mem_path, [[field_name, direction]])
+            with arcpy.EnvManager(overwriteOutput=True):
+                arcpy.ExportFeatures_conversion(mem_path, self.path)
+                arcpy.Delete_management(mem_path)
+        else:
+            arcpy.Sort_management(self.path, out_path, [[field_name, direction]])
+
+        return
 
     def to_geojson(self) -> geojson.FeatureCollection:
         """Return a geojson Feature Collection representation of the feature class."""
