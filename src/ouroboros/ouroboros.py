@@ -96,16 +96,23 @@ class FeatureClass(_BaseClass):
 
         return
 
-    def __add__(self, row: list[any]) -> None:
+    def __add__(self, rows: [list[any], list[list[any]]]):
         """
-        Append a row to the feature class.
+        Append one or more rows to the feature class.
 
-        :param row: The list of values to append; list length and order must match that of method get_fields()
-        :type row: list[any]
+        :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
+        :type rows: list[any] or list[list[any]]
         """
-        with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
-            ic.insertRow(row)
-        return
+        if isinstance(rows, list) and any(isinstance(i, list) for i in rows):
+            # list of rows
+            with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
+                for row in rows:
+                    ic.insertRow(row)
+        else:
+            # single row
+            with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
+                ic.insertRow(rows)
+        return self
 
     def __delitem__(self, index: int) -> None:
         """Delete the row at the given index."""
@@ -147,10 +154,14 @@ class FeatureClass(_BaseClass):
                     break
         return
 
-    def append(self, row: list[any]) -> None:
-        """Add a row to the end of the attribute table. Input the list of values to append; list length and order
-        must match that of method get_fields()"""
-        self.__add__(row)
+    def append(self, rows: [list[any], list[list[any]]]) -> None:
+        """
+        Append one or more rows to the feature class.
+
+        :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
+        :type rows: list[any] or list[list[any]]
+        """
+        self.__add__(rows)
         return
 
     def clear(self) -> None:

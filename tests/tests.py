@@ -120,16 +120,27 @@ def test_iter(fc):
     return True
 
 
-def test_get_rows():
-    r = ob.FeatureClass(test_points)
-    print(r)
+def test_get_rows(fc):
+    print(fc)
     return True
 
 
-def test_append_rows():
-    r = ob.FeatureClass(test_points)
-    count1 = len(r)
-    r.append(r[0])
-    count2 = len(r)
+def test_append_rows(fc):
+    count1 = len(fc)
+    fc.append(fc[0])
+    count2 = len(fc)
+    assert count1 < count2
+
+    fc.append(fc[1:10])
+    count3 = len(fc)
+    assert count2 < count3
+
+    return True
+
+
+def test_add_fcs(fc):
+    count1 = len(fc)
+    extended = fc + fc[11:20]
+    count2 = len(extended)
     assert count1 < count2
     return True
