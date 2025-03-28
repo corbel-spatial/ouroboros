@@ -63,12 +63,14 @@ def test_get_rows(fc):
 def test_iter(fc):
     for row in fc[:10]:
         assert isinstance(row, list)
+    for row in fc.__iter__()[:10]:
+        assert isinstance(row, list)
 
 
 def test_len(fc):
-    l = len(fc)
-    pprint(l)
-    assert isinstance(l, int)
+    i = len(fc)
+    pprint(i)
+    assert isinstance(i, int)
 
 
 def test_repr(fc):
@@ -76,6 +78,13 @@ def test_repr(fc):
     pprint(r)
     assert isinstance(r, str)
     assert r.startswith("C:") or r.startswith("memory")
+
+
+def test_reversed(fc):
+    r = reversed(fc)
+    for row in r:
+        assert row == fc[-1]
+        break
 
 
 def test_str(fc):
@@ -101,6 +110,12 @@ def test_clear(fc):
     count2 = len(fc)
     assert count1 > count2
     assert count2 == 0
+
+
+def test_count(fc):
+    count = fc.count(("feature 1", "textfield"))
+    print(count)
+    assert count == 1
 
 
 def test_describe(fc):

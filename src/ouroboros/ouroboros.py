@@ -63,8 +63,14 @@ class FeatureClass(Sequence):
                 ic.insertRow(rows)
         return self
 
-    def __contains__(self, item):  # TODO
-        raise NotImplementedError
+    def __contains__(self, query: [tuple[any, str]]) -> bool:
+        """Return true if query is in self, false otherwise: query is tuple("value_to_count", "field_name")"""
+        field_idx = self.index_field(query[1])
+        for row in self._get_rows():
+            value = row[field_idx]
+            if value == query[0]:
+                return True
+        return False
 
     def __delitem__(self, index: int) -> None:
         """Delete the row at the given index."""
@@ -99,8 +105,9 @@ class FeatureClass(Sequence):
         rows = self._get_rows()
         return rows[index]
 
-    def __iter__(self):  # TODO
-        raise NotImplementedError
+    def __iter__(self):
+        """Return a new iterator object that can iterate over all the objects in the container."""
+        return self._get_rows()
 
     def __len__(self) -> int:
         result = arcpy.GetCount_management(self.path)
@@ -108,6 +115,9 @@ class FeatureClass(Sequence):
 
     def __repr__(self):
         return self.path
+
+    def __reversed__(self):
+        return self._get_rows().__reversed__()
 
     def __str__(self):
         return str(self._get_rows())
@@ -127,8 +137,15 @@ class FeatureClass(Sequence):
         arcpy.DeleteRows_management(self.path)
         return
 
-    def count(self, value: [tuple[str, any]]) -> int:  # TODO
-        raise NotImplementedError
+    def count(self, query: [tuple[str, any]]) -> int:
+        """Return number of occurrences: query is tuple("value_to_count", "field_name")"""
+        field_idx = self.index_field(query[1])
+        total = 0
+        for row in self._get_rows():
+            value = row[field_idx]
+            if value == query[0]:
+                total += 1
+        return total
 
     def describe(self) -> dict:
         properties = arcpy.da.Describe(self.path)
