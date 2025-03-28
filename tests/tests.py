@@ -1,5 +1,4 @@
 import os
-import arcpy
 import pytest
 import sys
 from pprint import pprint
@@ -16,120 +15,192 @@ test_polylines = os.path.join(ROOT_PATH, "test_data.gdb", "test_polylines")
 test_fcs = [test_points, test_polygons, test_polylines]
 
 
+def test_instantiate_fcs():
+    for fp in test_fcs:
+        fc_test = ob.FeatureClass(fp)
+        assert isinstance(fc_test, ob.FeatureClass)
+
+
+def test_instantiate_fcs_in_memory():
+    for fp in test_fcs:
+        fc_test = ob.FeatureClass(fp, in_memory=True)
+        assert isinstance(fc_test, ob.FeatureClass)
+        assert fc_test.path.startswith("memory")
+
+
 @pytest.fixture
 def fc():
     return ob.FeatureClass(test_points, in_memory=True)
 
 
-def test_instantiate_feature_class():
-    for fp in test_fcs:
-        fc_test = ob.FeatureClass(fp)
-        assert isinstance(fc_test, ob.FeatureClass)
-    return True
+def test_add(fc):
+    count1 = len(fc)
+    extended = fc + fc[11:20]
+    count2 = len(extended)
+    assert count1 < count2
+    return
 
 
-def test_instantiate_fc_in_memory():
-    for fp in test_fcs:
-        fc_test = ob.FeatureClass(fp, in_memory=True)
-        assert isinstance(fc_test, ob.FeatureClass)
-        assert fc_test.path.startswith("memory")
-    return True
+def test_delitem(fc):
+    count1 = len(fc)
+    fc.__delitem__(0)
+    count2 = len(fc)
+    assert count1 > count2
 
 
-def test_describe_properties(fc):
-    print("\n")
-    pprint(fc.describe())
-    assert isinstance(fc.properties, dict)
-    assert fc.properties.keys() == fc.describe().keys()
-    return True
+def test_getitem(fc):
+    item = fc.__getitem__(0)
+    pprint(item)
+    assert isinstance(item, list)
+
+
+def test_get_rows(fc):
+    rows = fc._get_rows()
+    assert isinstance(rows, list)
+    assert len(rows) == len(fc)
+
+
+def test_iter(fc):
+    for row in fc[:10]:
+        assert isinstance(row, list)
+    for row in fc.__iter__():
+        assert isinstance(row, list)
+        break
+
+
+def test_len(fc):
+    i = len(fc)
+    pprint(i)
+    assert isinstance(i, int)
+
+
+def test_repr(fc):
+    r = fc.__repr__()
+    pprint(r)
+    assert isinstance(r, str)
+    assert r.startswith("C:") or r.startswith("memory")
+
+
+def test_reversed(fc):
+    r = reversed(fc)
+    for row in r:
+        assert row == fc[-1]
+        break
+
+
+def test_str(fc):
+    s = str(fc)
+    pprint(s)
+    assert isinstance(s, str)
+
+
+def test_append(fc):
+    count1 = len(fc)
+    fc.append(fc[0])
+    count2 = len(fc)
+    assert count1 < count2
+
+    fc.append(fc[1:10])
+    count3 = len(fc)
+    assert count2 < count3
+
+
+def test_clear(fc):
+    count1 = len(fc)
+    fc.clear()
+    count2 = len(fc)
+    assert count1 > count2
+    assert count2 == 0
+
+
+def test_count(fc):
+    count = fc.count(("feature 1", "textfield"))
+    print(count)
+    assert count == 1
+
+
+def test_describe(fc):
+    desc = fc.describe()
+    pprint(desc)
+    assert isinstance(desc, dict)
+
+    prop = fc.properties
+    pprint(prop)
+    assert isinstance(prop, dict)
+
+    assert prop.keys() == desc.keys()
+
+
+def test_get_fields(fc):
+    fields = fc.get_fields()
+    pprint(fields)
+    assert isinstance(fields, list)
+
+
+def test_get_oid(fc):
+    oid = fc.get_oid(0)
+    assert isinstance(oid, int)
+    assert oid == fc[0][0]
 
 
 def test_head(fc):
     print("\n")
-    fc.head()
+    h = fc.head()
+    assert isinstance(h, list)
+    assert len(h) == 10
+
     print("\n")
-    fc.head(20)
-    return True
+    h = fc.head(20)
+    assert isinstance(h, list)
+    assert len(h) == 20
 
 
-def test_len(fc):
-    print(len(fc))
-    assert isinstance(len(fc), int)
-    return True
+def test_index(fc):
+    idx = fc.index(1)
+    assert isinstance(idx, int)
+    assert idx == 0
+
+
+def test_index_field(fc):
+    idx = fc.index_field("Shape")
+    assert isinstance(idx, int)
+
+
+def test_pop(fc):
+    count1 = len(fc)
+    p = fc.pop()
+    count2 = len(fc)
+    assert count2 == (count1 - 1)
+    assert isinstance(p, list)
+
+
+def test_remove(fc):
+    count1 = len(fc)
+    fc.remove(1)
+    count2 = len(fc)
+    assert count2 == (count1 - 1)
 
 
 def test_save(fc):
-    fc.save(test_points + "2")
-    return True
+    out_path = ob.get_memory_path()
+    fc.save(out_path)
+    fc.save(out_path, overwrite_output=True)
+    out_fc = ob.FeatureClass(out_path)
+    assert len(fc) == len(out_fc)
 
 
 def test_sort(fc):
-    print("\n")
-    print(fc.get_fields())
-
     fc.sort("textfield", ascending=True)
     sort_asc = fc.head()
-
     print("\n")
-
     fc.sort("textfield", ascending=False)
     sort_desc = fc.head()
-
     assert sort_asc != sort_desc
-    return True
-
-
-def test_str(fc):
-    print(str(fc))
-    return True
-
-
-def test_repr(fc):
-    print(fc)
-    return True
-
-
-def test_properties(fc):
-    print(fc.path)
-    assert arcpy.Exists(fc.path)
-    assert fc._oid_name in ["OID", "OBJECTID", "ObjectID"]
-
-    return True
-
-
-def test_list_fields(fc):
-    print(fc.get_fields())
-    assert isinstance(fc.get_fields(), list)
-    return True
-
-
-def test_to_shapely(fc):
-    fc.to_shapely()
-    return True
 
 
 def test_to_geojson(fc):
     fc.to_geojson()
-    return True
 
 
-def test_iter(fc):
-    for row in fc:
-        print(row)
-        break
-    return True
-
-
-def test_get_rows():
-    r = ob.FeatureClass(test_points)
-    print(r)
-    return True
-
-
-def test_append_rows():
-    r = ob.FeatureClass(test_points)
-    count1 = len(r)
-    r.append(r[0])
-    count2 = len(r)
-    assert count1 < count2
-    return True
+def test_to_shapely(fc):
+    fc.to_shapely()

@@ -40,7 +40,7 @@ fc = ob.FeatureClass(r'C:\Users\zoot\spam.gdb\eggs_feature_class')
 
 ## References
 
-- [Mutable Sequence](https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types)
+- [Sequence](https://docs.python.org/3/library/collections.abc.html#module-collections.abc)
 - [ArcPy](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/what-is-arcpy-.htm)
 
 ## Changelog

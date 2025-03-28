@@ -1,63 +1,12 @@
-from abc import abstractmethod
-from collections.abc import MutableSequence
+from collections.abc import Sequence
 from pprint import pprint
 from os import PathLike
-from typing import overload, Iterable, TypeVar
 from uuid import uuid4
 
 import arcpy
 import geojson
 from geomet import wkt
 from shapely import geometry as sg
-
-_T = TypeVar("_T")
-
-
-class _BaseClass(MutableSequence):
-    def insert(self, index, value):
-        pass
-
-    @overload
-    @abstractmethod
-    def __getitem__(self, index: int) -> _T:
-        ...
-
-    @overload
-    @abstractmethod
-    def __getitem__(self, index: slice) -> MutableSequence[_T]:
-        ...
-
-    def __getitem__(self, index):
-        pass
-
-    @overload
-    @abstractmethod
-    def __setitem__(self, index: int, value: _T) -> None:
-        ...
-
-    @overload
-    @abstractmethod
-    def __setitem__(self, index: slice, value: Iterable[_T]) -> None:
-        ...
-
-    def __setitem__(self, index, value):
-        pass
-
-    @overload
-    @abstractmethod
-    def __delitem__(self, index: int) -> None:
-        ...
-
-    @overload
-    @abstractmethod
-    def __delitem__(self, index: slice) -> None:
-        ...
-
-    def __delitem__(self, index):
-        pass
-
-    def __len__(self):
-        pass
 
 
 def get_memory_path():
@@ -70,7 +19,7 @@ def copy_to_memory(path: [str, PathLike]):
     return out_path
 
 
-class FeatureClass(_BaseClass):
+class FeatureClass(Sequence):
     """Wrapper class for more Pythonic manipulation of geodatabase feature classes."""
 
     def __init__(self, path: str, in_memory: bool = False):
@@ -87,25 +36,41 @@ class FeatureClass(_BaseClass):
             self.path = path
 
         self.properties = self.describe()
-
         self._oid_name = self.properties["OIDFieldName"]
         self._geometry_type = self.properties["shapeType"]
+
         fields = self.get_fields()
         self._oid_index = fields.index(self._oid_name)
         self._shape_column_index = fields.index("Shape")
 
         return
 
-    def __add__(self, row: list[any]) -> None:
+    def __add__(self, rows: [list[any], list[list[any]]]):
         """
-        Append a row to the feature class.
+        Append one or more rows to the feature class.
 
-        :param row: The list of values to append; list length and order must match that of method get_fields()
-        :type row: list[any]
+        :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
+        :type rows: list[any] or list[list[any]]
         """
-        with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
-            ic.insertRow(row)
-        return
+        if isinstance(rows, list) and any(isinstance(i, list) for i in rows):
+            # list of rows
+            with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
+                for row in rows:
+                    ic.insertRow(row)
+        else:
+            # single row
+            with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
+                ic.insertRow(rows)
+        return self
+
+    def __contains__(self, query: [tuple[any, str]]) -> bool:
+        """Return true if query is in self, false otherwise: query is tuple("value_to_count", "field_name")"""
+        field_idx = self.index_field(query[1])
+        for row in self._get_rows():
+            value = row[field_idx]
+            if value == query[0]:
+                return True
+        return False
 
     def __delitem__(self, index: int) -> None:
         """Delete the row at the given index."""
@@ -117,70 +82,8 @@ class FeatureClass(_BaseClass):
             raise IndexError("Row index not found")
         return
 
-    def __getitem__(self, index: slice) -> list[list[any]]:
-        """Return a list of rows for the given index or slice."""
-        rows = self.get_rows()
-        return rows[index]
-
-    def __len__(self) -> int:
-        result = arcpy.GetCount_management(self.path)
-        return int(result[0])
-
-    def __repr__(self):
-        return self.path
-
-    def __setitem__(self, row_idx, value: tuple[int, any]) -> None:
-        """Change the value of a given row/column in the attribute table.
-
-        :param row_idx: List index of the row (not the ObjectID!)
-        :type row_idx: int
-        :param value: Two-member tuple (column index, value to set). Column index can be derived from method get_fields()
-        :type value: tuple[int, any]
-        """
-        column_idx, value = value
-        with arcpy.da.UpdateCursor(self.path, ["*"]) as uc:
-            row: list
-            for idx, row in enumerate(uc):
-                if idx == row_idx:
-                    row[column_idx] = value
-                    uc.updateRow(row)
-                    break
-        return
-
-    def append(self, row: list[any]) -> None:
-        """Add a row to the end of the attribute table. Input the list of values to append; list length and order
-        must match that of method get_fields()"""
-        self.__add__(row)
-        return
-
-    def clear(self) -> None:
-        """Delete all rows in the feature class."""
-        arcpy.DeleteRows_management(self.path)
-        return
-
-    def describe(self) -> dict:
-        properties = arcpy.da.Describe(self.path)
-        self.properties = properties
-        return properties
-
-    def extend(self, rows: iter) -> None:
-        """Append rows from an iterator list of rows."""
-        for row in rows:
-            self.append(row)
-        return
-
-    def get_fields(self) -> list[str]:
-        return [f.name for f in arcpy.ListFields(self.path)]
-
-    def get_oid(self, index: int) -> int:
-        """Return the ObjectID for a given row index."""
-        if not isinstance(index, int):
-            raise TypeError
-        item = self.__getitem__(slice(index))
-        idx = self._oid_index
-        return item[idx][0]
-
-    def get_rows(self):
+    def _get_rows(self) -> list[list[any]]:
+        """Return all rows as a list of lists."""
         fields = self.get_fields()
         shape_index = self._shape_column_index
         fields[shape_index] = "SHAPE@"
@@ -197,6 +100,73 @@ class FeatureClass(_BaseClass):
                 rows.append(row)
         return rows
 
+    def __getitem__(self, index: [int, slice]) -> [list[any], list[list[any]]]:
+        """Return the row or rows at the given index or slice."""
+        rows = self._get_rows()
+        return rows[index]
+
+    def __iter__(self):
+        """Return a new iterator object that can iterate over all the objects in the container."""
+        return iter(self._get_rows())
+
+    def __len__(self) -> int:
+        result = arcpy.GetCount_management(self.path)
+        return int(result[0])
+
+    def __repr__(self):
+        return self.path
+
+    def __reversed__(self):
+        return self._get_rows().__reversed__()
+
+    def __str__(self):
+        return str(self._get_rows())
+
+    def append(self, rows: [list[any], list[list[any]]]) -> None:
+        """
+        Append one or more rows to the feature class.
+
+        :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
+        :type rows: list[any] or list[list[any]]
+        """
+        self.__add__(rows)
+        return
+
+    def clear(self) -> None:
+        """Delete all rows in the feature class."""
+        arcpy.DeleteRows_management(self.path)
+        return
+
+    def count(self, query: [tuple[str, any]]) -> int:
+        """Return number of occurrences: query is tuple("value_to_count", "field_name")"""
+        field_idx = self.index_field(query[1])
+        total = 0
+        for row in self._get_rows():
+            value = row[field_idx]
+            if value == query[0]:
+                total += 1
+        return total
+
+    def describe(self) -> dict:
+        properties = arcpy.da.Describe(self.path)
+        self.properties = properties
+        return properties
+
+    def get_fields(self) -> list[str]:
+        return [f.name for f in arcpy.ListFields(self.path)]
+
+    def get_oid(self, index: int) -> int:
+        """Return the ObjectID for a given row index."""
+        if not isinstance(index, int):
+            raise TypeError
+        item = self.__getitem__(index)
+        oidx = self._oid_index
+        return int(item[oidx])
+
+    def get_rows(self) -> list[list[any]]:
+        """Return all rows as a list of lists."""
+        return self._get_rows()
+
     def head(self, n=10, silent=False):
         if n > self.__len__():
             n = self.__len__()
@@ -205,23 +175,20 @@ class FeatureClass(_BaseClass):
             pprint(rows)
         return rows
 
-    def index(self, objectid: int, start: int = 0, stop: int = -1) -> int:
+    def index(self, oid: int, **kwargs) -> int:
         """Return the row index for a given ObjectID."""
-        if objectid < 1:
+        if oid < 1:
             raise ValueError("ObjectID must be integer 1 or greater")
+
         with arcpy.da.SearchCursor(self.path, [self._oid_name]) as sc:
             for idx, row in enumerate(sc):
-                if row[0] == objectid:
-                    index = idx
-                    return index
+                if row[0] == oid:
+                    return idx
             raise AttributeError("ObjectID not found")
 
     def index_field(self, field_name) -> int:
         """Return the column index for a given field name."""
         return self.get_fields().index(field_name)
-
-    def insert(self, index, value):
-        return NotImplemented
 
     def pop(self, index: int = -1) -> list:
         """Return and remove the row at the given index. Functionally the same as list.pop(index)"""
@@ -232,9 +199,11 @@ class FeatureClass(_BaseClass):
         self.remove(oid)
         return list(item)
 
-    def remove(self, objectid: int) -> None:
+    def remove(self, oid: int) -> None:
         """Delete the row with the provided ObjectID."""
-        index = self.index(objectid)
+        if oid < 1:
+            raise ValueError("ObjectID must be integer 1 or greater")
+        index = self.index(oid)
         self.__delitem__(index)
         return
 
@@ -307,7 +276,7 @@ class FeatureClass(_BaseClass):
                     id=oid, geometry=wkt.loads(shape), properties=properties
                 )
             else:
-                raise NotImplementedError
+                raise TypeError(f'Incompatible geometry type: "{shape}"')
 
             out.append(gjs)
 
@@ -326,37 +295,18 @@ class FeatureClass(_BaseClass):
 
                 if geo_type == "polygon":
                     js = js["rings"]
-
                     holes = None
                     if len(js) > 1:
                         holes = list()
                         for g in js[1:]:
                             holes.append(g)
-
                     sf = sg.Polygon(shell=js[0], holes=holes)
-
                 elif geo_type == "point":
                     sf = sg.Point(js["x"], js["y"])
-
                 elif geo_type == "polyline":
                     js = js["paths"][0]
                     sf = sg.LineString(js)
-
                 else:
-                    raise NotImplementedError(geo)
-
+                    raise TypeError(f'Incompatible geometry type: "{geo_type}"')
                 geoms.append(sf)
-
         return sg.GeometryCollection(geoms)
-
-    def update(self, row_idx: int, value: tuple[int, any]):
-        """
-        Change the value of a given row/column in the attribute table.
-
-        :param row_idx: List index of the row (not the ObjectID!)
-        :type row_idx: int
-        :param value: Two-member tuple (column index, value to set). Column index can be derived from method get_fields()
-        :type value: tuple[int, any]
-        """
-        self.__setitem__(row_idx, value)
-        return
