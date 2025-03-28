@@ -45,14 +45,14 @@ class FeatureClass(Sequence):
 
         return
 
-    def __add__(self, rows: [list[any], list[list[any]]]):
+    def __add__(self, rows: [list[tuple], list[tuple, ...]]):
         """
         Append one or more rows to the feature class.
 
         :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
         :type rows: list[any] or list[list[any]]
         """
-        if isinstance(rows, list) and any(isinstance(i, list) for i in rows):
+        if isinstance(rows, tuple) and any(isinstance(i, tuple) for i in rows):
             # list of rows
             with arcpy.da.InsertCursor(self.path, ["*"]) as ic:
                 for row in rows:
@@ -82,8 +82,8 @@ class FeatureClass(Sequence):
             raise IndexError("Row index not found")
         return
 
-    def _get_rows(self) -> list[list[any]]:
-        """Return all rows as a list of lists."""
+    def _get_rows(self) -> tuple[tuple, ...]:
+        """Return all rows as a tuple of tuples. Geometry is stored as WKT."""
         fields = self.get_fields()
         shape_index = self._shape_column_index
         fields[shape_index] = "SHAPE@"
@@ -97,8 +97,9 @@ class FeatureClass(Sequence):
                     row[shape_index] = geom.WKT
                 except AttributeError:
                     pass
+                row = tuple(row)
                 rows.append(row)
-        return rows
+        return tuple(rows)
 
     def __getitem__(self, index: [int, slice]) -> [list[any], list[list[any]]]:
         """Return the row or rows at the given index or slice."""
@@ -117,7 +118,7 @@ class FeatureClass(Sequence):
         return self.path
 
     def __reversed__(self):
-        return self._get_rows().__reversed__()
+        return list(self._get_rows()).__reversed__()
 
     def __str__(self):
         return str(self._get_rows())
@@ -160,10 +161,10 @@ class FeatureClass(Sequence):
         if not isinstance(index, int):
             raise TypeError
         item = self.__getitem__(index)
-        oidx = self._oid_index
-        return int(item[oidx])
+        idx = self._oid_index
+        return int(item[idx])
 
-    def get_rows(self) -> list[list[any]]:
+    def get_rows(self):
         """Return all rows as a list of lists."""
         return self._get_rows()
 

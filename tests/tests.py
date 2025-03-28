@@ -51,20 +51,20 @@ def test_delitem(fc):
 def test_getitem(fc):
     item = fc.__getitem__(0)
     pprint(item)
-    assert isinstance(item, list)
+    assert isinstance(item, tuple)
 
 
 def test_get_rows(fc):
     rows = fc._get_rows()
-    assert isinstance(rows, list)
+    assert isinstance(rows, tuple)
     assert len(rows) == len(fc)
 
 
 def test_iter(fc):
     for row in fc[:10]:
-        assert isinstance(row, list)
+        assert isinstance(row, tuple)
     for row in fc.__iter__():
-        assert isinstance(row, list)
+        assert isinstance(row, tuple)
         break
 
 
@@ -146,12 +146,12 @@ def test_get_oid(fc):
 def test_head(fc):
     print("\n")
     h = fc.head()
-    assert isinstance(h, list)
+    assert isinstance(h, tuple)
     assert len(h) == 10
 
     print("\n")
     h = fc.head(20)
-    assert isinstance(h, list)
+    assert isinstance(h, tuple)
     assert len(h) == 20
 
 
