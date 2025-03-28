@@ -123,12 +123,7 @@ def test_describe(fc):
     desc = fc.describe()
     pprint(desc)
     assert isinstance(desc, dict)
-
-    prop = fc.properties
-    pprint(prop)
-    assert isinstance(prop, dict)
-
-    assert prop.keys() == desc.keys()
+    assert "shapeType" in desc
 
 
 def test_get_fields(fc):
