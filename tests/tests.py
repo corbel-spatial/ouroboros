@@ -133,7 +133,7 @@ def test_get_fields(fc):
 
 
 def test_get_oid(fc):
-    oid = fc.get_oid(0)
+    oid = fc._get_oid(0)
     assert isinstance(oid, int)
     assert oid == fc[0][0]
 

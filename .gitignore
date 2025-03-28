@@ -161,3 +161,4 @@ cython_debug/
 
 *.xml
 *.lock
+/docs/docstrings.md
