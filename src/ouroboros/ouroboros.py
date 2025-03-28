@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from pprint import pprint
 from os import PathLike
 from uuid import uuid4
 
@@ -167,7 +166,7 @@ class FeatureClass(Sequence):
             n = self.__len__()
         rows = self._get_rows()[0:n]
         if silent is False:
-            pprint(rows)
+            print(rows)
         return rows
 
     def index(self, oid: int, **kwargs) -> int:
