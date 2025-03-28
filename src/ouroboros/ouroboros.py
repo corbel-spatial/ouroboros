@@ -82,6 +82,14 @@ class FeatureClass(Sequence):
             raise IndexError("Row index not found")
         return
 
+    def _get_oid(self, index: int) -> int:
+        """Return the ObjectID for a given row index."""
+        if not isinstance(index, int):
+            raise TypeError
+        item = self.__getitem__(index)
+        idx = self._oid_index
+        return int(item[idx])
+
     def _get_rows(self) -> tuple[tuple, ...]:
         """Return all rows as a tuple of tuples. Geometry is stored as WKT."""
         fields = self.get_fields()
@@ -154,14 +162,6 @@ class FeatureClass(Sequence):
     def get_fields(self) -> list[str]:
         return [f.name for f in arcpy.ListFields(self.path)]
 
-    def get_oid(self, index: int) -> int:
-        """Return the ObjectID for a given row index."""
-        if not isinstance(index, int):
-            raise TypeError
-        item = self.__getitem__(index)
-        idx = self._oid_index
-        return int(item[idx])
-
     def head(self, n=10, silent=False):
         if n > self.__len__():
             n = self.__len__()
@@ -190,7 +190,7 @@ class FeatureClass(Sequence):
         if not isinstance(index, int):
             raise TypeError
         item = self.__getitem__(slice(index))
-        oid = self.get_oid(index)
+        oid = self._get_oid(index)
         self.remove(oid)
         return list(item)
 
