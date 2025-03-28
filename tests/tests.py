@@ -6,12 +6,11 @@ from pprint import pprint
 sys.path.append("../src")
 from ouroboros import ouroboros as ob  # noqa
 
+assets = "../assets"
 
-ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-test_points = os.path.join(ROOT_PATH, "test_data.gdb", "test_points")
-test_polygons = os.path.join(ROOT_PATH, "test_data.gdb", "test_polygons")
-test_polylines = os.path.join(ROOT_PATH, "test_data.gdb", "test_polylines")
+test_points = os.path.join(assets, "test_data.gdb", "test_points")
+test_polygons = os.path.join(assets, "test_data.gdb", "test_polygons")
+test_polylines = os.path.join(assets, "test_data.gdb", "test_polylines")
 test_fcs = [test_points, test_polygons, test_polylines]
 
 
