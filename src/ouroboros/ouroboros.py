@@ -35,13 +35,13 @@ class FeatureClass(Sequence):
         else:
             self.path = path
 
-        self.properties = self.describe()
-        self._oid_name = self.properties["OIDFieldName"]
-        self._geometry_type = self.properties["shapeType"]
+        _properties = self.describe()
+        self._oid_name = _properties["OIDFieldName"]
+        self._geometry_type = _properties["shapeType"]
 
-        fields = self.get_fields()
-        self._oid_index = fields.index(self._oid_name)
-        self._shape_column_index = fields.index("Shape")
+        _fields = self.get_fields()
+        self._oid_index = _fields.index(self._oid_name)
+        self._shape_column_index = _fields.index("Shape")
 
         return
 
@@ -149,9 +149,7 @@ class FeatureClass(Sequence):
         return total
 
     def describe(self) -> dict:
-        properties = arcpy.da.Describe(self.path)
-        self.properties = properties
-        return properties
+        return arcpy.da.Describe(self.path)
 
     def get_fields(self) -> list[str]:
         return [f.name for f in arcpy.ListFields(self.path)]
