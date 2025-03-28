@@ -162,14 +162,10 @@ class FeatureClass(Sequence):
         idx = self._oid_index
         return int(item[idx])
 
-    def get_rows(self):
-        """Return all rows as a list of lists."""
-        return self._get_rows()
-
     def head(self, n=10, silent=False):
         if n > self.__len__():
             n = self.__len__()
-        rows = self.get_rows()[0:n]
+        rows = self._get_rows()[0:n]
         if silent is False:
             pprint(rows)
         return rows
