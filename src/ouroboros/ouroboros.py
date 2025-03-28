@@ -1,3 +1,4 @@
+import os.path
 from collections.abc import Sequence
 from os import PathLike
 from uuid import uuid4
@@ -8,20 +9,43 @@ from geomet import wkt
 from shapely import geometry as sg
 
 
-def get_memory_path():
+def get_memory_path() -> [str, PathLike]:
+    """Get in-memory path for feature class storage.
+
+    This function generates a unique file path in the "memory" directory,
+    prefixing it with 'fc_' and a randomly generated UUID. This ensures that each
+    file has a unique name, preventing potential conflicts if devices share the same
+    storage location.
+
+    :returns: A string representing the path to the new memory location.
+    :rtype: str
+
+    """
     return "memory\\fc_" + str(uuid4()).replace("-", "_")
 
 
-def copy_to_memory(path: [str, PathLike]):
+def copy_to_memory(in_path: [str, PathLike]) -> [str, PathLike]:
+    """
+    Copies data from an input path to memory using ArcGIS's ExportFeatures_conversion method.
+
+    :param in_path: The file path or object containing the input feature class
+        that will be copied to memory.
+    :type in_path: [str, PathLike]
+    :return: The file path or object containing the output features that were
+        copied to memory.
+    :rtype: [str, PathLike]
+    """
+    assert os.path.exists(in_path)
     out_path = get_memory_path()
-    arcpy.ExportFeatures_conversion(path, out_path)
+
+    arcpy.ExportFeatures_conversion(in_path, out_path)
     return out_path
 
 
 class FeatureClass(Sequence):
     """Wrapper class for more Pythonic manipulation of geodatabase feature classes."""
 
-    def __init__(self, path: str, in_memory: bool = False):
+    def __init__(self, path: str, in_memory: bool = False, head_n: int = 10):
         """
         :param path: Path to a feature class inside a geodatabase, e.g., "C:\\Users\\zoot\\spam.gdb\\eggs"
         :type path: str
@@ -41,6 +65,8 @@ class FeatureClass(Sequence):
         _fields = self.get_fields()
         self._oid_index = _fields.index(self._oid_name)
         self._shape_column_index = _fields.index("Shape")
+
+        self._head_n = head_n
 
         return
 
@@ -118,6 +144,12 @@ class FeatureClass(Sequence):
         return iter(self._get_rows())
 
     def __len__(self) -> int:
+        """
+        Returns the number of features in the table or feature class.
+
+        :return: The count of features.
+        :rtype: int
+        """
         result = arcpy.GetCount_management(self.path)
         return int(result[0])
 
@@ -161,7 +193,9 @@ class FeatureClass(Sequence):
     def get_fields(self) -> list[str]:
         return [f.name for f in arcpy.ListFields(self.path)]
 
-    def head(self, n=10, silent=False):
+    def head(self, n: [int, None] = None, silent: bool = False) -> tuple[tuple, ...]:
+        if n is None:
+            n = self._head_n
         if n > self.__len__():
             n = self.__len__()
         rows = self._get_rows()[0:n]
@@ -228,6 +262,7 @@ class FeatureClass(Sequence):
             with arcpy.EnvManager(overwriteOutput=True):
                 arcpy.ExportFeatures_conversion(mem_path, self.path)
                 arcpy.Delete_management(mem_path)
+                del mem_path
         else:
             arcpy.Sort_management(self.path, out_path, [[field_name, direction]])
 
