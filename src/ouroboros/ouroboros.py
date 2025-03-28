@@ -107,7 +107,7 @@ class FeatureClass(Sequence):
 
     def __iter__(self):
         """Return a new iterator object that can iterate over all the objects in the container."""
-        return self._get_rows()
+        return iter(self._get_rows())
 
     def __len__(self) -> int:
         result = arcpy.GetCount_management(self.path)

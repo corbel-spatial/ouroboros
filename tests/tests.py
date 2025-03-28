@@ -63,8 +63,9 @@ def test_get_rows(fc):
 def test_iter(fc):
     for row in fc[:10]:
         assert isinstance(row, list)
-    for row in fc.__iter__()[:10]:
+    for row in fc.__iter__():
         assert isinstance(row, list)
+        break
 
 
 def test_len(fc):
