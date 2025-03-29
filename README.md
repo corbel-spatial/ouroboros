@@ -26,31 +26,33 @@
 
 ## Installation
 
-- Download this source
 - In the [Python Command Prompt](https://developers.arcgis.com/python/latest/guide/install-and-set-up/#installation-using-python-command-prompt):
 
-```
+```PowerShell
 conda create -n arcgispro-py3-ob arcpy=3.4.* geojson shapely -c Esri -c conda-forge --solver libmamba -y
 ```
 
-```
+```PowerShell
 proswap arcgispro-py3-ob
 ```
+- Download this source repository
+- Open [docs/example.ipynb](docs/example.ipynb) in ArcGIS Pro and change the path in the first cell to point to the `ouroboros` source folder.
 
-## Usage
+## Basic Usage
 
-```
+```Python
+import sys
+
+src = r"C:\Users\PATH_TO\ouroboros" 
+sys.path.append(os.path.join(src, "src"))
+
 from ouroboros import ouroboros as ob
 
-fc = ob.FeatureClass(r'C:\Users\zoot\spam.gdb\eggs_feature_class')
+fc = ob.FeatureClass(r"C:\Users\zoot\spam.gdb\eggs_feature_class")
 
 for row in fc:
     print(row)
 ```
-
-## Examples
-
-- [docs/example.ipynb](docs/example.ipynb)
 
 ## References
 
