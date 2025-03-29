@@ -43,11 +43,14 @@ proswap arcgispro-py3-ob
 from ouroboros import ouroboros as ob
 
 fc = ob.FeatureClass(r'C:\Users\zoot\spam.gdb\eggs_feature_class')
+
+for row in fc:
+    print(row)
 ```
 
 ## Examples
 
-- `ouroboros\docs\example.ipynb` (for use in ArcGIS Pro)
+- [docs/example.ipynb](docs/example.ipynb)
 
 ## References
 
