@@ -4,7 +4,8 @@ import sys
 from pprint import pprint
 
 sys.path.append("../src")
-from ouroboros import ouroboros as ob  # noqa
+import ouroboros as ob  # noqa
+from ouroboros import utils  # noqa
 
 assets = "../assets"
 
@@ -176,7 +177,7 @@ def test_remove(fc):
 
 
 def test_save(fc):
-    out_path = ob.get_memory_path()
+    out_path = utils.get_memory_path()
     fc.save(out_path)
     fc.save(out_path, overwrite_output=True)
     out_fc = ob.FeatureClass(out_path)

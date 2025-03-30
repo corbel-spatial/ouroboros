@@ -6,17 +6,7 @@
 
 # ouroboros
 
-<table align="center">
-    <tr>
-    <td>
-        A module that provides a wrapper class to manipulate <b>arcpy</b> feature classes in a more pythonic way.
-        <br><br>
-        Uses the <b>Sequence</b> abstract base class to give list-like behavior to feature class objects.
-    </td>
-    <td style="border:hidden;padding-left:40px"><img alt="ouroboros logo" src="assets/ouroboros.png"></td>
-    </tr>
-</table>
-
+A module that provides a wrapper class to manipulate `arcpy` feature classes in a more pythonic way. Uses the `Sequence` abstract base class to give list-like behavior to feature class objects.
 
 ## Requirements
 
@@ -36,7 +26,7 @@ conda create -n arcgispro-py3-ob arcpy=3.4.* geojson shapely -c Esri -c conda-fo
 proswap arcgispro-py3-ob
 ```
 - Download this source repository
-- Open [docs/example.ipynb](docs/example.ipynb) in ArcGIS Pro and change the path in the first cell to point to the `ouroboros` source folder.
+- Open `notebooks/example.ipynb` in ArcGIS Pro and change the path in the first cell to point to the `ouroboros` source folder.
 
 ## Basic Usage
 
@@ -46,7 +36,7 @@ import sys
 src = r"C:\Users\PATH_TO\ouroboros" 
 sys.path.append(os.path.join(src, "src"))
 
-from ouroboros import ouroboros as ob
+import ouroboros as ob
 
 fc = ob.FeatureClass(r"C:\Users\zoot\spam.gdb\eggs_feature_class")
 
@@ -58,11 +48,3 @@ for row in fc:
 
 - [Abstract Base Classes](https://docs.python.org/3/library/collections.abc.html)
 - [ArcPy](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/what-is-arcpy-.htm)
-
-## Changelog
-
-### 1.0.0-alpha (work in progress)
-
-- Initial proof of concept module
-- Test suite (pytest) and sample geodatabase
-- Jupyter notebook with basic examples 
