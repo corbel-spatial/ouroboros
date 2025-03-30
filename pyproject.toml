@@ -1,0 +1,16 @@
+[project]
+name = "ouroboros"
+authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
+dynamic = ["version"]
+requires-python = "==3.11.*"
+description = "Wrapper class for pythonic use of arcpy Feature Classes"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project-urls]
+Homepage = "https://github.com/corbel-spatial/ouroboros"
+Documentation = ""
+Repository = "https://github.com/corbel-spatial/ouroboros.git"
+Issues = "https://github.com/corbel-spatial/ouroboros/issues"
+Changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"

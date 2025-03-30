@@ -1,0 +1,295 @@
+# packages in environment at C:\Users\workstation\AppData\Local\ESRI\conda\envs\arcgispro-py3-ob:
+#
+# Name                    Version                   Build  Channel
+annotated-types           0.6.0                      py_2    Esri
+anyio                     3.7.1              pyhd8ed1ab_0    conda-forge
+anywidget                 0.9.13                     py_1    Esri
+appdirs                   1.4.4              pyhd8ed1ab_1    conda-forge
+arcgis                    2.4.0.1               py311_103    Esri
+arcgis-mapping            4.30.0                   py_305    Esri
+arcgispro                 3.4                           0    Esri
+arcpy                     3.4             py311_arcgispro_55347    Esri
+arcpy-base                3.4                 py311_55347    Esri
+argon2-cffi               23.1.0             pyhd8ed1ab_1    conda-forge
+argon2-cffi-bindings      21.2.0          py311h2bbff1b_0  
+arrow-cpp                 16.1.0                        4    Esri
+asttokens                 3.0.0              pyhd8ed1ab_1    conda-forge
+async-lru                 2.0.4                      py_0    Esri
+attrs                     25.3.0             pyh71513ae_0    conda-forge
+aws-crt-cpp               0.27.4                        0    Esri
+aws-sdk-cpp-base          1.11.386                      1    Esri
+azure-core                1.12.0                     py_0    Esri
+azure-storage-blob        12.8.0                     py_0    Esri
+babel                     2.11.0                  py311_1    Esri
+beautifulsoup4            4.13.3             pyha770c72_0    conda-forge
+black                     23.10.1                 py311_2    Esri
+blas                      1.0                         mkl    conda-forge
+bleach                    6.2.0              pyh29332c3_4    conda-forge
+blinker                   1.9.0              pyhff2d567_0    conda-forge
+bottleneck                1.3.7           py311hd7041d2_0  
+brotli                    1.1.0                         1    Esri
+brotli-bin                1.1.0                         1    Esri
+brotli-python             1.0.9           py311hd77b12b_8  
+c-ares                    1.19.1                        0    Esri
+cachetools                5.5.2              pyhd8ed1ab_0    conda-forge
+certifi                   2025.1.31          pyhd8ed1ab_0    conda-forge
+cffi                      1.16.0          py311h2bbff1b_1  
+cftime                    1.6.3                   py311_0    Esri
+chardet                   5.2.0              pyhd8ed1ab_3    conda-forge
+charset-normalizer        3.4.1              pyhd8ed1ab_0    conda-forge
+click                     8.1.8              pyh7428d3b_0    conda-forge
+cloudpickle               3.1.1              pyhd8ed1ab_0    conda-forge
+colorama                  0.4.6              pyhd8ed1ab_1    conda-forge
+comm                      0.2.2                      py_0    Esri
+contourpy                 1.2.0           py311h59b6b97_0  
+cppzmq                    4.9.0                         0    Esri
+cryptography              43.0.1                  py311_0    Esri
+cycler                    0.12.1             pyhd8ed1ab_1    conda-forge
+cytoolz                   0.12.2          py311h2bbff1b_0  
+dask                      2023.3.2                   py_0    Esri
+dask-core                 2023.3.2                   py_0    Esri
+debugpy                   1.6.7           py311hd77b12b_0  
+decorator                 5.2.1              pyhd8ed1ab_0    conda-forge
+defusedxml                0.7.1              pyhd8ed1ab_0    conda-forge
+distributed               2023.3.2                   py_0    Esri
+dpcpp-cpp-rt              2022.2.1        arcgispro_19741    Esri
+entrypoints               0.4                pyhd8ed1ab_1    conda-forge
+et_xmlfile                2.0.0              pyhd8ed1ab_1    conda-forge
+exceptiongroup            1.0.0rc9           pyhd8ed1ab_0    Esri
+executing                 2.1.0              pyhd8ed1ab_1    conda-forge
+flake8                    7.1.2              pyhd8ed1ab_0    conda-forge
+fonttools                 4.56.0             pyhe1237c8_0    conda-forge
+freetype                  2.13.2                        1    Esri
+fsspec                    2025.3.0           pyhd8ed1ab_0    conda-forge
+future                    0.18.3                  py311_0    Esri
+gdal                      3.9.2           arcgispro_py311_17844    Esri
+geojson                   3.2.0              pyhd8ed1ab_0    conda-forge
+geomet                    1.0.0                      py_0    Esri
+geos                      3.12.1              arcgispro_2    Esri
+greenlet                  3.0.1           py311hd77b12b_0  
+h11                       0.14.0             pyhd8ed1ab_1    conda-forge
+h2                        4.2.0              pyhd8ed1ab_0    conda-forge
+h5py                      3.10.0          arcgispro_py311_0    Esri
+hpack                     4.1.0              pyhd8ed1ab_0    conda-forge
+httpcore                  1.0.7              pyh29332c3_1    conda-forge
+httpx                     0.28.1             pyhd8ed1ab_0    conda-forge
+hyperframe                6.1.0              pyhd8ed1ab_0    conda-forge
+icc_rt                    2022.2.1        arcgispro_19741    Esri
+idna                      3.10               pyhd8ed1ab_1    conda-forge
+importlib-metadata        8.6.1              pyha770c72_0    conda-forge
+importlib_metadata        8.6.1                hd8ed1ab_0    conda-forge
+importlib_resources       6.5.2              pyhd8ed1ab_0    conda-forge
+iniconfig                 1.1.1              pyhd3eb1b0_0    Esri
+intel-cmplr-lib-rt        2022.2.1        arcgispro_19741    Esri
+intel-fortran-rt          2022.2.1        arcgispro_19741    Esri
+intel-openmp              2022.2.1        arcgispro_19741    Esri
+ipykernel                 6.29.5             pyh5f5efe1_0    Esri
+ipython                   8.18.1             pyh3a91677_1    Esri
+ipython_genutils          0.2.0              pyhd8ed1ab_2    conda-forge
+ipywidgets                8.1.5                      py_0    Esri
+isodate                   0.6.0                      py_0    Esri
+jdcal                     1.4.1                      py_0    conda-forge
+jedi                      0.18.2                     py_1    Esri
+jinja2                    3.1.6              pyhd8ed1ab_0    conda-forge
+jpeg                      9e                            0    Esri
+json5                     0.9.25                     py_0    Esri
+jsonschema                4.23.0             pyhd8ed1ab_1    conda-forge
+jsonschema-specifications 2024.10.1          pyhd8ed1ab_1    conda-forge
+jupyter-lsp               2.2.0                      py_0    Esri
+jupyter_client            8.6.0                      py_0    Esri
+jupyter_console           6.6.3                      py_0    Esri
+jupyter_core              5.5.1                   py311_1    Esri
+jupyter_events            0.10.0                     py_0    Esri
+jupyter_server            2.14.2                     py_0    Esri
+jupyter_server_terminals  0.5.3              pyhd8ed1ab_1    conda-forge
+jupyterlab                4.2.5                      py_0    Esri
+jupyterlab_pygments       0.3.0                      py_1    Esri
+jupyterlab_server         2.27.3                     py_0    Esri
+jupyterlab_widgets        3.0.13                     py_0    Esri
+keyring                   24.3.0                  py311_1    Esri
+kiwisolver                1.4.4           py311hd77b12b_0  
+krb5                      1.21.3                        1    Esri
+libabseil                 20230125.3                    0    Esri
+libbrotlicommon           1.1.0                         1    Esri
+libbrotlidec              1.1.0                         1    Esri
+libbrotlienc              1.1.0                         1    Esri
+libdeflate                1.20                          1    Esri
+libpng                    1.6.43                        1    Esri
+libprotobuf               3.21.12                       4    Esri
+libsodium                 1.0.18                        5    Esri
+libthrift                 0.20.0                        0    Esri
+libtiff                   4.6.0                         4    Esri
+libutf8proc               2.8.0                         0    Esri
+libxml2                   2.12.9              arcgispro_0    Esri
+libxslt                   1.1.42                        0    Esri
+locket                    1.0.0              pyhd8ed1ab_0    conda-forge
+lxml                      5.3.0                   py311_0    Esri
+lz4                       4.3.2           py311h2bbff1b_0  
+lz4-c                     1.9.4                         1    Esri
+markupsafe                3.0.2              pyhe1237c8_1    conda-forge
+matplotlib                3.6.3           py311_arcgispro_2    Esri
+matplotlib-base           3.6.3           py311_arcgispro_2    Esri
+matplotlib-inline         0.1.7              pyhd8ed1ab_1    conda-forge
+mccabe                    0.7.0              pyhd8ed1ab_1    conda-forge
+mistune                   3.1.3              pyh29332c3_0    conda-forge
+mkl                       2022.2.1        arcgispro_19755    Esri
+mkl-service               2.4.1           py311_arcgispro_0    Esri
+mkl_fft                   1.3.10          py311_arcgispro_0    Esri
+mkl_random                1.2.7           py311_arcgispro_0    Esri
+mpmath                    1.3.0              pyhd8ed1ab_1    conda-forge
+msgpack-python            1.0.3           py311h59b6b97_0  
+msrest                    0.6.21                     py_0    Esri
+munkres                   1.1.4              pyh9f0ad1d_0    conda-forge
+mypy_extensions           1.0.0              pyha770c72_1    conda-forge
+nbclassic                 1.1.0                      py_1    Esri
+nbclient                  0.8.0                      py_0    Esri
+nbconvert                 7.16.4                     py_0    Esri
+nbformat                  5.10.4                     py_0    Esri
+nest-asyncio              1.6.0              pyhd8ed1ab_1    conda-forge
+netcdf4                   1.6.4           py311_arcgispro_4    Esri
+networkx                  3.4                pyhd8ed1ab_0    conda-forge
+nlohmann_json             3.11.2                        0    Esri
+nose                      1.3.7                   py_1006    conda-forge
+notebook                  7.2.2                      py_1    Esri
+notebook-shim             0.2.4                      py_0    Esri
+numexpr                   2.8.4                   py311_2    Esri
+numpy                     1.24.3                  py311_1    Esri
+numpy-base                1.24.3                  py311_1    Esri
+oauthlib                  3.2.2                      py_0    Esri
+olefile                   0.47               pyhd8ed1ab_1    conda-forge
+openpyxl                  3.1.2           py311h2bbff1b_0  
+openssl                   3.0.15                        1    Esri
+orc                       2.0.0                         0    Esri
+overrides                 7.7.0              pyhd8ed1ab_1    conda-forge
+packaging                 24.2               pyhd8ed1ab_2    conda-forge
+pandas                    2.0.2                   py311_0    Esri
+pandocfilters             1.5.0              pyhd8ed1ab_0    conda-forge
+parso                     0.8.4              pyhd8ed1ab_1    conda-forge
+partd                     1.4.2              pyhd8ed1ab_0    conda-forge
+pathspec                  0.9.0                      py_0    Esri
+patsy                     1.0.1              pyhd8ed1ab_1    conda-forge
+pefile                    2022.5.30          pyhd8ed1ab_0    Esri
+pickleshare               0.7.5           pyhd8ed1ab_1004    conda-forge
+pillow                    10.4.0                  py311_3    Esri
+pip                       23.3.2                  py311_0    Esri
+pkgutil-resolve-name      1.3.10             pyhd8ed1ab_2    conda-forge
+platformdirs              4.3.7              pyh29332c3_0    conda-forge
+pluggy                    1.5.0              pyhd8ed1ab_1    conda-forge
+pro_notebook_integration  3.4                    py311_11    Esri
+prometheus_client         0.20.0                     py_0    Esri
+prompt-toolkit            3.0.47                     py_0    Esri
+prompt_toolkit            3.0.47                        0    Esri
+protobuf                  4.21.12                 py311_5    Esri
+psutil                    5.9.0           py311h2bbff1b_0  
+psygnal                   0.11.0                     py_0    Esri
+pure_eval                 0.2.3              pyhd8ed1ab_1    conda-forge
+puremagic                 1.15                       py_0    Esri
+pyarrow                   16.1.0                  py311_2    Esri
+pybind11                  2.10.4                        2    Esri
+pybind11_json             0.2.13                        2    Esri
+pycodestyle               2.12.1             pyhd8ed1ab_1    conda-forge
+pycparser                 2.22               pyh29332c3_1    conda-forge
+pydantic                  2.4.2                      py_1    Esri
+pydantic-core             2.10.1                  py311_1    Esri
+pyflakes                  3.2.0              pyhd8ed1ab_1    conda-forge
+pygments                  2.18.0                     py_0    Esri
+pyjwt                     2.4.0                      py_1    Esri
+pylerc                    4.0                        py_0    Esri
+pyodbc                    5.0.1           py311hd77b12b_0  
+pyparsing                 3.2.1              pyhd8ed1ab_0    conda-forge
+pypdf                     4.3.1                      py_1    Esri
+pyshp                     2.3.1              pyhd8ed1ab_1    conda-forge
+pysocks                   1.7.1              pyh09c184e_7    conda-forge
+pyspnego                  0.11.1                  py311_0    Esri
+pytest                    7.4.3                   py311_0    Esri
+python                    3.11.10                       0    Esri
+python-dateutil           2.9.0.post0        pyhff2d567_1    conda-forge
+python-fastjsonschema     2.21.1             pyhd8ed1ab_0    conda-forge
+python-gssapi             1.8.3                   py311_1    Esri
+python-json-logger        2.0.7              pyhd8ed1ab_0    conda-forge
+pytz                      2022.6                  py311_0    Esri
+pywin32                   308             py311h5da7b33_0  
+pywin32-ctypes            0.2.0                   py311_1    Esri
+pywin32-security          306                     py311_2    Esri
+pywinpty                  2.0.10          py311h5da7b33_0  
+pyyaml                    6.0.2              pyhe1237c8_2    conda-forge
+pyzmq                     25.1.2                  py311_0    Esri
+re2                       2023.06.02                    0    Esri
+referencing               0.36.2             pyh29332c3_0    conda-forge
+regex                     2023.10.3       py311h2bbff1b_0  
+requests                  2.31.0             pyhd8ed1ab_0    conda-forge
+requests-gssapi           1.2.3                      py_2    Esri
+requests-kerberos         0.14.0             pyh424387f_4    Esri
+requests-oauthlib         2.0.0              pyhd8ed1ab_1    conda-forge
+requests-toolbelt         1.0.0                      py_0    Esri
+rfc3339-validator         0.1.4              pyhd8ed1ab_1    conda-forge
+rfc3986-validator         0.1.1              pyh9f0ad1d_0    conda-forge
+rpds-py                   0.10.6          py311h062c2fa_0  
+ruamel.yaml               0.17.21         py311h2bbff1b_0  
+saspy                     4.3.2                      py_1    Esri
+scipy                     1.9.3                   py311_4    Esri
+seaborn                   0.13.2               hd8ed1ab_3    conda-forge
+seaborn-base              0.13.2             pyhd8ed1ab_3    conda-forge
+send2trash                1.8.3              pyh5737063_1    conda-forge
+setuptools                74.1.2                  py311_0    Esri
+shapely                   2.0.5           py311_arcgispro_0    Esri
+six                       1.16.0                     py_0    Esri
+snappy                    1.2.1                         0    Esri
+sniffio                   1.3.1              pyhd8ed1ab_1    conda-forge
+sortedcontainers          2.4.0              pyhd8ed1ab_1    conda-forge
+soupsieve                 2.5                pyhd8ed1ab_1    conda-forge
+sqlalchemy                2.0.32                  py311_0    Esri
+sqlite                    3.46.1                        0    Esri
+sspilib                   0.1.0                   py311_0    Esri
+stack_data                0.5.1                      py_0    Esri
+statsmodels               0.14.0          py311hd7041d2_0  
+swat                      1.13.3                  py311_1    Esri
+sympy                     1.12                    py311_0    Esri
+tblib                     3.0.0              pyhd8ed1ab_1    conda-forge
+terminado                 0.18.1             pyh5737063_0    conda-forge
+testpath                  0.5.0                      py_0    Esri
+tinycss2                  1.1.1                      py_0    Esri
+toml                      0.10.2             pyhd8ed1ab_1    conda-forge
+tomli                     2.2.1              pyhd8ed1ab_1    conda-forge
+toolz                     1.0.0              pyhd8ed1ab_1    conda-forge
+tornado                   6.3.3           py311h2bbff1b_0  
+tqdm                      4.67.1             pyhd8ed1ab_1    conda-forge
+traitlets                 5.14.3             pyhd8ed1ab_1    conda-forge
+truststore                0.9.1                      py_0    Esri
+typing-extensions         4.12.2               hd8ed1ab_1    conda-forge
+typing_extensions         4.12.2             pyha770c72_1    conda-forge
+typing_utils              0.1.0              pyhd8ed1ab_1    conda-forge
+tzdata                    2025a                h78e105d_0    conda-forge
+ujson                     5.4.0           py311hd77b12b_0  
+unicodedata2              15.1.0          py311h2bbff1b_0  
+urllib3                   2.3.0              pyhd8ed1ab_0    conda-forge
+vc                        14.2                 h21ff451_1  
+vs2015_runtime            14.27.29016          h5e58377_2    Esri
+watchfiles                0.21.0          py311h062c2fa_0  
+wcwidth                   0.2.13             pyhd8ed1ab_1    conda-forge
+webencodings              0.5.1              pyhd8ed1ab_3    conda-forge
+websocket-client          1.8.0              pyhd8ed1ab_1    conda-forge
+wheel                     0.45.1             pyhd8ed1ab_1    conda-forge
+widgetsnbextension        4.0.13                     py_0    Esri
+win_inet_pton             1.1.0                   py311_1    Esri
+winkerberos               0.9.1                   py311_0    Esri
+winpty                    0.4.3                         4    conda-forge
+wrapt                     1.14.1          py311h2bbff1b_0  
+xarray                    2024.3.0           pyhd8ed1ab_0    conda-forge
+xeus                      3.0.5                         0    Esri
+xeus-python               0.15.8                  py311_2    Esri
+xeus-python-shell         0.6.3                         1    Esri
+xeus-python-shell-raw     0.6.3                      py_1    Esri
+xeus-zmq                  1.0.2                         3    Esri
+xlrd                      2.0.1              pyhd8ed1ab_3    conda-forge
+xlwt                      1.3.0                      py_1    conda-forge
+xtl                       0.7.5                         0    Esri
+xz                        5.4.7                         0    Esri
+yaml                      0.2.5                         0    Esri
+zeromq                    4.3.5                         0    Esri
+zict                      3.0.0                      py_0    Esri
+zipp                      3.21.0             pyhd8ed1ab_1    conda-forge
+zlib                      1.3.1                         1    Esri
+zlib-ng                   2.1.6                         2    Esri
+zstandard                 0.19.0          py311h2bbff1b_0  
+zstd                      1.5.6                         1    Esri
