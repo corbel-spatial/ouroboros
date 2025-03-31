@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0-alpha (work in progress)
+## 1.0.0-beta1
 
 - Proof of concept class `ouroboros.core.FeatureClass`
 - Test suite (pytest) 
