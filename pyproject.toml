@@ -1,5 +1,5 @@
 [project]
-version = "1.0.0-beta"
+version = "1.0.0b1"
 name = "ouroboros-arcpy"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
@@ -13,7 +13,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3.11",
     "Operating System :: Microsoft :: Windows :: Windows 11"
 ]
