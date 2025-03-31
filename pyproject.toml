@@ -18,9 +18,9 @@ classifiers = [
     "Operating System :: Microsoft :: Windows :: Windows 11"
 ]
 
-[project-urls]
-Homepage = "https://github.com/corbel-spatial/ouroboros"
-Documentation = "https://app.readthedocs.org/projects/ouroboros-arcpy/"
-Repository = "https://github.com/corbel-spatial/ouroboros.git"
-Issues = "https://github.com/corbel-spatial/ouroboros/issues"
-Changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
+[project.urls]
+homepage = "https://pypi.org/project/ouroboros-arcpy/"
+documentation = "https://app.readthedocs.org/projects/ouroboros-arcpy/"
+repository = "https://github.com/corbel-spatial/ouroboros"
+issues = "https://github.com/corbel-spatial/ouroboros/issues"
+changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
