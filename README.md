@@ -1,8 +1,10 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/ouroboros-arcpy)](https://pypi.org/project/ouroboros-arcpy/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-arcpy)](https://pypistats.org/packages/ouroboros-arcpy)
+![PyPI - Format](https://img.shields.io/pypi/format/ouroboros-arcpy)
 [![Read the Docs](https://img.shields.io/readthedocs/ouroboros-arcpy)](https://ouroboros-arcpy.readthedocs.io/)
 [![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=pylint)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
 [![arcpy 3.4](https://img.shields.io/badge/arcpy-3.4-blue?logo=arcgis&logoColor=fff)](https://pro.arcgis.com/en/pro-app/3.4/arcpy/get-started/what-is-arcpy-.htm)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=FFD43B&labelColor=306998&color=FFD43B)](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/installing-python-for-arcgis-pro.htm)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-arcpy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
 
 # ouroboros
