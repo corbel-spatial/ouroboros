@@ -1,9 +1,13 @@
 [project]
-version = "1.0.0-alpha1"
+version = "1.0.0-beta"
 name = "ouroboros-arcpy"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = "==3.11.*"
+dependencies = [
+  "geojson",
+  "shapely",
+]
 description = "Wrapper class for pythonic use of arcpy Feature Classes"
 readme = "README.md"
 license = "MIT"
