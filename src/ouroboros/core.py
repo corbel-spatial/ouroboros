@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Sequence, Iterator
 
 import arcpy
 import geojson
@@ -55,12 +55,14 @@ class FeatureClass(Sequence):
 
         return
 
-    def __add__(self, rows: [list[tuple], list[tuple, ...]]):
+    def __add__(self, rows: tuple[tuple, ...]) -> object:
         """
         Append one or more rows to the feature class.
 
-        :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
-        :type rows: list[any] or list[list[any]]
+        :param rows: A tuple of one or more tuples, where each inner tuple represents a row in the feature class.
+                     Tuple length and order must match that of method get_fields().
+        :type rows: tuple[tuple, ...]
+
         :return: The self object of ouroboros.FeatureClass
         :rtype: object
         """
@@ -75,15 +77,16 @@ class FeatureClass(Sequence):
                 ic.insertRow(rows)
         return self
 
-    def __contains__(self, query: [tuple[any, str]]) -> bool:
+    def __contains__(self, query: tuple[any, str]) -> bool:
         """
-        Return true if the given query is in self, false otherwise.
+        Return true if the given query is in self; false otherwise.
 
         A query is a tuple where the first element is the value to count and the second
         element is the field name to look for. For example: ("value_to_count", "field_name")
 
         :param query: The query tuple (value_to_count, field_name)
         :type query: tuple[any, str]
+
         :return: True if the query is in self, False otherwise
         :rtype: bool
         """
@@ -100,7 +103,9 @@ class FeatureClass(Sequence):
 
         :param index: The index of the row to delete.
         :type index: int
+
         :raises IndexError: If the specified index is not found in the rows.
+
         :return: None
         :rtype: None
         """
@@ -118,7 +123,9 @@ class FeatureClass(Sequence):
 
         :param index: The row index to retrieve the ObjectID for.
         :type index: int
-        :raises TypeError: If ``index`` is not an integer.
+
+        :raises TypeError: If "index" is not an integer.
+
         :return: The ObjectID associated with the specified row index.
         :rtype: int
         """
@@ -152,24 +159,25 @@ class FeatureClass(Sequence):
                 rows.append(row)
         return tuple(rows)
 
-    def __getitem__(self, index: [int, slice]) -> [tuple[any], tuple[tuple[any]]]:
+    def __getitem__(self, index: int | slice) -> tuple[tuple, ...]:
         """
         Return the row or rows at the given index or slice.
 
         :param index: The index or slice of the row to return.
         :type index: int or slice
+
         :return: The row or rows at the given index or slice.
         :rtype: tuple or tuple of tuples
         """
         rows = self._get_rows()
         return rows[index]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[tuple[tuple, ...]]:
         """
-        Return a new iterator object that can iterate over all the objects in the container.
+        Return a new iterator object that can iterate over rows.
 
         :return: A new iterator object.
-        :rtype: object
+        :rtype: Iterator[tuple[tuple, ...]]
         """
         return iter(self._get_rows())
 
@@ -183,7 +191,7 @@ class FeatureClass(Sequence):
         result = arcpy.GetCount_management(self.path)
         return int(result[0])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Returns a string representation of the object, which is the path to the feature class.
 
@@ -192,16 +200,16 @@ class FeatureClass(Sequence):
         """
         return self.path
 
-    def __reversed__(self):
+    def __reversed__(self) -> Iterator[tuple[tuple, ...]]:
         """
-        Reverses the order of elements in the object.
+        Reverses the order of rows.
 
         :return: Returns an iterator of rows.
-        :rtype: object
+        :rtype: Iterator[tuple[tuple, ...]]
         """
         return list(self._get_rows()).__reversed__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns a string representation of the feature class's rows.
 
@@ -210,12 +218,16 @@ class FeatureClass(Sequence):
         """
         return str(self._get_rows())
 
-    def append(self, rows: [list[any], list[list[any]]]) -> None:
+    def append(self, rows: tuple[tuple, ...]) -> None:
         """
         Append one or more rows to the feature class.
 
-        :param rows: A single list of values or a list of lists to append; list lengths and order must match that of method get_fields()
+        :param rows: A tuple of one or more tuples, where each inner tuple represents a row in the feature class.
+                     Tuple length and order must match that of method get_fields().
         :type rows: list[any] or list[list[any]]
+
+        :return: None
+        :rtype: None
         """
         self.__add__(rows)
         return
@@ -230,7 +242,7 @@ class FeatureClass(Sequence):
         arcpy.DeleteRows_management(self.path)
         return
 
-    def count(self, query: [tuple[str, any]]) -> int:
+    def count(self, query: tuple[str, any]) -> int:
         """
         Return the number of occurrences in the data.
 
@@ -240,6 +252,7 @@ class FeatureClass(Sequence):
 
         :param query: A tuple with two elements: ("value_to_count", "field_name")
         :type query: [tuple[str, any]]
+
         :return: The total number of occurrences
         :rtype: int
         """
@@ -255,7 +268,7 @@ class FeatureClass(Sequence):
         """
         Returns a dictionary containing metadata about the feature class.
 
-        This method uses the ``arcpy.da.Describe`` function from ArcPy to fetch the metadata,
+        This method uses the "arcpy.da.Describe" function from ArcPy to fetch the metadata,
         which includes properties such as the dataset type, extent, spatial reference, and more.
 
         :return: A dictionary containing the metadata.
@@ -267,14 +280,12 @@ class FeatureClass(Sequence):
         """
         Returns a list of field names from the feature class.
 
-        This method relies on the :mod:`arcpy` module for functionality.
-
         :return: A list of strings representing the field names.
         :return type: list[str]
         """
         return [f.name for f in arcpy.ListFields(self.path)]
 
-    def head(self, n: [int, None] = None, silent: bool = False) -> tuple[tuple, ...]:
+    def head(self, n: int | None = None, silent: bool = False) -> tuple[tuple, ...]:
         """
         Prints and returns a specified number of rows from the data.
 
@@ -283,6 +294,7 @@ class FeatureClass(Sequence):
         :type n: int or None
         :param silent: If True, suppresses printing the output (default is False).
         :type silent: bool
+
         :return: A tuple of tuples containing the specified rows of data.
         :rtype: tuple[tuple, ...]
         """
@@ -295,6 +307,7 @@ class FeatureClass(Sequence):
             print(rows)
         return rows
 
+    # noinspection PyInconsistentReturns,PyTypeChecker
     def index(self, oid: int, **kwargs) -> int:
         """
         Return the row index for a given ObjectID.
@@ -323,6 +336,7 @@ class FeatureClass(Sequence):
 
         :param field_name: The name of the field for which to retrieve the index.
         :type field_name: str
+
         :return: The column index for the given field name.
         :rtype: int
         """
@@ -337,6 +351,7 @@ class FeatureClass(Sequence):
 
         :param index: The index of the row to remove (default=-1)
         :type index: int, optional
+
         :return: The removed row as a list
         :rtype: list
         """
@@ -352,7 +367,9 @@ class FeatureClass(Sequence):
 
         :param oid: The ObjectID to delete.
         :type oid: int
+
         :raises ValueError: If the ObjectID is not an integer or less than 1.
+
         :return: None
         :rtype: None
         """
@@ -362,15 +379,17 @@ class FeatureClass(Sequence):
         self.__delitem__(index)
         return
 
-    def save(self, out_path: [str, PathLike], overwrite_output=True) -> None:
+    def save(self, out_path: str | PathLike, overwrite_output=True) -> None:
         """
         Saves the feature class data to a geodatabase or file.
 
         :param out_path: The path where the output will be saved. Can be either a string (e.g., 'path/to/output') or a PathLike object.
-        :type out_path: str, PathLike
+        :type out_path: str or PathLike
         :param overwrite_output: If True, overwrites any existing output if it already exists at the specified location.
         :type overwrite_output: bool, optional
+
         :raises RuntimeError: If arcpy fails to export features due to an invalid path or other error.
+
         :return: None
         :rtype: None
         """
@@ -382,12 +401,12 @@ class FeatureClass(Sequence):
         self,
         field_name: str,
         ascending: bool = True,
-        out_path: [str, PathLike] = None,
+        out_path: str | PathLike = None,
     ) -> None:
         """
         Sort on a specified field (cannot be ObjectID).
 
-        If `out_path` is not specified, the sorting is done in place. Otherwise,
+        If "out_path" is not specified, the sorting is done in place. Otherwise,
         the sorted features are exported to the specified path.
 
         :param field_name: The name of the field to sort on.
@@ -398,8 +417,10 @@ class FeatureClass(Sequence):
         :type ascending: bool
         :param out_path: The path where the sorted features are exported,
             if not sorting in place. Defaults to None.
-        :type out_path: [str, PathLike], optional
+        :type out_path: str or PathLike, optional
+
         :raises ValueError: If the field name is the same as the ObjectID.
+
         :return: None
         :rtype: None
         """

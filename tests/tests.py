@@ -1,5 +1,5 @@
 import os
-import pytest
+import pytest  # noqa
 import sys
 from pprint import pprint
 

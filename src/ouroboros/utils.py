@@ -4,7 +4,7 @@ from uuid import uuid4
 from arcpy import Exists, ExportFeatures_conversion
 
 
-def get_memory_path() -> [str, PathLike]:
+def get_memory_path() -> str:
     """Get in-memory path for feature class storage.
 
     This function generates a unique file path in the "memory" directory,
@@ -18,7 +18,7 @@ def get_memory_path() -> [str, PathLike]:
     return "memory\\fc_" + str(uuid4()).replace("-", "_")
 
 
-def copy_to_memory(in_path: [str, PathLike]) -> [str, PathLike]:
+def copy_to_memory(in_path: str | PathLike) -> str:
     """
     Copies data from an input path to memory using ArcGIS's ExportFeatures_conversion method.
 
@@ -27,7 +27,7 @@ def copy_to_memory(in_path: [str, PathLike]) -> [str, PathLike]:
     :type in_path: [str, PathLike]
     :return: The file path or object containing the output features that were
         copied to memory.
-    :rtype: [str, PathLike]
+    :rtype: str
     """
     assert Exists(in_path)
     out_path = get_memory_path()
