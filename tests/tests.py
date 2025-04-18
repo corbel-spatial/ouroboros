@@ -193,9 +193,13 @@ def test_sort(fc):
     assert sort_asc != sort_desc
 
 
-def test_to_geojson(fc):
-    fc.to_geojson()
+def test_to_geojson():
+    for fp in test_fcs:
+        fc_test = ob.FeatureClass(fp, in_memory=True)
+        fc_test.to_geojson()
 
 
-def test_to_shapely(fc):
-    fc.to_shapely()
+def test_to_shapely():
+    for fp in test_fcs:
+        fc_test = ob.FeatureClass(fp, in_memory=True)
+        fc_test.to_shapely()

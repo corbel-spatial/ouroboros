@@ -445,25 +445,32 @@ class FeatureClass(Sequence):
 
         return
 
-    def to_geojson(self) -> geojson.FeatureCollection:
+    def to_geojson(self, id_field: None | str = None) -> geojson.FeatureCollection:
         """
         Return a geojson Feature Collection representation of the feature class.
+
+        :param id_field: The field name to use as the IDs of the GeoJSON features.
+        :type id_field: None or str
 
         :return: A geojson Feature Collection representation of the feature class.
         :rtype: geojson.FeatureCollection
         """
         items = self.__getitem__(slice(0, -1))
 
-        oid_colindex = self._oid_index
+        if id_field is None:
+            id_colindex = self._oid_index
+        else:
+            id_colindex = self.index_field(id_field)
         shape_colindex = self._shape_column_index
 
         out = list()
         for item in items:
-            oid = item[oid_colindex]
-            shape = item[shape_colindex]
+            fid = item[id_colindex]
+            shape = wkt.loads(item[shape_colindex])
+            shape_type = shape["type"]
             properties = dict()
             for i, f in enumerate(self.get_fields()):
-                if f.upper() not in [
+                if f != id_field and f.upper() not in [
                     "OBJECTID",
                     "OID",
                     "SHAPE",
@@ -472,22 +479,26 @@ class FeatureClass(Sequence):
                 ]:
                     properties[f] = item[i]
 
-            if shape is None:
-                gjs = geojson.Feature(id=oid, geometry=None, properties=properties)
-            elif "POLYGON" in str(shape).upper():
-                gjs = geojson.Polygon(
-                    id=oid, geometry=wkt.loads(shape), properties=properties
+            if shape_type in [None, ""]:
+                gjs = geojson.Feature(id=fid, geometry=None, properties=properties)
+            elif shape_type == "Point":
+                gjs = geojson.Point(id=fid, geometry=shape, properties=properties)
+            elif shape_type == "MultiPoint":
+                gjs = geojson.MultiPoint(id=fid, geometry=shape, properties=properties)
+            elif shape_type == "LineString":
+                gjs = geojson.LineString(id=fid, geometry=shape, properties=properties)
+            elif shape_type == "MultiLineString":
+                gjs = geojson.MultiLineString(
+                    id=fid, geometry=shape, properties=properties
                 )
-            elif "LINE" in str(shape).upper():
-                gjs = geojson.Polygon(
-                    id=oid, geometry=wkt.loads(shape), properties=properties
-                )
-            elif "POINT" in str(shape).upper():
-                gjs = geojson.Feature(
-                    id=oid, geometry=wkt.loads(shape), properties=properties
+            elif shape_type == "Polygon":
+                gjs = geojson.Polygon(id=fid, geometry=shape, properties=properties)
+            elif shape_type == "MultiPolygon":
+                gjs = geojson.MultiPolygon(
+                    id=fid, geometry=shape, properties=properties
                 )
             else:
-                raise TypeError(f'Incompatible geometry type: "{shape}"')
+                raise TypeError(f'Incompatible geometry type: "{shape_type}"')
 
             out.append(gjs)
 
