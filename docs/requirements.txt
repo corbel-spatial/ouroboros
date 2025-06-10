@@ -12,8 +12,6 @@ certifi==2025.1.31
     # via requests
 charset-normalizer==3.4.1
     # via requests
-colorama==0.4.6
-    # via sphinx
 docutils==0.21.2
     # via
     #   myst-parser
@@ -45,7 +43,7 @@ pygments==2.19.1
     # via sphinx
 pyyaml==6.0.2
     # via myst-parser
-requests==2.32.3
+requests==2.32.4
     # via sphinx
 roman-numerals-py==3.1.0
     # via sphinx
