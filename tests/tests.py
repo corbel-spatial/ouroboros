@@ -1,7 +1,6 @@
 import os
-import pytest  # noqa
+import pytest
 import sys
-from pprint import pprint
 
 sys.path.append("../src")
 import ouroboros as ob  # noqa
@@ -50,7 +49,7 @@ def test_delitem(fc):
 
 def test_getitem(fc):
     item = fc.__getitem__(0)
-    pprint(item)
+    # print(item)
     assert isinstance(item, tuple)
 
 
@@ -70,13 +69,13 @@ def test_iter(fc):
 
 def test_len(fc):
     i = len(fc)
-    pprint(i)
+    # print(i)
     assert isinstance(i, int)
 
 
 def test_repr(fc):
     r = fc.__repr__()
-    pprint(r)
+    # print(r)
     assert isinstance(r, str)
     assert r.startswith("C:") or r.startswith("memory")
 
@@ -90,7 +89,7 @@ def test_reversed(fc):
 
 def test_str(fc):
     s = str(fc)
-    pprint(s)
+    # print(s)
     assert isinstance(s, str)
 
 
@@ -115,20 +114,20 @@ def test_clear(fc):
 
 def test_count(fc):
     count = fc.count(("feature 1", "textfield"))
-    print(count)
+    # print(count)
     assert count == 1
 
 
 def test_describe(fc):
     desc = fc.describe()
-    pprint(desc)
+    # print(desc)
     assert isinstance(desc, dict)
     assert "shapeType" in desc
 
 
 def test_get_fields(fc):
     fields = fc.get_fields()
-    pprint(fields)
+    # print(fields)
     assert isinstance(fields, list)
 
 
@@ -139,13 +138,11 @@ def test_get_oid(fc):
 
 
 def test_head(fc):
-    print("\n")
-    h = fc.head()
+    h = fc.head(silent=True)
     assert isinstance(h, tuple)
     assert len(h) == 10
 
-    print("\n")
-    h = fc.head(20)
+    h = fc.head(20, silent=True)
     assert isinstance(h, tuple)
     assert len(h) == 20
 
@@ -186,10 +183,9 @@ def test_save(fc):
 
 def test_sort(fc):
     fc.sort("textfield", ascending=True)
-    sort_asc = fc.head()
-    print("\n")
+    sort_asc = fc.head(silent=True)
     fc.sort("textfield", ascending=False)
-    sort_desc = fc.head()
+    sort_desc = fc.head(silent=True)
     assert sort_asc != sort_desc
 
 

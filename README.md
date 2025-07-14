@@ -3,7 +3,7 @@
 ![PyPI - Format](https://img.shields.io/pypi/format/ouroboros-arcpy)
 [![Read the Docs](https://img.shields.io/readthedocs/ouroboros-arcpy)](https://ouroboros-arcpy.readthedocs.io/)
 [![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=pylint)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
-[![arcpy 3.4](https://img.shields.io/badge/arcpy-3.4-blue?logo=arcgis&logoColor=fff)](https://pro.arcgis.com/en/pro-app/3.4/arcpy/get-started/what-is-arcpy-.htm)
+[![arcpy 3.5](https://img.shields.io/badge/arcpy-3.5-blue?logo=arcgis&logoColor=fff)](https://pro.arcgis.com/en/pro-app/3.5/arcpy/get-started/what-is-arcpy-.htm)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-arcpy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
 
@@ -13,7 +13,7 @@ A module that provides a wrapper class to manipulate `arcpy` feature classes in 
 
 ## Requirements
 
-- ArcGIS Pro 3.4
+- ArcGIS Pro 3.5
 - Windows 11
   
 ## Installation

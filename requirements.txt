@@ -1,3 +1,0 @@
-geojson>=3.0.0
-geomet>=1.0.0
-shapely>=2.0.0
