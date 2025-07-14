@@ -3,19 +3,17 @@ version = "1.0.0b3"
 name = "ouroboros-arcpy"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
-requires-python = "==3.11.*"
+requires-python = ">=3.11"
 dependencies = [
-  "geojson",
-  "shapely",
+  "geopandas",
 ]
-description = "Wrapper class for pythonic use of arcpy Feature Classes"
+description = "Wrapper classes for pythonic use of arcpy Feature Classes"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3.11",
-    "Operating System :: Microsoft :: Windows :: Windows 11"
 ]
 
 [project.urls]

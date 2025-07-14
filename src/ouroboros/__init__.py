@@ -1,1 +1,1 @@
-from .core import FeatureClass
+from .core import *
