@@ -1,5 +1,5 @@
 [project]
-version = "1.0.0b2"
+version = "1.0.0b3"
 name = "ouroboros-arcpy"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
@@ -24,3 +24,7 @@ documentation = "https://app.readthedocs.org/projects/ouroboros-arcpy/"
 repository = "https://github.com/corbel-spatial/ouroboros"
 issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+test = ['pytest']
+docs = ['sphinx']
