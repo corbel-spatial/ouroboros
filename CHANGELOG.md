@@ -2,6 +2,7 @@
 
 ## 1.0.0-beta3
 
+- README updates
 - Black action working
 - Remove extraneous requirements files
 - Bump versions

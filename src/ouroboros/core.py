@@ -1,6 +1,5 @@
 from collections.abc import Sequence, Iterator
 
-import arcpy
 import geojson
 from geomet import wkt
 from shapely import geometry as sg

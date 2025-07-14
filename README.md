@@ -5,10 +5,9 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-arcpy)](https://pypistats.org/packages/ouroboros-arcpy)
 ![PyPI - Format](https://img.shields.io/pypi/format/ouroboros-arcpy)
 
-[![Read the Docs](https://img.shields.io/readthedocs/ouroboros-arcpy)](https://ouroboros-arcpy.readthedocs.io/)
+[![Read the Docs Status](https://img.shields.io/readthedocs/ouroboros-arcpy)](https://ouroboros-arcpy.readthedocs.io/)
 [![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=pylint)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
 [![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/black-action.yml?label=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/black-action.yml)
-
 
 # ouroboros
 
@@ -40,38 +39,10 @@ for row in fc:
 
 ## Examples
 
-- See `notebooks/example.ipynb`, best used in ArcGIS Pro
+- See `notebooks/example.ipynb`
 
 ## Links
 
 - [Documentation on Read the Docs](https://ouroboros-arcpy.readthedocs.io/)
 - [GitHub repository](https://github.com/corbel-spatial/ouroboros)
 - [Package on PyPI](https://pypi.org/project/ouroboros-arcpy/)
-
-## References
-
-- [Abstract Base Classes](https://docs.python.org/3/library/collections.abc.html)
-- [ArcPy](https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/what-is-arcpy-.htm)
-
-## Installation Steps for Development
-```
-cmd /k "C:\Program Files\ArcGIS\Pro\bin\Python\Scripts\proenv.bat"
-```
-```
-git clone https://github.com/corbel-spatial/ouroboros
-```
-```
-cd ouroboros
-```
-```
-conda env create -f environment.yml
-```
-
-```
-proswap arcgispro-py3-ob
-```
-
-```
-python -m pip install -r requirements.txt
-```
-
