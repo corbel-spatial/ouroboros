@@ -7,7 +7,10 @@ import pandas as pd
 
 
 class FeatureClass(MutableSequence):
-    """Wraps a GeoDataFrame, and allows access like an arcpy.da cursor in memory. Must use 'save' method to write to disk."""
+    """
+    Wraps a GeoDataFrame, and allows access like an arcpy.da cursor in memory.
+    Must use 'save' method to write to disk.
+    """
 
     def __init__(self, gdb_path: os.PathLike | str, fc_name: str):
         self.gdb_path = gdb_path
@@ -16,24 +19,54 @@ class FeatureClass(MutableSequence):
         self.saved = True
 
     def __delitem__(self, index):
+        assert isinstance(index, int)
+        self._data = pd.concat(
+            [self._data.iloc[: index - 1], self._data.iloc[index:]]
+        ).reset_index(drop=True)
         self.saved = False
-        raise NotImplementedError
 
-    def __getitem__(self, index: int | slice | list | tuple) -> pd.Series:
+    def __getitem__(self, index: int) -> pd.Series:
+        assert isinstance(index, int)
         return self._data.iloc[index]
 
-    def __setitem__(self, index, value):
-        self.saved = False
-        raise NotImplementedError
+    def __iter__(self):
+        return self._data.itertuples()
 
     def __len__(self):
         if len(self._data.shape) != 2:
             raise ValueError("GeoDataFrame must be two-dimensional")
-        return self._data.shape[1]
+        return self._data.shape[0]
 
-    def insert(self, index, value):
+    def __setitem__(
+        self,
+        index: tuple[int, [int | str]],
+        value,
+    ):
+        """index is a tuple (row, column) where column can be int or str"""
+        row, column = index
+        assert isinstance(row, int)
+        assert isinstance(column, int) or isinstance(column, str)
+        if type(column) is int:
+            self._data.iat[row, column] = value
+        else:
+            self._data.at[row, column] = value
         self.saved = False
-        raise NotImplementedError
+
+    def copy(self, fc_name: str, gdb_path: None | os.PathLike | str = None):
+        self._data.to_file(
+            gdb_path if gdb_path else self.gdb_path,
+            layer=fc_name,
+            driver="OpenFileGDB",
+        )
+        self.saved = True
+
+    def insert(self, index: int, value: pd.Series):
+        assert isinstance(index, int)
+        assert isinstance(value, pd.Series)
+        self._data = pd.concat(
+            [self._data.iloc[:index], value, self._data.iloc[index:]]
+        ).reset_index(drop=True)
+        self.saved = False
 
     def save(
         self,
@@ -42,14 +75,6 @@ class FeatureClass(MutableSequence):
         self._data.to_file(
             self.gdb_path,
             layer=self.name,
-            driver="OpenFileGDB",
-        )
-        self.saved = True
-
-    def copy(self, fc_name: str, gdb_path: None | os.PathLike | str = None):
-        self._data.to_file(
-            gdb_path if gdb_path else self.gdb_path,
-            layer=fc_name,
             driver="OpenFileGDB",
         )
         self.saved = True
@@ -76,20 +101,16 @@ class GeoDatabase(MutableMapping):
     def __getitem__(self, fc_name: str, /):
         if not isinstance(fc_name, str):
             raise TypeError("Feature class name must be a string")
-        self.reload()
         return self._data[fc_name]
 
     def __iter__(self):
-        self.reload()
         return iter(self._data)
 
     def __len__(self):
-        self.reload()
         return len(self._data)
 
     def __setitem__(self, fc_name: str, fc: FeatureClass, /):
         assert isinstance(fc, FeatureClass)
-        self.reload()
         if fc_name in self.names:
             raise KeyError(f"Feature class '{fc_name}' already exists")
         else:
