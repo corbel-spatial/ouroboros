@@ -1,16 +1,18 @@
 import os
 import pathlib
 import re
+import warnings
 from collections.abc import MutableMapping, MutableSequence
 from os import PathLike
 from typing import Iterator
 
 import fiona
+import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import pyarrow as pa
 import pyogrio
-from pyogrio.errors import DataSourceError
 
 
 class FeatureClass(MutableSequence):
@@ -82,6 +84,10 @@ class FeatureClass(MutableSequence):
                 raise TypeError(
                     f"Feature classes cannot have multiple geometries: {geoms}"
                 )
+            elif len(geoms) == 0:
+                for fc, geom in pyogrio.list_layers(self.gdb_path):
+                    if fc == self.name:
+                        self.geom_type = geom
             else:
                 self.geom_type = geoms[0]
 
@@ -114,9 +120,13 @@ class FeatureClass(MutableSequence):
     def __setitem__(
         self,
         index: tuple[int, int | str],
-        value,
+        value: any,
     ):
-        """index is a tuple (row, column) where column can be int or str"""
+        """
+        Set the value of a single cell at row, column
+
+        index is a tuple (row, column) where column can be int or str
+        """
         row, column = index
 
         if not isinstance(row, int):
@@ -128,6 +138,7 @@ class FeatureClass(MutableSequence):
             self._data.iat[row, column] = value
         else:
             self._data.at[row, column] = value
+
         self.saved = False
 
     def __str__(self):
@@ -140,15 +151,18 @@ class FeatureClass(MutableSequence):
         self._data = self._data[0:0]
 
     def describe(self):
+        if self.saved:
+            ogr_info = pyogrio.read_info(self.gdb_path, self.name)
+        else:
+            ogr_info = None
         return {
-            "feature_dataset": self.feature_dataset,
-            "fields": self.get_fields(),
-            "gdb_path": str(self.gdb_path),
-            "name": self.name,
-            "path": str(self.path),
-            "row_count": len(self._data),
             "saved": self.saved,
-            "ogr_info": pyogrio.read_info(self.gdb_path, self.name),
+            "name": self.name,
+            "feature_dataset": self.feature_dataset,
+            "gdb_path": str(self.gdb_path),
+            "path": str(self.path),
+            "geom_type": self.geom_type,
+            "ogr_info": ogr_info,
         }
 
     def get_fields(self):
@@ -164,12 +178,25 @@ class FeatureClass(MutableSequence):
         return h
 
     def insert(self, index: int, value: gpd.GeoDataFrame):
+        """
+        Insert row(s) at an index, extending the dataframe. Schema must match.
+        """
         if not isinstance(index, int):
             raise TypeError("Index must be an integer")
         if not isinstance(value, gpd.GeoDataFrame):
             raise TypeError("Value must be an instance of gpd.GeoDataFrame")
         if not (value.columns == self._data.columns).all():
             raise ValueError("Schemas must match")
+
+        # enforce geometry type
+        simple_type = self.geom_type.strip("Multi")
+        geoms = value.geom_type.unique()
+        if (
+            0 < len(geoms) > 1
+            and geoms[0] is not None
+            and geoms[0].strip("Multi") != simple_type
+        ):
+            raise TypeError(f"Geometry must be {simple_type} or Multi{simple_type}")
 
         match index:
             case 0:
@@ -207,11 +234,28 @@ class FeatureClass(MutableSequence):
     def to_geodataframe(self):
         return self._data.copy(deep=True)
 
-    def to_geojson(self):
-        return self._data.to_json()
+    def to_geojson(
+        self, filename: PathLike | str = None
+    ) -> None | geojson.FeatureCollection:
+        """Save to GeoJSON file if filename is given, otherwise return GeoJSON FeatureCollection object"""
+        if filename:
+            if not filename.endswith(".geojson"):
+                filename += ".geojson"
+            self._data.to_file(filename, driver="GeoJSON", to_wgs84=True)
+            return None
+        else:
+            gjs = self._data.to_json(to_wgs84=True)
+            return geojson.loads(gjs)
+
+    def to_pyarrow(self) -> pa.Table:
+        """To PyArrow Table"""
+        arrow_table = self._data.to_arrow()
+        return pa.table(arrow_table)
 
     def to_shapefile(self, filename: PathLike | str):
-        return self._data.to_file(filename=filename, driver="ESRI Shapefile")
+        if not filename.endswith(".shp"):
+            filename += ".shp"
+        self._data.to_file(filename=filename, driver="ESRI Shapefile")
 
 
 class GeoDatabase(MutableMapping):
@@ -223,8 +267,8 @@ class GeoDatabase(MutableMapping):
 
         self.path = os.path.abspath(gdb_path)
         self._data = dict()
-        self.feature_classes = set()
-        self.feature_datasets = set()
+        self.feature_classes = list()
+        self.feature_datasets = list()
         self.saved = False
         self.reload()
 
@@ -235,10 +279,14 @@ class GeoDatabase(MutableMapping):
             del self._data[fc_name]
             self.saved = False
 
-    def __getitem__(self, fc_name: str, /) -> FeatureClass:
-        if not isinstance(fc_name, str):
-            raise TypeError("Feature class name must be a string")
-        return self._data.get(fc_name)
+    def __getitem__(self, index: int | str, /) -> FeatureClass:
+        if isinstance(index, str):
+            return self._data.get(index)
+        elif isinstance(index, int):
+            fc_name = self.feature_classes[index]
+            return self._data.get(fc_name)
+        else:
+            raise TypeError(index)
 
     def __iter__(self) -> Iterator[FeatureClass]:
         return iter(self._data.values())
@@ -261,12 +309,15 @@ class GeoDatabase(MutableMapping):
 
     def reload(self):
         """Load from disk, overwriting data in memory"""
-        self.feature_classes = set(list_layers(self.path))
+        self.feature_classes = sorted(list_layers(self.path))
         self._data = dict()
         for fc_name in self.feature_classes:
             self._data[fc_name] = FeatureClass(fc_name, self.path)
 
-        self.feature_datasets = set(list_datasets(self.path).keys())
+        fds = list(list_datasets(self.path).keys())
+        if None in fds:
+            fds.remove(None)
+        self.feature_datasets = sorted(fds)
 
         self.saved = True
 
@@ -314,8 +365,12 @@ def fc_to_gdf(
 
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
-    gdf: gpd.GeoDataFrame = gpd.read_file(gdb_path, layer=fc_name, driver="OpenFileGDB")
+
+    with warnings.catch_warnings():  # hide pyogrio driver warnings
+        warnings.simplefilter("ignore")
+        gdf: gpd.GeoDataFrame = gpd.read_file(gdb_path, layer=fc_name)
     gdf = gdf.rename_axis("ObjectID")  # use ObjectID as dataframe index
+
     return gdf
 
 
@@ -411,7 +466,8 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
         if fds not in out:
             out[fds] = list()
         out[fds].append(fc)
-        fcs.remove(fc)
+        if fc in fcs:
+            fcs.remove(fc)
     out[None] = fcs  # remainder fcs outside of feature datasets
     return out
 
@@ -425,5 +481,5 @@ def list_layers(gdb_path: os.PathLike | str) -> list:
 
     try:
         return [fc[0] for fc in pyogrio.list_layers(gdb_path)]
-    except DataSourceError:  # empty GeoDatabase
+    except pyogrio.errors.DataSourceError:  # noqa # empty GeoDatabase
         return list()

@@ -5,7 +5,14 @@ authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.11"
 dependencies = [
-  "geopandas",
+    "fiona",
+    "geoarrow-pyarrow",
+    "geojson",
+    "geopandas",
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "pyogrio"
 ]
 description = "Wrapper classes for pythonic use of arcpy Feature Classes"
 readme = "README.md"
@@ -24,5 +31,14 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-test = ['pytest']
-docs = ['sphinx']
+test = ["pytest"]
+docs = ["sphinx"]
+lint = ["black"]
+dev = ["ouroboros-arcpy[test,docs,lint]"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }

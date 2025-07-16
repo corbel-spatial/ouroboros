@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from shapely.geometry import Point
 
-from src import ouroboros as ob
+import ouroboros as ob
 
 
 SAMPLE_FCS = (
@@ -237,6 +237,8 @@ class TestGeoDatabase:
     def test_getitem(self, gdb):
         for fc in gdb:
             assert isinstance(fc, ob.FeatureClass)
+        fc = gdb["Test1_Points"]
+        fc = gdb[0]
 
     def test_iter(self, gdb):
         count = 0
