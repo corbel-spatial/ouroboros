@@ -2,6 +2,7 @@ import os
 import pathlib
 import re
 from collections.abc import MutableMapping, MutableSequence
+from os import PathLike
 from typing import Iterator
 
 import fiona
@@ -12,7 +13,7 @@ import pyogrio
 from pyogrio.errors import DataSourceError
 
 
-class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce
+class FeatureClass(MutableSequence):
     """
     Wraps a GeoDataFrame, and allows access like an arcpy.da cursor in memory.
     Must use 'save' method to write to disk.
@@ -28,6 +29,7 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce
         self.gdb_path = None
         self.path = None
         self.saved = False
+        self.geom_type = None
 
         # parse fc_name
         if not isinstance(fc_name, str):
@@ -38,7 +40,7 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce
             )  # fc name cannot start with a digit, mimicking ArcGIS Pro renaming behavior
         self.name = fc_name
 
-        # parse src
+        # parse src and load data from file
         if isinstance(src, gpd.GeoDataFrame):
             self._data = src
         elif isinstance(src, os.PathLike) or isinstance(src, str):
@@ -71,6 +73,17 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce
                 self.path = os.path.join(self.gdb_path, self.name)
         else:
             self.path = self.name
+
+        # parse geometry
+        if "geometry" in self._data.columns:
+            self._data.set_geometry("geometry", inplace=True)
+            geoms = self._data.geom_type.unique()
+            if len(geoms) > 1:
+                raise TypeError(
+                    f"Feature classes cannot have multiple geometries: {geoms}"
+                )
+            else:
+                self.geom_type = geoms[0]
 
     def __delitem__(self, index):
         if not isinstance(index, int):
@@ -190,6 +203,15 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce
         ascending: bool = True,
     ):
         self._data.sort_values(by=field_name, ascending=ascending, inplace=True)
+
+    def to_geodataframe(self):
+        return self._data.copy(deep=True)
+
+    def to_geojson(self):
+        return self._data.to_json()
+
+    def to_shapefile(self, filename: PathLike | str):
+        return self._data.to_file(filename=filename, driver="ESRI Shapefile")
 
 
 class GeoDatabase(MutableMapping):
