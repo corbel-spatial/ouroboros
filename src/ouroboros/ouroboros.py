@@ -2,16 +2,18 @@ import os
 from collections.abc import MutableMapping, MutableSequence
 from typing import Iterator
 import pathlib
-from unittest import case
 
 import fiona
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import shapely
 from pyogrio.errors import DataSourceError
 
 
-class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce; use feature datasets
+class FeatureClass(
+    MutableSequence
+):  # TODO add geometry attribute and enforce; use feature datasets
     """
     Wraps a GeoDataFrame, and allows access like an arcpy.da cursor in memory.
     Must use 'save' method to write to disk.
@@ -98,9 +100,9 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce;
         row, column = index
 
         if not isinstance(row, int):
-            raise TypeError("row index must be an integer")
+            raise TypeError("Row index must be an integer")
         if not isinstance(column, int) and not isinstance(column, str):
-            raise TypeError("column index must be an integer or a column name string")
+            raise TypeError("Column index must be an integer or a column name string")
 
         if type(column) is int:
             self._data.iat[row, column] = value
@@ -117,7 +119,7 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce;
     def clear(self):
         self._data = self._data[0:0]
 
-    def count(self, value):  # TODO
+    def count(self, value: shapely.Geometry):  # TODO
         raise NotImplementedError
 
     def describe(self):
@@ -133,6 +135,9 @@ class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce;
 
     def get_fields(self):
         return self._data.columns.to_list()
+
+    def gdf(self, deep_copy: bool = True):
+        return self._data.copy(deep=deep_copy)
 
     def head(self, n: int = 10, silent: bool = False) -> gpd.GeoDataFrame:
         h = self._data.head(n)

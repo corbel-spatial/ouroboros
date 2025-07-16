@@ -111,6 +111,11 @@ class TestFeatureClass:
             del fc[500]
             assert len(fc) == SAMPLES - 1
 
+    def test_gdf(self, gdb):
+        for fc in gdb:
+            gdf = fc.gdf()
+            assert isinstance(gdf, gpd.GeoDataFrame)
+
     def test_getitem(self, gdb):
         for fc in gdb:
             assert isinstance(fc[0], gpd.GeoDataFrame)
@@ -139,7 +144,6 @@ class TestFeatureClass:
     def test_str(self, gdb):
         for fc in gdb:
             assert str(fc) == fc.path
-            print(str(fc))
 
     def test_append(self, gdb):
         fc = gdb["test_points"]
@@ -154,21 +158,17 @@ class TestFeatureClass:
             fc.clear()
             assert len(fc) == 0
 
-    def test_count(self, gdb):
-        raise NotImplementedError
-
     def test_describe(self, gdb):
         for fc in gdb:
             assert isinstance(fc.describe(), dict)
-            print(fc.describe())
 
     def test_get_fields(self, gdb):
         for fc in gdb:
-            print(fc.get_fields())
+            assert isinstance(fc.get_fields(), list)
 
     def test_head(self, gdb):
         for fc in gdb:
-            h = fc.head(5)
+            h = fc.head(5, silent=True)
             assert isinstance(h, pd.DataFrame)
             assert len(h) == 5
 
@@ -188,12 +188,10 @@ class TestFeatureClass:
         fc = gdb["test_points"]
         case1 = fc[0].iat[0, 0]
         fc.sort("sample1", ascending=True)
-        fc.head()
         case2 = fc[0].iat[0, 0]
         fc.sort("sample1", ascending=False)
         case3 = fc[0].iat[0, 0]
         assert case1 != case2 != case3
-        fc.head()
 
 
 class TestGeoDatabase:
