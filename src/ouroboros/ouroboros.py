@@ -1,19 +1,18 @@
 import os
+import pathlib
+import re
 from collections.abc import MutableMapping, MutableSequence
 from typing import Iterator
-import pathlib
 
 import fiona
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import shapely
+import pyogrio
 from pyogrio.errors import DataSourceError
 
 
-class FeatureClass(
-    MutableSequence
-):  # TODO add geometry attribute and enforce; use feature datasets
+class FeatureClass(MutableSequence):  # TODO add geometry attribute and enforce
     """
     Wraps a GeoDataFrame, and allows access like an arcpy.da cursor in memory.
     Must use 'save' method to write to disk.
@@ -60,6 +59,14 @@ class FeatureClass(
         if self.gdb_path:
             if self.feature_dataset:
                 self.path = os.path.join(self.gdb_path, self.feature_dataset, self.name)
+            # check if fc is in a feature dataset
+            elif self.name not in list_datasets(self.gdb_path)[None]:
+                for fds, fcs in list_datasets(self.gdb_path).items():
+                    if self.name in fcs:
+                        self.feature_dataset = fds
+                        self.path = os.path.join(
+                            self.gdb_path, self.feature_dataset, self.name
+                        )
             else:
                 self.path = os.path.join(self.gdb_path, self.name)
         else:
@@ -119,9 +126,6 @@ class FeatureClass(
     def clear(self):
         self._data = self._data[0:0]
 
-    def count(self, value: shapely.Geometry):  # TODO
-        raise NotImplementedError
-
     def describe(self):
         return {
             "feature_dataset": self.feature_dataset,
@@ -131,6 +135,7 @@ class FeatureClass(
             "path": str(self.path),
             "row_count": len(self._data),
             "saved": self.saved,
+            "ogr_info": pyogrio.read_info(self.gdb_path, self.name),
         }
 
     def get_fields(self):
@@ -144,9 +149,6 @@ class FeatureClass(
         if not silent:
             print(h)
         return h
-
-    def index(self, oid, start=0, stop=None):  # TODO
-        raise NotImplementedError
 
     def insert(self, index: int, value: gpd.GeoDataFrame):
         if not isinstance(index, int):
@@ -199,6 +201,8 @@ class GeoDatabase(MutableMapping):
 
         self.path = os.path.abspath(gdb_path)
         self._data = dict()
+        self.feature_classes = set()
+        self.feature_datasets = set()
         self.saved = False
         self.reload()
 
@@ -235,10 +239,13 @@ class GeoDatabase(MutableMapping):
 
     def reload(self):
         """Load from disk, overwriting data in memory"""
+        self.feature_classes = set(list_layers(self.path))
         self._data = dict()
-        gdb_fcs = list_fcs(self.path)
-        for fc_name in gdb_fcs:
+        for fc_name in self.feature_classes:
             self._data[fc_name] = FeatureClass(fc_name, self.path)
+
+        self.feature_datasets = set(list_datasets(self.path).keys())
+
         self.saved = True
 
     def save(self):
@@ -246,16 +253,15 @@ class GeoDatabase(MutableMapping):
         Save in-memory object data to disk
         """
         # Delete fcs that are not in _data
-        gdb_fcs = list_fcs(self.path)
+        gdb_fcs = list_layers(self.path)
         for fc_name in gdb_fcs:
             if fc_name not in self._data:
                 delete_fc(self.path, fc_name)
 
         # Add or overwrite feature classes on disk from _data
-        # TODO feature dataset support
-        for fc_name, fc in self._data.items():
+        for fc in self._data.values():
             # noinspection PyProtectedMember
-            gdf_to_fc(fc._data, self.path, fc_name, overwrite=True)
+            gdf_to_fc(fc._data, self.path, fc.name, fc.feature_dataset, overwrite=True)
         self.saved = True
 
 
@@ -269,7 +275,7 @@ def delete_fc(
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
-    if fc_name in list_fcs(gdb_path):
+    if fc_name in list_layers(gdb_path):
         fiona.remove(gdb_path, "OpenFileGDB", fc_name)
         return True
     else:
@@ -330,7 +336,7 @@ def gdf_to_fc(
     }
 
     if os.path.exists(gdb_path):
-        if fc_name in list_fcs(gdb_path):
+        if fc_name in list_layers(gdb_path):
             if overwrite:
                 delete_fc(gdb_path, fc_name)
             else:
@@ -353,7 +359,42 @@ def gdf_to_fc(
     )
 
 
-def list_fcs(gdb_path: os.PathLike | str) -> list:
+def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
+    """
+    Lists feature datasets and their child feature classes
+
+    Returns a dict of {feature_dataset: [feature_class, ...]}
+
+    Feature classes outside of a feature dataset will have a key of None
+    """
+    gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
+    if not os.path.exists(gdbtable) or "a00000004.gdbtable" not in os.listdir(gdb_path):
+        raise FileNotFoundError(gdbtable)
+
+    fcs = list_layers(gdb_path)
+    if len(fcs) == 0:  # no feature classes returns empty dict
+        return dict()
+
+    # get \feature_dataset\feature_class paths
+    with open(gdbtable, "r", encoding="ansi") as f:
+        contents = f.read()
+    re_matches = re.findall(
+        r"<CatalogPath>\\([a-zA-Z0-9_]+)\\([a-zA-Z0-9_]+)</CatalogPath>",
+        contents,
+    )
+
+    # assemble output
+    out = dict()
+    for fds, fc in re_matches:
+        if fds not in out:
+            out[fds] = list()
+        out[fds].append(fc)
+        fcs.remove(fc)
+    out[None] = fcs  # remainder fcs outside of feature datasets
+    return out
+
+
+def list_layers(gdb_path: os.PathLike | str) -> list:
     """
     List feature classes in geodatabase
     """
@@ -361,6 +402,6 @@ def list_fcs(gdb_path: os.PathLike | str) -> list:
         raise FileNotFoundError(gdb_path)
 
     try:
-        return gpd.list_layers(gdb_path)["name"].values.tolist()
+        return [fc[0] for fc in pyogrio.list_layers(gdb_path)]
     except DataSourceError:  # empty GeoDatabase
         return list()

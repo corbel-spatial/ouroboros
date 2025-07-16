@@ -10,7 +10,18 @@ from shapely.geometry import Point
 from src import ouroboros as ob
 
 
-SAMPLE_DEFS = ("test_points", "test_lines", "test_polygons")
+SAMPLE_FCS = (
+    "Test1_Points",
+    "Test1_Points_No_Dataset",
+    "Test2_Polygons",
+    "Test3_Lines",
+)
+SAMPLE_FDS = {
+    "Test1_Points": "Test_1",
+    "Test1_Points_No_Dataset": None,
+    "Test2_Polygons": "Test_2",
+    "Test3_Lines": "Test_3",
+}
 SAMPLES = 1000
 
 
@@ -28,8 +39,16 @@ def gdb(tmp_path):
     ob.gdf_to_fc(
         test_points,
         test_gdb_path,
-        "test_points",
-        "test",
+        "Test1_Points",  # use upper and lower alphanum and underscore
+        "Test_1",
+        overwrite=True,
+    )
+
+    ob.gdf_to_fc(
+        test_points,
+        test_gdb_path,
+        "Test1_Points_No_Dataset",
+        None,
         overwrite=True,
     )
 
@@ -37,8 +56,8 @@ def gdb(tmp_path):
     ob.gdf_to_fc(
         test_polygons,
         test_gdb_path,
-        "test_polygons",
-        "test",
+        "Test2_Polygons",
+        "Test_2",
         overwrite=True,
     )
 
@@ -46,8 +65,8 @@ def gdb(tmp_path):
     ob.gdf_to_fc(
         test_lines,
         test_gdb_path,
-        "test_lines",
-        feature_dataset="test",
+        "Test3_Lines",
+        feature_dataset="Test_3",
         overwrite=True,
     )
 
@@ -60,7 +79,7 @@ def test_create_gdb_fixture(gdb):
 
 class TestUtilityFunctions:
     def test_delete_fc(self, gdb):
-        fcs = ob.list_fcs(gdb.path)
+        fcs = ob.list_layers(gdb.path)
         count = len(fcs)
         for fc_name in fcs:
             ob.delete_fc(gdb.path, fc_name)
@@ -79,15 +98,22 @@ class TestUtilityFunctions:
             gdf = fc._data
             ob.gdf_to_fc(gdf, gdb.path, fc.name + "_copy")
         gdb.reload()
-        assert len(gdb) == 6
+        assert len(gdb) == len(SAMPLE_FCS) * 2
 
-    def test_list_fcs(self, gdb):
-        assert len(ob.list_fcs(gdb.path)) == 3
+    def test_list_datasets(self, gdb):
+        fds = ob.list_datasets(gdb.path)
+        assert len(fds) == len(SAMPLE_FCS)
+        for k, v in fds.items():
+            assert isinstance(k, str) or k is None
+            assert isinstance(v, list)
+
+    def test_list_layers(self, gdb):
+        assert len(ob.list_layers(gdb.path)) == len(SAMPLE_FCS)
 
 
 class TestFeatureClass:
     def test_instantiate_gdb(self, gdb):
-        for fc in gdb:
+        for idx, fc in enumerate(gdb):
             fc_obj = ob.FeatureClass(
                 fc.name,
                 gdb.path,
@@ -95,6 +121,7 @@ class TestFeatureClass:
             assert isinstance(fc_obj, ob.FeatureClass)
             assert fc_obj.saved is True
             assert str(fc) == fc.path
+            assert fc.feature_dataset == SAMPLE_FDS[fc.name]
 
     def test_instatiate_gdf(self):
         fc = ob.FeatureClass("test", gpd.GeoDataFrame(geometry=[Point(0, 1)]))
@@ -146,7 +173,7 @@ class TestFeatureClass:
             assert str(fc) == fc.path
 
     def test_append(self, gdb):
-        fc = gdb["test_points"]
+        fc = gdb["Test1_Points"]
         count = len(fc)
         new_row = fc[0]
         fc.append(new_row)
@@ -173,7 +200,7 @@ class TestFeatureClass:
             assert len(h) == 5
 
     def test_insert(self, gdb):
-        fc = gdb["test_points"]
+        fc = gdb["Test1_Points"]
         new_row = fc[500]
         fc.insert(600, new_row)
         assert len(fc) == SAMPLES + 1
@@ -185,7 +212,7 @@ class TestFeatureClass:
             assert fc.saved is True
 
     def test_sort(self, gdb):
-        fc = gdb["test_points"]
+        fc = gdb["Test1_Points"]
         case1 = fc[0].iat[0, 0]
         fc.sort("sample1", ascending=True)
         case2 = fc[0].iat[0, 0]
@@ -199,7 +226,7 @@ class TestGeoDatabase:
         assert isinstance(gdb, ob.GeoDatabase)
 
     def test_delitem(self, gdb):
-        fcs = ob.list_fcs(gdb.path)
+        fcs = ob.list_layers(gdb.path)
         count = len(fcs)
         for fc_name in fcs:
             del gdb[fc_name]
@@ -220,10 +247,10 @@ class TestGeoDatabase:
         assert count == len(gdb)
 
     def test_len(self, gdb):
-        assert len(gdb) == 3
+        assert len(gdb) == len(SAMPLE_FCS)
 
     def test_setitem(self, gdb):
-        fcs = ob.list_fcs(gdb.path)
+        fcs = ob.list_layers(gdb.path)
         count = len(fcs)
         for fc_name in fcs:
             with pytest.raises(KeyError):
@@ -235,9 +262,9 @@ class TestGeoDatabase:
     def test_reload(self, gdb):
         for fc in gdb:
             ob.gdf_to_fc(fc._data, gdb.path, fc.name + "_copy")
-        assert len(gdb) == 3
+        assert len(gdb) == len(SAMPLE_FCS)
         gdb.reload()
-        assert len(gdb) == 6
+        assert len(gdb) == len(SAMPLE_FCS) * 2
 
     def test_save(self, gdb):
         for fc in gdb:
