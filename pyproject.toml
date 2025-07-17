@@ -31,10 +31,14 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-test = ["pytest", "coverage"]
 docs = ["sphinx"]
 lint = ["black"]
-dev = ["ouroboros-arcpy[test,docs,lint]"]
+test = ["pytest", "coverage"]
+dev = ["ouroboros-arcpy",
+    { include-group = "docs" },
+    { include-group = "lint" },
+    { include-group = "test" }
+]
 
 [build-system]
 requires = ["setuptools"]
@@ -42,3 +46,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
+
+# dev install steps
+# python -m build
+# python -m pip install -e . --group dev
