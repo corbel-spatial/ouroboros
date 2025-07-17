@@ -17,8 +17,8 @@ import pyogrio
 
 class FeatureClass(MutableSequence):
     """
-    Wraps a GeoDataFrame, and allows access like an arcpy.da cursor in memory.
-    Must use 'save' method to write to disk.
+    Loads a GDB Feature Class into a GeoDataFrame, and allows access like an arcpy.da cursor in memory.
+    Must use 'save' method to write changes to disk.
     """
 
     def __init__(
@@ -27,12 +27,6 @@ class FeatureClass(MutableSequence):
         src: None | os.PathLike | str | gpd.GeoDataFrame = None,
         feature_dataset: None | str = None,
     ):
-        self.feature_dataset = feature_dataset
-        self.gdb_path = None
-        self.path = None
-        self.saved = False
-        self.geom_type = None
-
         # parse fc_name
         if not isinstance(fc_name, str):
             raise TypeError("fc_name must be a string")
@@ -43,6 +37,8 @@ class FeatureClass(MutableSequence):
         self.name = fc_name
 
         # parse src and load data from file
+        self.gdb_path = None
+        self.saved = False
         if isinstance(src, gpd.GeoDataFrame):
             self._data = src
         elif isinstance(src, os.PathLike) or isinstance(src, str):
@@ -55,11 +51,15 @@ class FeatureClass(MutableSequence):
             else:
                 self.gdb_path = pathlib.Path(os.path.abspath(src))
                 self._data: gpd.GeoDataFrame = fc_to_gdf(self.gdb_path, self.name)
+                if len(self._data.shape) != 2:
+                    raise ValueError("GeoDataFrame must be two-dimensional")
+                self.fields = self._data.columns.to_list()
                 self.saved = True
         else:
             self._data = gpd.GeoDataFrame()
 
         # parse path
+        self.feature_dataset = feature_dataset
         if self.gdb_path:
             if self.feature_dataset:
                 self.path = os.path.join(self.gdb_path, self.feature_dataset, self.name)
@@ -91,7 +91,8 @@ class FeatureClass(MutableSequence):
             else:
                 self.geom_type = geoms[0]
 
-    def __delitem__(self, index):
+    def __delitem__(self, index) -> None:
+        """Delete row at index"""
         if not isinstance(index, int):
             raise TypeError("index must be an integer")
         self._data = pd.concat(
@@ -100,19 +101,21 @@ class FeatureClass(MutableSequence):
         self.saved = False
 
     def __getitem__(self, index: int) -> gpd.GeoDataFrame:
+        """Return row at index"""
         if not isinstance(index, int):
             raise TypeError("index must be an integer")
         return self._data.iloc[[index]]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[tuple]:
+        """Return iterator over rows (as tuples)"""
         return self._data.itertuples()
 
-    def __len__(self):
-        if len(self._data.shape) != 2:
-            raise ValueError("GeoDataFrame must be two-dimensional")
+    def __len__(self) -> int:
+        """Return count of rows"""
         return self._data.shape[0]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Representation of the object as a string that can be recreated with eval()"""
         return (
             f"ob.FeatureClass('{self.name}', gpd.GeoDataFrame({self._data.to_json()}))"
         )
@@ -121,7 +124,7 @@ class FeatureClass(MutableSequence):
         self,
         index: tuple[int, int | str],
         value: any,
-    ):
+    ) -> None:
         """
         Set the value of a single cell at row, column
 
@@ -141,16 +144,20 @@ class FeatureClass(MutableSequence):
 
         self.saved = False
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return full path of feature class on disk"""
         return self.path
 
-    def append(self, value):
+    def append(self, value: gpd.GeoDataFrame) -> None:
+        """Append row(s) to the end of the GeoDataFrame. Schema must match."""
         self.insert(-1, value)
 
-    def clear(self):
+    def clear(self) -> None:
+        """Delete all rows, leaving schema unchanged."""
         self._data = self._data[0:0]
 
-    def describe(self):
+    def describe(self) -> dict:
+        """Return dict of useful information."""
         if self.saved:
             ogr_info = pyogrio.read_info(self.gdb_path, self.name)
         else:
@@ -165,19 +172,14 @@ class FeatureClass(MutableSequence):
             "ogr_info": ogr_info,
         }
 
-    def get_fields(self):
-        return self._data.columns.to_list()
-
-    def gdf(self, deep_copy: bool = True):
-        return self._data.copy(deep=deep_copy)
-
     def head(self, n: int = 10, silent: bool = False) -> gpd.GeoDataFrame:
+        """Return a selection of rows. 'silent' prevents printing."""
         h = self._data.head(n)
         if not silent:
             print(h)
         return h
 
-    def insert(self, index: int, value: gpd.GeoDataFrame):
+    def insert(self, index: int, value: gpd.GeoDataFrame) -> None:
         """
         Insert row(s) at an index, extending the dataframe. Schema must match.
         """
@@ -210,7 +212,7 @@ class FeatureClass(MutableSequence):
 
     def save(
         self,
-    ):
+    ) -> None:
         """Save to disk"""
         if not self.gdb_path:
             raise AttributeError("gdb_path not set")
@@ -228,10 +230,12 @@ class FeatureClass(MutableSequence):
         self,
         field_name: str,
         ascending: bool = True,
-    ):
+    ) -> None:
+        """Sort by field name"""
         self._data.sort_values(by=field_name, ascending=ascending, inplace=True)
 
-    def to_geodataframe(self):
+    def to_geodataframe(self) -> gpd.GeoDataFrame:
+        """Return data as GeoDataFrame"""
         return self._data.copy(deep=True)
 
     def to_geojson(
@@ -252,7 +256,7 @@ class FeatureClass(MutableSequence):
         arrow_table = self._data.to_arrow()
         return pa.table(arrow_table)
 
-    def to_shapefile(self, filename: PathLike | str):
+    def to_shapefile(self, filename: PathLike | str) -> None:
         if not filename.endswith(".shp"):
             filename += ".shp"
         self._data.to_file(filename=filename, driver="ESRI Shapefile")
@@ -272,7 +276,8 @@ class GeoDatabase(MutableMapping):
         self.saved = False
         self.reload()
 
-    def __delitem__(self, fc_name: str, /):
+    def __delitem__(self, fc_name: str, /) -> None:
+        """Delete feature class from object in memory. Must use 'save' method to actually delete from disk."""
         if not isinstance(fc_name, str):
             raise TypeError("Feature class name must be a string")
         if fc_name in self._data:
@@ -280,6 +285,7 @@ class GeoDatabase(MutableMapping):
             self.saved = False
 
     def __getitem__(self, index: int | str, /) -> FeatureClass:
+        """Return feature class object by name or by index."""
         if isinstance(index, str):
             return self._data.get(index)
         elif isinstance(index, int):
@@ -289,12 +295,15 @@ class GeoDatabase(MutableMapping):
             raise TypeError(index)
 
     def __iter__(self) -> Iterator[FeatureClass]:
+        """Return iterator over feature class objects."""
         return iter(self._data.values())
 
     def __len__(self) -> int:
+        """Return count of feature classes in the GeoDatabase object."""
         return len(self._data)
 
-    def __setitem__(self, fc_name: str, fc: FeatureClass, /):
+    def __setitem__(self, fc_name: str, fc: FeatureClass, /) -> None:
+        """Set feature class object by name. Cannot overwrite existing features."""
         if not isinstance(fc_name, str):
             raise TypeError("Feature class name must be a string")
         if not isinstance(fc, FeatureClass):
@@ -307,7 +316,7 @@ class GeoDatabase(MutableMapping):
             self._data[fc_name].name = fc_name
             self.saved = False
 
-    def reload(self):
+    def reload(self) -> None:  # TODO test zipped gdbs as inputs
         """Load from disk, overwriting data in memory"""
         self.feature_classes = sorted(list_layers(self.path))
         self._data = dict()
@@ -321,9 +330,9 @@ class GeoDatabase(MutableMapping):
 
         self.saved = True
 
-    def save(self):
+    def save(self) -> None:
         """
-        Save in-memory object data to disk
+        Save in-memory object data to disk, and delete any feature classes on disk that have been removed from the object.
         """
         # Delete fcs that are not in _data
         gdb_fcs = list_layers(self.path)
@@ -342,6 +351,7 @@ def delete_fc(
     gdb_path: os.PathLike | str,
     fc_name: str,
 ) -> bool:
+    """Delete feature class from disk, returns False if feature class doesn't exist"""
     if not os.path.exists(gdb_path):
         raise FileNotFoundError(gdb_path)
 
@@ -359,7 +369,7 @@ def fc_to_gdf(
     gdb_path: os.PathLike | str,
     fc_name: str,
 ) -> gpd.GeoDataFrame:
-    """Feature Class to GeoDataFrame"""
+    """Load Feature Class to GeoDataFrame"""
     if not os.path.exists(gdb_path):
         raise FileNotFoundError(gdb_path)
 
@@ -384,7 +394,7 @@ def gdf_to_fc(
     reindex: bool = False,
 ):
     """
-    GeoDataFrame to Feature Class
+    Save GeoDataFrame to Feature Class on disk
 
     References:
     - https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.to_file.html

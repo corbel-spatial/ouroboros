@@ -138,11 +138,6 @@ class TestFeatureClass:
             del fc[500]
             assert len(fc) == SAMPLES - 1
 
-    def test_gdf(self, gdb):
-        for fc in gdb:
-            gdf = fc.gdf()
-            assert isinstance(gdf, gpd.GeoDataFrame)
-
     def test_getitem(self, gdb):
         for fc in gdb:
             assert isinstance(fc[0], gpd.GeoDataFrame)
@@ -152,7 +147,13 @@ class TestFeatureClass:
         for fc in gdb:
             for row in fc:
                 assert isinstance(row, tuple)
+                assert isinstance(row[0], int)
+                assert isinstance(row[1], str)
+                assert isinstance(row[2], str)
+                assert isinstance(row[3], str)
+                assert isinstance(row[4], Point)
                 break
+            break
 
     def test_len(self, gdb):
         for fc in gdb:
@@ -188,10 +189,6 @@ class TestFeatureClass:
     def test_describe(self, gdb):
         for fc in gdb:
             assert isinstance(fc.describe(), dict)
-
-    def test_get_fields(self, gdb):
-        for fc in gdb:
-            assert isinstance(fc.get_fields(), list)
 
     def test_head(self, gdb):
         for fc in gdb:
