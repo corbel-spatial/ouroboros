@@ -3,7 +3,7 @@ version = "1.0.0b3"
 name = "ouroboros-arcpy"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "fiona",
     "geoarrow-pyarrow",

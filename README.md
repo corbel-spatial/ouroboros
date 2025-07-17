@@ -1,48 +1,19 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/ouroboros-arcpy)](https://pypi.org/project/ouroboros-arcpy/)
-[![arcpy 3.5](https://img.shields.io/badge/arcpy-3.5-blue?logo=arcgis&logoColor=fff)](https://pro.arcgis.com/en/pro-app/3.5/arcpy/get-started/what-is-arcpy-.htm)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-arcpy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-arcpy)](https://pypistats.org/packages/ouroboros-arcpy)
 ![PyPI - Format](https://img.shields.io/pypi/format/ouroboros-arcpy)
 
+[![GitHub Actions Workflow Status: Pytest](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest.yml?label=pytest)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest.yml)
+[![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest.yml?label=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest.yml)
 [![Read the Docs Status](https://img.shields.io/readthedocs/ouroboros-arcpy)](https://ouroboros-arcpy.readthedocs.io/)
-[![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=pylint)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
-[![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/black-action.yml?label=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/black-action.yml)
 
 # ouroboros
 
-A module that provides a wrapper class to manipulate `arcpy` feature classes in a more pythonic way. Uses the `Sequence` abstract base class to give list-like behavior to feature class objects.
+A module that provides classes to manipulate File GeoDatabase feature classes in a more pythonic way. 
 
-## Requirements
+Uses GDAL wrappers under the hood (GeoPandas, Fiona, Pyogrio) and does not depend on arcpy. Thus it builds on a completely open stack and is cross-platform.
 
-- ArcGIS Pro 3.5
-- Windows 11
-  
-## Installation
+Tested on Python 3.10 - 3.13 on Windows, Linux, and macOS. (Version info [here](https://github.com/actions/runner-images).)
 
-- In the [Python Command Prompt](https://developers.arcgis.com/python/latest/guide/install-and-set-up/#installation-using-python-command-prompt):
-
-```PowerShell
-python -m pip install ouroboros-arcpy
-```
-
-## Basic Usage
-
-```Python
-import ouroboros as ob
-
-fc = ob.FeatureClass(r"C:\Users\zoot\spam.gdb\eggs_polygons", in_memory=True)  # cache in memory for better performance
-
-for row in fc:
-    print(row)
-```
-
-## Examples
-
-- See `notebooks/example.ipynb`
-
-## Links
-
-- [Documentation on Read the Docs](https://ouroboros-arcpy.readthedocs.io/)
-- [GitHub repository](https://github.com/corbel-spatial/ouroboros)
-- [Package on PyPI](https://pypi.org/project/ouroboros-arcpy/)
+NOTE: Under active development, see the [beta release](https://github.com/corbel-spatial/ouroboros/releases/tag/v1.0.0b2) for a proof of concept that relies on arcpy.
