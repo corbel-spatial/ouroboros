@@ -512,7 +512,7 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
         return dict()
 
     # get \feature_dataset\feature_class paths
-    with open(gdbtable, "r", encoding="ansi") as f:
+    with open(gdbtable, "r", encoding="MacRoman") as f:
         contents = f.read()
     re_matches = re.findall(
         r"<CatalogPath>\\([a-zA-Z0-9_]+)\\([a-zA-Z0-9_]+)</CatalogPath>",
