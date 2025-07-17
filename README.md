@@ -2,10 +2,12 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-arcpy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-arcpy)](https://pypistats.org/packages/ouroboros-arcpy)
-![PyPI - Format](https://img.shields.io/pypi/format/ouroboros-arcpy)
 
-[![GitHub Actions Workflow Status: Pytest](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest.yml?label=pytest)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest.yml)
-[![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest.yml?label=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest.yml)
+[![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/black.yml?label=Black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/black.yml)
+[![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=Pytest)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
+[![GitHub Actions Workflow Status: Linux](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-linux.yml?label=Linux)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-linux.yml)
+[![GitHub Actions Workflow Status: macOS](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-macos.yml?label=macOS)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-macos.yml)
+[![GitHub Actions Workflow Status: Windows](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-windows.yml?label=Windows)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-windows.yml)
 [![Read the Docs Status](https://img.shields.io/readthedocs/ouroboros-arcpy)](https://ouroboros-arcpy.readthedocs.io/)
 
 # ouroboros
@@ -16,4 +18,4 @@ Uses GDAL wrappers under the hood (GeoPandas, Fiona, Pyogrio) and does not depen
 
 Tested on Python 3.10 - 3.13 on Windows, Linux, and macOS. (Version info [here](https://github.com/actions/runner-images).)
 
-NOTE: Under active development, see the [beta release](https://github.com/corbel-spatial/ouroboros/releases/tag/v1.0.0b2) for a proof of concept that relies on arcpy.
+NOTE: Under active development with a new beta release soon. See the previous [beta release](https://github.com/corbel-spatial/ouroboros/releases/tag/v1.0.0b2) for a proof of concept that relies on arcpy.
