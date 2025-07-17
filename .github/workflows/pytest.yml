@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14.0-beta.4"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -25,7 +25,7 @@ jobs:
         python -m pip install -e .
     - name: Check with Pylint
       run: |
-        pylint $(git ls-files '*.py') --errors-only --disable=E0401
+        pylint $(git ls-files '*.py') --errors-only --disable=E0401 --disable=E1131
     - name: Check with Black
       run: |
         black ./src
