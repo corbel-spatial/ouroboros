@@ -2,6 +2,11 @@
 
 ## 1.0.0-beta3
 
+- Built in export methods to various formats (shp, geojson, arrow, etc.)
+- Major refactor:
+  - use GeoPandas under the hood
+  - GeoDatabase class
+- Feature dataset reading reverse engineered
 - README updates
 - Black action working
 - Remove extraneous requirements files

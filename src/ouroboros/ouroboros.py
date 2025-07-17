@@ -51,8 +51,6 @@ class FeatureClass(MutableSequence):
             else:
                 self.gdb_path = pathlib.Path(os.path.abspath(src))
                 self._data: gpd.GeoDataFrame = fc_to_gdf(self.gdb_path, self.name)
-                if len(self._data.shape) != 2:
-                    raise ValueError("GeoDataFrame must be two-dimensional")
                 self.fields = self._data.columns.to_list()
                 self.saved = True
         else:
@@ -76,7 +74,7 @@ class FeatureClass(MutableSequence):
         else:
             self.path = self.name
 
-        # parse geometry
+        # parse geometry, enforce only one geometry type
         if "geometry" in self._data.columns:
             self._data.set_geometry("geometry", inplace=True)
             geoms = self._data.geom_type.unique()
@@ -84,12 +82,19 @@ class FeatureClass(MutableSequence):
                 raise TypeError(
                     f"Feature classes cannot have multiple geometries: {geoms}"
                 )
-            elif len(geoms) == 0:
-                for fc, geom in pyogrio.list_layers(self.gdb_path):
-                    if fc == self.name:
-                        self.geom_type = geom
+            elif len(geoms) == 0 or geoms[0] is None:
+                if not self.gdb_path:
+                    self.geom_type = "Unknown"
+                else:
+                    for fc, geom in pyogrio.list_layers(self.gdb_path):
+                        if fc == self.name:
+                            self.geom_type = geom
             else:
                 self.geom_type = geoms[0]
+        # elif "geometry" in self._data.columns and len(self._data.geom_type) == 0:
+        #     self.geom_type = "Unknown"
+        else:
+            self.geom_type = None
 
     def __delitem__(self, index) -> None:
         """Delete row at index"""
@@ -187,19 +192,41 @@ class FeatureClass(MutableSequence):
             raise TypeError("Index must be an integer")
         if not isinstance(value, gpd.GeoDataFrame):
             raise TypeError("Value must be an instance of gpd.GeoDataFrame")
-        if not (value.columns == self._data.columns).all():
-            raise ValueError("Schemas must match")
 
-        # enforce geometry type
-        simple_type = self.geom_type.strip("Multi")
-        geoms = value.geom_type.unique()
-        if (
-            0 < len(geoms) > 1
-            and geoms[0] is not None
-            and geoms[0].strip("Multi") != simple_type
-        ):
-            raise TypeError(f"Geometry must be {simple_type} or Multi{simple_type}")
+        if len(self._data.columns) >= 1:
+            try:
+                assert (value.columns == self._data.columns).all()
+            except ValueError:
+                raise ValueError("Schemas must match")
 
+        # parse geometry types of new features
+        new_geoms = value.geom_type.unique()
+        if len(new_geoms) == 1:
+            new_geom = new_geoms[0]
+        elif len(new_geoms) == 2:
+            if new_geoms[0].strip("Multi") == new_geoms[1].strip("Multi"):
+                new_geom = f"Multi{new_geoms[0].strip('Multi')}"
+            else:
+                raise TypeError(f"Cannot mix geometry types: {new_geoms}")
+        else:  # len(new_geoms) > 2:
+            raise TypeError(f"Cannot mix geometry types: {new_geoms}")
+
+        # enforce new geometry types against existing
+        if self.geom_type is not None and self.geom_type == new_geom:
+            pass
+        elif self.geom_type in (None, "Unknown") and new_geom is not None:
+            self.geom_type = new_geom
+        elif self.geom_type in (None, "Unknown") and new_geom is None:
+            self.geom_type = "Unknown"
+        else:  # promote to Multi- type geometry (MultiPoint etc)
+            self.geom_type: str
+            simple_type = self.geom_type.strip("Multi")
+            if new_geom.strip("Multi") != simple_type:
+                raise TypeError(f"Geometry must be {simple_type} or Multi{simple_type}")
+            else:
+                self.geom_type = f"Multi{simple_type}"
+
+        # insert features into dataframe
         match index:
             case 0:
                 c = [value, self._data]
@@ -217,11 +244,19 @@ class FeatureClass(MutableSequence):
         if not self.gdb_path:
             raise AttributeError("gdb_path not set")
         else:
+            # pyogrio can't infer geometry type from an empty geodataframe
+            if len(self._data) == 0:
+                geometry_type = self.geom_type
+            else:
+                geometry_type = None  # let pyogrio infer from dataset
+
+            # save
             gdf_to_fc(
                 self._data,
                 self.gdb_path,
                 self.name,
                 self.feature_dataset,
+                geometry_type=geometry_type,
                 overwrite=True,
             )
             self.saved = True
@@ -245,7 +280,7 @@ class FeatureClass(MutableSequence):
         if filename:
             if not filename.endswith(".geojson"):
                 filename += ".geojson"
-            self._data.to_file(filename, driver="GeoJSON", to_wgs84=True)
+            self._data.to_file(filename, driver="GeoJSON")
             return None
         else:
             gjs = self._data.to_json(to_wgs84=True)
@@ -315,6 +350,16 @@ class GeoDatabase(MutableMapping):
             self._data[fc_name] = fc
             self._data[fc_name].name = fc_name
             self.saved = False
+
+            self.feature_classes.append(fc_name)
+            self.feature_classes.sort()
+
+            if (
+                fc.feature_dataset not in self.feature_datasets
+                and fc.feature_dataset is not None
+            ):
+                self.feature_datasets.append(fc.feature_dataset)
+                self.feature_datasets.sort()
 
     def reload(self) -> None:  # TODO test zipped gdbs as inputs
         """Load from disk, overwriting data in memory"""
@@ -389,6 +434,7 @@ def gdf_to_fc(
     gdb_path: os.PathLike | str,
     fc_name: str,
     feature_dataset: str = None,
+    geometry_type: str = None,
     overwrite: bool = False,
     compatibility: bool = True,
     reindex: bool = False,
@@ -406,15 +452,14 @@ def gdf_to_fc(
         else:
             raise TypeError("Input must be a GeoDataFrame or GeoSeries")
 
+    # if not os.path.exists(gdb_path):  # TODO this breaks pytest
+    #     raise FileNotFoundError(gdb_path)
+
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
     if feature_dataset and not isinstance(feature_dataset, str):
         raise TypeError("Feature dataset name must be a string")
-
-    for param in (overwrite, compatibility, reindex):
-        if not isinstance(param, bool):
-            raise TypeError(f"Parameter {param} must be a boolean")
 
     layer_options = {
         "TARGET_ARCGIS_VERSION": True if compatibility else False,
@@ -443,6 +488,7 @@ def gdf_to_fc(
         driver="OpenFileGDB",
         layer=fc_name,
         layer_options=layer_options,
+        geometry_type=geometry_type,
     )
 
 
@@ -453,6 +499,9 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     Returns a dict of {feature_dataset: [feature_class, ...]}
 
     Feature classes outside of a feature dataset will have a key of None
+
+    References:
+    - https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
     """
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
     if not os.path.exists(gdbtable) or "a00000004.gdbtable" not in os.listdir(gdb_path):

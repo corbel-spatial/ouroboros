@@ -31,7 +31,7 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-test = ["pytest"]
+test = ["pytest", "coverage"]
 docs = ["sphinx"]
 lint = ["black"]
 dev = ["ouroboros-arcpy[test,docs,lint]"]
