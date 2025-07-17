@@ -227,13 +227,12 @@ class FeatureClass(MutableSequence):
                 self.geom_type = f"Multi{simple_type}"
 
         # insert features into dataframe
-        match index:
-            case 0:
-                c = [value, self._data]
-            case -1:
-                c = [self._data, value]
-            case _:
-                c = [self._data.iloc[:index], value, self._data.iloc[index:]]
+        if index == 0:
+            c = [value, self._data]
+        elif index == -1:
+            c = [self._data, value]
+        else:
+            c = [self._data.iloc[:index], value, self._data.iloc[index:]]
         self._data = pd.concat(c, ignore_index=True)
         self.saved = False
 
