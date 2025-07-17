@@ -3,19 +3,24 @@ version = "1.0.0b3"
 name = "ouroboros-arcpy"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
-requires-python = "==3.11.*"
+requires-python = ">=3.11"
 dependencies = [
-  "geojson",
-  "shapely",
+    "fiona",
+    "geoarrow-pyarrow",
+    "geojson",
+    "geopandas",
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "pyogrio"
 ]
-description = "Wrapper class for pythonic use of arcpy Feature Classes"
+description = "Wrapper classes for pythonic use of arcpy Feature Classes"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3.11",
-    "Operating System :: Microsoft :: Windows :: Windows 11"
 ]
 
 [project.urls]
@@ -26,5 +31,22 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-test = ['pytest']
-docs = ['sphinx']
+docs = ["sphinx"]
+lint = ["black"]
+test = ["pytest", "coverage"]
+dev = ["ouroboros-arcpy",
+    { include-group = "docs" },
+    { include-group = "lint" },
+    { include-group = "test" }
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+# dev install steps
+# python -m build
+# python -m pip install -e . --group dev
