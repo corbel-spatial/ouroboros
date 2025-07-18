@@ -4,7 +4,7 @@ import re
 import warnings
 from collections.abc import MutableMapping, MutableSequence
 from os import PathLike
-from typing import Iterator
+from typing import Iterator, Sequence
 
 import fiona
 import geojson
@@ -52,6 +52,7 @@ class FeatureClass(MutableSequence):
                 self.gdb_path = pathlib.Path(os.path.abspath(src))
                 self._data: gpd.GeoDataFrame = fc_to_gdf(self.gdb_path, self.name)
                 self.fields = self._data.columns.to_list()
+                self.fields.insert(0, self._data.index.name)
                 self.saved = True
         else:
             self._data = gpd.GeoDataFrame()
@@ -91,8 +92,6 @@ class FeatureClass(MutableSequence):
                             self.geom_type = geom
             else:
                 self.geom_type = geoms[0]
-        # elif "geometry" in self._data.columns and len(self._data.geom_type) == 0:
-        #     self.geom_type = "Unknown"
         else:
             self.geom_type = None
 
@@ -105,11 +104,29 @@ class FeatureClass(MutableSequence):
         ).reset_index(drop=True)
         self.saved = False
 
-    def __getitem__(self, index: int) -> gpd.GeoDataFrame:
+    def __getitem__(
+        self, index: "int | slice | Sequence[int | slice]"
+    ) -> gpd.GeoDataFrame:
         """Return row at index"""
-        if not isinstance(index, int):
-            raise TypeError("index must be an integer")
-        return self._data.iloc[[index]]
+        if isinstance(index, int):
+            return self._data.iloc[[index]]
+        elif isinstance(index, slice):
+            return self._data[index]
+        elif isinstance(index, list):
+            return self._data.iloc[index]
+        elif isinstance(index, tuple):
+            if slice in [type(x) for x in index]:
+                c = list()
+                for idx in index:
+                    if isinstance(idx, slice):
+                        c.append(self._data.iloc[idx])
+                    else:  # int
+                        c.append(self._data.iloc[[idx]])
+                return gpd.GeoDataFrame(pd.concat(c))
+            else:
+                return self._data.iloc[list(index)]
+        else:
+            raise KeyError(f"Invalid index type: {type(index)}")
 
     def __iter__(self) -> Iterator[tuple]:
         """Return iterator over rows (as tuples)"""
@@ -233,7 +250,7 @@ class FeatureClass(MutableSequence):
             c = [self._data, value]
         else:
             c = [self._data.iloc[:index], value, self._data.iloc[index:]]
-        self._data = pd.concat(c, ignore_index=True)
+        self._data = pd.concat(c, ignore_index=True)  # will reindex after concat
         self.saved = False
 
     def save(self) -> None:

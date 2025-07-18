@@ -55,4 +55,4 @@ package-dir = { "" = "src" }
 # .\docs\make html
 
 # generate coverage
-# coverage run -m pytest .\tests\tests.py; coverage json -o docs\pytest_coverage.json
+# coverage run -m pytest .\tests\tests.py; coverage json -o docs\pytest_coverage.json  --pretty-print

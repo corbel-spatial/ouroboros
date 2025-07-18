@@ -26,4 +26,5 @@ jobs:
     - name: Generate coverage report
       run: |
         coverage run -m pytest tests/tests.py
-        coverage json -o docs/pytest_coverage.json
+        coverage json -o docs/pytest_coverage.json --pretty-print
+        cat docs/pytest_coverage.json
