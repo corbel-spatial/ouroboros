@@ -31,7 +31,7 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-docs = ["sphinx"]
+docs = ["sphinx", "myst-parser", "sphinx-rtd-theme"]
 lint = ["black"]
 test = ["pytest", "coverage"]
 dev = ["ouroboros-arcpy",
@@ -50,3 +50,9 @@ package-dir = { "" = "src" }
 # dev install steps
 # python -m build
 # python -m pip install -e . --group dev
+
+# build docs
+# .\docs\make html
+
+# generate coverage
+# coverage run -m pytest .\tests\tests.py; coverage json -o docs\pytest_coverage.json
