@@ -3,12 +3,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-arcpy?logo=python)
 
+![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcorbel-spatial%2Fouroboros%2Frefs%2Fheads%2Fmain%2Fdocs%2Fpytest_coverage.json&query=%24.totals.percent_covered_display&suffix=%25&label=coverage)
 [![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/black.yml?label=Black&logo=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/black.yml)
 [![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=Pylint)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
+[![Read the Docs](https://img.shields.io/readthedocs/ouroboros-arcpy?logo=readthedocs)](https://ouroboros-arcpy.readthedocs.io/)
+
 [![GitHub Actions Workflow Status: Linux](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-linux.yml?label=Linux&logo=linux)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-linux.yml)
 [![GitHub Actions Workflow Status: macOS](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-macos.yml?label=macOS&logo=apple)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-macos.yml)
 [![GitHub Actions Workflow Status: Windows](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-windows.yml?label=Windows)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-windows.yml)
-[![Read the Docs](https://img.shields.io/readthedocs/ouroboros-arcpy?logo=readthedocs)](https://ouroboros-arcpy.readthedocs.io/)
 
 # ouroboros
 
