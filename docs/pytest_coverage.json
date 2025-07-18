@@ -2,7 +2,7 @@
     "meta": {
         "format": 3,
         "version": "7.9.2",
-        "timestamp": "2025-07-18T11:16:22.643584",
+        "timestamp": "2025-07-18T11:27:01.850796",
         "branch_coverage": false,
         "show_contexts": false
     },
@@ -128,6 +128,7 @@
                 113,
                 114,
                 115,
+                116,
                 117,
                 118,
                 119,
@@ -362,16 +363,14 @@
                 558
             ],
             "summary": {
-                "covered_lines": 300,
+                "covered_lines": 301,
                 "num_statements": 301,
-                "percent_covered": 99.66777408637874,
-                "percent_covered_display": "99",
-                "missing_lines": 1,
+                "percent_covered": 100.0,
+                "percent_covered_display": "100",
+                "missing_lines": 0,
                 "excluded_lines": 0
             },
-            "missing_lines": [
-                116
-            ],
+            "missing_lines": [],
             "excluded_lines": [],
             "functions": {
                 "FeatureClass.__init__": {
@@ -455,6 +454,7 @@
                         113,
                         114,
                         115,
+                        116,
                         117,
                         118,
                         119,
@@ -467,16 +467,14 @@
                         129
                     ],
                     "summary": {
-                        "covered_lines": 15,
+                        "covered_lines": 16,
                         "num_statements": 16,
-                        "percent_covered": 93.75,
-                        "percent_covered_display": "94",
-                        "missing_lines": 1,
+                        "percent_covered": 100.0,
+                        "percent_covered_display": "100",
+                        "missing_lines": 0,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [
-                        116
-                    ],
+                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.__iter__": {
@@ -1195,6 +1193,7 @@
                         113,
                         114,
                         115,
+                        116,
                         117,
                         118,
                         119,
@@ -1286,16 +1285,14 @@
                         311
                     ],
                     "summary": {
-                        "covered_lines": 140,
+                        "covered_lines": 141,
                         "num_statements": 141,
-                        "percent_covered": 99.29078014184397,
-                        "percent_covered_display": "99",
-                        "missing_lines": 1,
+                        "percent_covered": 100.0,
+                        "percent_covered_display": "100",
+                        "missing_lines": 0,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [
-                        116
-                    ],
+                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase": {
@@ -1570,7 +1567,7 @@
                 150,
                 151,
                 152,
-                154,
+                153,
                 155,
                 156,
                 157,
@@ -1581,14 +1578,14 @@
                 162,
                 163,
                 164,
-                166,
+                165,
                 167,
                 168,
-                170,
+                169,
                 171,
                 172,
                 173,
-                175,
+                174,
                 176,
                 177,
                 178,
@@ -1596,29 +1593,29 @@
                 180,
                 181,
                 182,
-                184,
+                183,
                 185,
                 186,
-                188,
+                187,
                 189,
                 190,
                 191,
                 192,
                 193,
                 194,
-                196,
+                195,
                 197,
                 198,
                 199,
-                201,
+                200,
                 202,
                 203,
-                205,
+                204,
                 206,
                 207,
                 208,
                 209,
-                211,
+                210,
                 212,
                 213,
                 214,
@@ -1626,7 +1623,7 @@
                 216,
                 217,
                 218,
-                220,
+                219,
                 221,
                 222,
                 223,
@@ -1634,33 +1631,33 @@
                 225,
                 226,
                 227,
-                229,
+                228,
                 230,
                 231,
-                241,
+                232,
                 242,
                 243,
-                246,
+                244,
                 247,
                 248,
-                252,
+                249,
                 253,
-                257,
+                254,
                 258,
-                265,
-                275,
+                259,
+                266,
                 276,
                 277,
-                288,
+                278,
                 289,
-                291,
+                290,
                 292,
                 293,
                 294,
                 295,
                 296,
                 297,
-                299,
+                298,
                 300,
                 301,
                 302,
@@ -1668,16 +1665,16 @@
                 304,
                 305,
                 306,
-                308,
+                307,
                 309,
-                311,
+                310,
                 312,
                 313,
-                315,
+                314,
                 316,
-                318,
+                317,
                 319,
-                322,
+                320,
                 323,
                 324,
                 325,
@@ -1686,7 +1683,7 @@
                 328,
                 329,
                 330,
-                332,
+                331,
                 333,
                 334,
                 335,
@@ -1696,7 +1693,7 @@
                 339,
                 340,
                 341,
-                343,
+                342,
                 344,
                 345,
                 346,
@@ -1705,16 +1702,16 @@
                 349,
                 350,
                 351,
-                353,
+                352,
                 354,
                 355,
                 356,
                 357,
                 358,
                 359,
-                361,
+                360,
                 362,
-                364,
+                363,
                 365,
                 366,
                 367,
@@ -1728,22 +1725,22 @@
                 375,
                 376,
                 377,
-                379,
+                378,
                 380,
                 381,
                 382,
-                384,
+                383,
                 385,
                 386,
                 387,
                 388,
                 389,
-                391,
+                390,
                 392,
                 393,
                 394,
                 395,
-                398,
+                396,
                 399,
                 400,
                 401,
@@ -1758,7 +1755,7 @@
                 410,
                 411,
                 412,
-                414,
+                413,
                 415,
                 416,
                 417,
@@ -1766,7 +1763,7 @@
                 419,
                 420,
                 421,
-                423,
+                422,
                 424,
                 425,
                 426,
@@ -1775,17 +1772,17 @@
                 429,
                 430,
                 431,
-                436,
+                432,
                 437,
                 438,
                 439,
                 440,
                 441,
-                448,
+                442,
                 449,
-                451,
+                450,
                 452,
-                454,
+                453,
                 455,
                 456,
                 457,
@@ -1793,14 +1790,15 @@
                 459,
                 460,
                 461,
-                463,
+                462,
                 464,
                 465,
-                466
+                466,
+                467
             ],
             "summary": {
-                "covered_lines": 305,
-                "num_statements": 305,
+                "covered_lines": 306,
+                "num_statements": 306,
                 "percent_covered": 100.0,
                 "percent_covered_display": "100",
                 "missing_lines": 0,
@@ -1976,11 +1974,12 @@
                         149,
                         150,
                         151,
-                        152
+                        152,
+                        153
                     ],
                     "summary": {
-                        "covered_lines": 9,
-                        "num_statements": 9,
+                        "covered_lines": 10,
+                        "num_statements": 10,
                         "percent_covered": 100.0,
                         "percent_covered_display": "100",
                         "missing_lines": 0,
@@ -1991,7 +1990,6 @@
                 },
                 "TestFeatureClass.test_iter": {
                     "executed_lines": [
-                        155,
                         156,
                         157,
                         158,
@@ -2000,7 +1998,8 @@
                         161,
                         162,
                         163,
-                        164
+                        164,
+                        165
                     ],
                     "summary": {
                         "covered_lines": 10,
@@ -2015,8 +2014,8 @@
                 },
                 "TestFeatureClass.test_len": {
                     "executed_lines": [
-                        167,
-                        168
+                        168,
+                        169
                     ],
                     "summary": {
                         "covered_lines": 2,
@@ -2031,9 +2030,9 @@
                 },
                 "TestFeatureClass.test_repr": {
                     "executed_lines": [
-                        171,
                         172,
-                        173
+                        173,
+                        174
                     ],
                     "summary": {
                         "covered_lines": 3,
@@ -2048,13 +2047,13 @@
                 },
                 "TestFeatureClass.test_setitem": {
                     "executed_lines": [
-                        176,
                         177,
                         178,
                         179,
                         180,
                         181,
-                        182
+                        182,
+                        183
                     ],
                     "summary": {
                         "covered_lines": 7,
@@ -2069,8 +2068,8 @@
                 },
                 "TestFeatureClass.test_str": {
                     "executed_lines": [
-                        185,
-                        186
+                        186,
+                        187
                     ],
                     "summary": {
                         "covered_lines": 2,
@@ -2085,12 +2084,12 @@
                 },
                 "TestFeatureClass.test_append": {
                     "executed_lines": [
-                        189,
                         190,
                         191,
                         192,
                         193,
-                        194
+                        194,
+                        195
                     ],
                     "summary": {
                         "covered_lines": 6,
@@ -2105,9 +2104,9 @@
                 },
                 "TestFeatureClass.test_clear": {
                     "executed_lines": [
-                        197,
                         198,
-                        199
+                        199,
+                        200
                     ],
                     "summary": {
                         "covered_lines": 3,
@@ -2122,8 +2121,8 @@
                 },
                 "TestFeatureClass.test_describe": {
                     "executed_lines": [
-                        202,
-                        203
+                        203,
+                        204
                     ],
                     "summary": {
                         "covered_lines": 2,
@@ -2138,10 +2137,10 @@
                 },
                 "TestFeatureClass.test_head": {
                     "executed_lines": [
-                        206,
                         207,
                         208,
-                        209
+                        209,
+                        210
                     ],
                     "summary": {
                         "covered_lines": 4,
@@ -2156,14 +2155,13 @@
                 },
                 "TestFeatureClass.test_insert": {
                     "executed_lines": [
-                        212,
                         213,
                         214,
                         215,
                         216,
                         217,
                         218,
-                        220,
+                        219,
                         221,
                         222,
                         223,
@@ -2171,25 +2169,26 @@
                         225,
                         226,
                         227,
-                        229,
+                        228,
                         230,
                         231,
-                        241,
+                        232,
                         242,
                         243,
-                        246,
+                        244,
                         247,
                         248,
-                        252,
+                        249,
                         253,
-                        257,
+                        254,
                         258,
-                        265,
-                        275,
+                        259,
+                        266,
                         276,
                         277,
-                        288,
-                        289
+                        278,
+                        289,
+                        290
                     ],
                     "summary": {
                         "covered_lines": 34,
@@ -2204,12 +2203,12 @@
                 },
                 "TestFeatureClass.test_save": {
                     "executed_lines": [
-                        292,
                         293,
                         294,
                         295,
                         296,
-                        297
+                        297,
+                        298
                     ],
                     "summary": {
                         "covered_lines": 6,
@@ -2224,13 +2223,13 @@
                 },
                 "TestFeatureClass.test_sort": {
                     "executed_lines": [
-                        300,
                         301,
                         302,
                         303,
                         304,
                         305,
-                        306
+                        306,
+                        307
                     ],
                     "summary": {
                         "covered_lines": 7,
@@ -2245,7 +2244,7 @@
                 },
                 "TestFeatureClass.test_to_geodataframe": {
                     "executed_lines": [
-                        309
+                        310
                     ],
                     "summary": {
                         "covered_lines": 1,
@@ -2260,8 +2259,8 @@
                 },
                 "TestFeatureClass.test_to_geojson": {
                     "executed_lines": [
-                        312,
-                        313
+                        313,
+                        314
                     ],
                     "summary": {
                         "covered_lines": 2,
@@ -2276,7 +2275,7 @@
                 },
                 "TestFeatureClass.test_to_pyarrow": {
                     "executed_lines": [
-                        316
+                        317
                     ],
                     "summary": {
                         "covered_lines": 1,
@@ -2291,7 +2290,7 @@
                 },
                 "TestFeatureClass.test_to_shapefile": {
                     "executed_lines": [
-                        319
+                        320
                     ],
                     "summary": {
                         "covered_lines": 1,
@@ -2306,13 +2305,13 @@
                 },
                 "TestGeoDatabase.test_instantiate": {
                     "executed_lines": [
-                        324,
                         325,
                         326,
                         327,
                         328,
                         329,
-                        330
+                        330,
+                        331
                     ],
                     "summary": {
                         "covered_lines": 7,
@@ -2327,7 +2326,6 @@
                 },
                 "TestGeoDatabase.test_delitem": {
                     "executed_lines": [
-                        333,
                         334,
                         335,
                         336,
@@ -2335,7 +2333,8 @@
                         338,
                         339,
                         340,
-                        341
+                        341,
+                        342
                     ],
                     "summary": {
                         "covered_lines": 9,
@@ -2350,14 +2349,14 @@
                 },
                 "TestGeoDatabase.test_getitem": {
                     "executed_lines": [
-                        344,
                         345,
                         346,
                         347,
                         348,
                         349,
                         350,
-                        351
+                        351,
+                        352
                     ],
                     "summary": {
                         "covered_lines": 8,
@@ -2372,12 +2371,12 @@
                 },
                 "TestGeoDatabase.test_iter": {
                     "executed_lines": [
-                        354,
                         355,
                         356,
                         357,
                         358,
-                        359
+                        359,
+                        360
                     ],
                     "summary": {
                         "covered_lines": 6,
@@ -2392,7 +2391,7 @@
                 },
                 "TestGeoDatabase.test_len": {
                     "executed_lines": [
-                        362
+                        363
                     ],
                     "summary": {
                         "covered_lines": 1,
@@ -2407,7 +2406,6 @@
                 },
                 "TestGeoDatabase.test_setitem": {
                     "executed_lines": [
-                        365,
                         366,
                         367,
                         368,
@@ -2420,10 +2418,11 @@
                         375,
                         376,
                         377,
-                        379,
+                        378,
                         380,
                         381,
-                        382
+                        382,
+                        383
                     ],
                     "summary": {
                         "covered_lines": 17,
@@ -2438,11 +2437,11 @@
                 },
                 "TestGeoDatabase.test_reload": {
                     "executed_lines": [
-                        385,
                         386,
                         387,
                         388,
-                        389
+                        389,
+                        390
                     ],
                     "summary": {
                         "covered_lines": 5,
@@ -2457,10 +2456,10 @@
                 },
                 "TestGeoDatabase.test_save": {
                     "executed_lines": [
-                        392,
                         393,
                         394,
-                        395
+                        395,
+                        396
                     ],
                     "summary": {
                         "covered_lines": 4,
@@ -2475,7 +2474,6 @@
                 },
                 "TestUtilityFunctions.test_delete_fc": {
                     "executed_lines": [
-                        400,
                         401,
                         402,
                         403,
@@ -2487,7 +2485,8 @@
                         409,
                         410,
                         411,
-                        412
+                        412,
+                        413
                     ],
                     "summary": {
                         "covered_lines": 13,
@@ -2502,13 +2501,13 @@
                 },
                 "TestUtilityFunctions.test_fc_to_gdf": {
                     "executed_lines": [
-                        415,
                         416,
                         417,
                         418,
                         419,
                         420,
-                        421
+                        421,
+                        422
                     ],
                     "summary": {
                         "covered_lines": 7,
@@ -2523,7 +2522,6 @@
                 },
                 "TestUtilityFunctions.test_gdf_to_fc": {
                     "executed_lines": [
-                        424,
                         425,
                         426,
                         427,
@@ -2531,16 +2529,17 @@
                         429,
                         430,
                         431,
-                        436,
+                        432,
                         437,
                         438,
                         439,
                         440,
                         441,
-                        448,
+                        442,
                         449,
-                        451,
-                        452
+                        450,
+                        452,
+                        453
                     ],
                     "summary": {
                         "covered_lines": 18,
@@ -2555,13 +2554,13 @@
                 },
                 "TestUtilityFunctions.test_list_datasets": {
                     "executed_lines": [
-                        455,
                         456,
                         457,
                         458,
                         459,
                         460,
-                        461
+                        461,
+                        462
                     ],
                     "summary": {
                         "covered_lines": 7,
@@ -2576,9 +2575,9 @@
                 },
                 "TestUtilityFunctions.test_list_layers": {
                     "executed_lines": [
-                        464,
                         465,
-                        466
+                        466,
+                        467
                     ],
                     "summary": {
                         "covered_lines": 3,
@@ -2617,37 +2616,37 @@
                         128,
                         136,
                         143,
-                        154,
-                        166,
-                        170,
-                        175,
-                        184,
-                        188,
-                        196,
-                        201,
-                        205,
-                        211,
-                        291,
-                        299,
-                        308,
-                        311,
-                        315,
-                        318,
-                        322,
+                        155,
+                        167,
+                        171,
+                        176,
+                        185,
+                        189,
+                        197,
+                        202,
+                        206,
+                        212,
+                        292,
+                        300,
+                        309,
+                        312,
+                        316,
+                        319,
                         323,
-                        332,
-                        343,
-                        353,
-                        361,
-                        364,
-                        384,
-                        391,
-                        398,
+                        324,
+                        333,
+                        344,
+                        354,
+                        362,
+                        365,
+                        385,
+                        392,
                         399,
-                        414,
-                        423,
-                        454,
-                        463
+                        400,
+                        415,
+                        424,
+                        455,
+                        464
                     ],
                     "summary": {
                         "covered_lines": 55,
@@ -2705,7 +2704,7 @@
                         150,
                         151,
                         152,
-                        155,
+                        153,
                         156,
                         157,
                         158,
@@ -2715,43 +2714,43 @@
                         162,
                         163,
                         164,
-                        167,
+                        165,
                         168,
-                        171,
+                        169,
                         172,
                         173,
-                        176,
+                        174,
                         177,
                         178,
                         179,
                         180,
                         181,
                         182,
-                        185,
+                        183,
                         186,
-                        189,
+                        187,
                         190,
                         191,
                         192,
                         193,
                         194,
-                        197,
+                        195,
                         198,
                         199,
-                        202,
+                        200,
                         203,
-                        206,
+                        204,
                         207,
                         208,
                         209,
-                        212,
+                        210,
                         213,
                         214,
                         215,
                         216,
                         217,
                         218,
-                        220,
+                        219,
                         221,
                         222,
                         223,
@@ -2759,47 +2758,48 @@
                         225,
                         226,
                         227,
-                        229,
+                        228,
                         230,
                         231,
-                        241,
+                        232,
                         242,
                         243,
-                        246,
+                        244,
                         247,
                         248,
-                        252,
+                        249,
                         253,
-                        257,
+                        254,
                         258,
-                        265,
-                        275,
+                        259,
+                        266,
                         276,
                         277,
-                        288,
+                        278,
                         289,
-                        292,
+                        290,
                         293,
                         294,
                         295,
                         296,
                         297,
-                        300,
+                        298,
                         301,
                         302,
                         303,
                         304,
                         305,
                         306,
-                        309,
-                        312,
+                        307,
+                        310,
                         313,
-                        316,
-                        319
+                        314,
+                        317,
+                        320
                     ],
                     "summary": {
-                        "covered_lines": 132,
-                        "num_statements": 132,
+                        "covered_lines": 133,
+                        "num_statements": 133,
                         "percent_covered": 100.0,
                         "percent_covered_display": "100",
                         "missing_lines": 0,
@@ -2810,14 +2810,13 @@
                 },
                 "TestGeoDatabase": {
                     "executed_lines": [
-                        324,
                         325,
                         326,
                         327,
                         328,
                         329,
                         330,
-                        333,
+                        331,
                         334,
                         335,
                         336,
@@ -2826,7 +2825,7 @@
                         339,
                         340,
                         341,
-                        344,
+                        342,
                         345,
                         346,
                         347,
@@ -2834,14 +2833,14 @@
                         349,
                         350,
                         351,
-                        354,
+                        352,
                         355,
                         356,
                         357,
                         358,
                         359,
-                        362,
-                        365,
+                        360,
+                        363,
                         366,
                         367,
                         368,
@@ -2854,19 +2853,20 @@
                         375,
                         376,
                         377,
-                        379,
+                        378,
                         380,
                         381,
                         382,
-                        385,
+                        383,
                         386,
                         387,
                         388,
                         389,
-                        392,
+                        390,
                         393,
                         394,
-                        395
+                        395,
+                        396
                     ],
                     "summary": {
                         "covered_lines": 57,
@@ -2881,7 +2881,6 @@
                 },
                 "TestUtilityFunctions": {
                     "executed_lines": [
-                        400,
                         401,
                         402,
                         403,
@@ -2894,14 +2893,14 @@
                         410,
                         411,
                         412,
-                        415,
+                        413,
                         416,
                         417,
                         418,
                         419,
                         420,
                         421,
-                        424,
+                        422,
                         425,
                         426,
                         427,
@@ -2909,26 +2908,27 @@
                         429,
                         430,
                         431,
-                        436,
+                        432,
                         437,
                         438,
                         439,
                         440,
                         441,
-                        448,
+                        442,
                         449,
-                        451,
+                        450,
                         452,
-                        455,
+                        453,
                         456,
                         457,
                         458,
                         459,
                         460,
                         461,
-                        464,
+                        462,
                         465,
-                        466
+                        466,
+                        467
                     ],
                     "summary": {
                         "covered_lines": 48,
@@ -2980,37 +2980,37 @@
                         128,
                         136,
                         143,
-                        154,
-                        166,
-                        170,
-                        175,
-                        184,
-                        188,
-                        196,
-                        201,
-                        205,
-                        211,
-                        291,
-                        299,
-                        308,
-                        311,
-                        315,
-                        318,
-                        322,
+                        155,
+                        167,
+                        171,
+                        176,
+                        185,
+                        189,
+                        197,
+                        202,
+                        206,
+                        212,
+                        292,
+                        300,
+                        309,
+                        312,
+                        316,
+                        319,
                         323,
-                        332,
-                        343,
-                        353,
-                        361,
-                        364,
-                        384,
-                        391,
-                        398,
+                        324,
+                        333,
+                        344,
+                        354,
+                        362,
+                        365,
+                        385,
+                        392,
                         399,
-                        414,
-                        423,
-                        454,
-                        463
+                        400,
+                        415,
+                        424,
+                        455,
+                        464
                     ],
                     "summary": {
                         "covered_lines": 68,
@@ -3027,11 +3027,11 @@
         }
     },
     "totals": {
-        "covered_lines": 606,
-        "num_statements": 607,
-        "percent_covered": 99.83525535420098,
-        "percent_covered_display": "99",
-        "missing_lines": 1,
+        "covered_lines": 608,
+        "num_statements": 608,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
         "excluded_lines": 0
     }
 }

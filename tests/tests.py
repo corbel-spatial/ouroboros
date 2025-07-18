@@ -147,6 +147,7 @@ class TestFeatureClass:
             assert isinstance(fc[100:105], gpd.GeoDataFrame)
             assert isinstance(fc[100, 200, 300], gpd.GeoDataFrame)
             assert isinstance(fc[(100, 200, 300)], gpd.GeoDataFrame)
+            assert isinstance(fc[[100, 200, 300]], gpd.GeoDataFrame)
             assert isinstance(fc[10, 100:105, 200, 300:305], gpd.GeoDataFrame)
             with pytest.raises(KeyError):
                 x = fc["test"]  # noqa
