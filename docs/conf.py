@@ -48,8 +48,6 @@ html_theme_options = {
     "style_external_links": True,
 }
 
-autodoc_mock_imports = ["arcpy", "geojson", "geomet", "shapely"]
-
 # -- Options for EPUB output
 epub_show_urls = "footnote"
 

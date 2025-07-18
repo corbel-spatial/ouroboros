@@ -24,7 +24,7 @@ class FeatureClass(MutableSequence):
     def __init__(
         self,
         fc_name: str,
-        src: None | os.PathLike | str | gpd.GeoDataFrame = None,
+        src: "None | os.PathLike | str | gpd.GeoDataFrame" = None,
         feature_dataset: None | str = None,
     ):
         # parse fc_name
@@ -236,9 +236,7 @@ class FeatureClass(MutableSequence):
         self._data = pd.concat(c, ignore_index=True)
         self.saved = False
 
-    def save(
-        self,
-    ) -> None:
+    def save(self) -> None:
         """Save to disk"""
         if not self.gdb_path:
             raise AttributeError("gdb_path not set")
@@ -274,7 +272,7 @@ class FeatureClass(MutableSequence):
 
     def to_geojson(
         self, filename: PathLike | str = None
-    ) -> None | geojson.FeatureCollection:
+    ) -> "None | geojson.FeatureCollection":
         """Save to GeoJSON file if filename is given, otherwise return GeoJSON FeatureCollection object"""
         if filename:
             if not filename.endswith(".geojson"):
