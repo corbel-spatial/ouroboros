@@ -120,6 +120,7 @@ class TestFeatureClass:
         del fc1[500]
         assert len(fc1) == SAMPLES - 1
         with pytest.raises(TypeError):
+            # noinspection PyTypeChecker
             del fc1["test"]
 
     def test_getitem(self, gdf_points):
@@ -696,6 +697,7 @@ class TestUsage:
 
         this_fds = None
         for fds in gdb:
+            # noinspection PyTypeChecker
             this_fds = gdb[fds]
             break
         for fc_name, fc in this_fds.feature_classes():

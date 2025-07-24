@@ -38,7 +38,7 @@ jobs:
 
     environment:
       name: pypi
-      url: https://pypi.org/project/ouroboros-arcpy
+      url: https://pypi.org/project/ouroboros-gis
 
     steps:
       - name: Retrieve release distributions

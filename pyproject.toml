@@ -1,6 +1,6 @@
 [project]
 version = "1.0.0b3"
-name = "ouroboros-arcpy"
+name = "ouroboros-gis"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.10"
@@ -14,23 +14,35 @@ dependencies = [
     "pyarrow",
     "pyogrio"
 ]
-description = "Wrapper classes for pythonic use of arcpy Feature Classes"
+description = "Towards more pythonic use of GeoDatabases"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Intended Audience :: Information Technology",
+    "Topic :: Scientific/Engineering :: GIS"
+
 ]
 
 [project.urls]
-homepage = "https://pypi.org/project/ouroboros-arcpy/"
-documentation = "https://app.readthedocs.org/projects/ouroboros-arcpy/"
+homepage = "https://pypi.org/project/ouroboros-gis/"
+documentation = "https://app.readthedocs.org/projects/ouroboros-gis/"
 repository = "https://github.com/corbel-spatial/ouroboros"
 issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-docs = ["sphinx", "myst-parser", "sphinx-rtd-theme"]
+docs = ["jupyter", "myst-parser", "nbsphinx", "notebook", "sphinx", "sphinx-rtd-theme"]
 lint = ["black"]
 test = ["pytest", "coverage", "pytest-xdist"]
 dev = [

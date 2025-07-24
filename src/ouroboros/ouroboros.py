@@ -18,15 +18,9 @@ from pyproj.crs import CRS
 
 class FeatureClass(MutableSequence):
     """
-    Handles geospatial data as a mutable collection, allowing operations like accessing,
-    modifying, appending, and deleting geospatial data while maintaining properties like
-    CRS and geometry type.
-
     The FeatureClass acts as a custom container built on top of GeoPandas' GeoDataFrame,
-    enabling fine-grained control and enhancements during manipulation of vector geospatial
-    data. Typical use cases include creating, modifying, and managing geospatial features
-    with attributes like coordinate systems and geometry types readily accessible.
-    The class ensures robust handling of various input types when initializing or altering data.
+    allowing operations like accessing, modifying, appending, and deleting geospatial data
+    while maintaining properties like CRS (Coordinate Reference System) and geometry type.
     """
 
     def __init__(
@@ -39,18 +33,15 @@ class FeatureClass(MutableSequence):
         geometry type. The source can be an existing GeoDataFrame, a file path to
         a geodatabase (GDB), or it can be empty.
 
-        Parameters
-        ----------
-        src: None | os.PathLike | str | gpd.GeoDataFrame
+        :param src:
             Source of the data. It can be:
               - A GeoDataFrame to initialize directly
               - A string or os.PathLike path pointing to a file or a geodatabase dataset
-              - None for initializing an empty GeoDataFrame
+              - None, for initializing an empty GeoDataFrame
+        :type src: None | os.PathLike | str | geopandas.GeoDataFrame
 
-        Raises
-        ------
-        TypeError
-            Raised when the provided source type is unsupported or invalid.
+        :raises TypeError: Raised when the provided source type is unsupported or invalid
+
         """
         self._data = None
         self.crs = None
@@ -95,19 +86,16 @@ class FeatureClass(MutableSequence):
 
     def __delitem__(self, index) -> None:
         """
-        Deletes an item from the internal data structure by its index.
+        Deletes an item from the GeoDataFrame by its index.
 
-        The method removes a specified item from the associated data structure
-        using the provided integer index. If the index is not of type int, a
-        TypeError is raised. The internal data structure is managed using a
-        pandas DataFrame, and the operation ensures that indices are properly
-        reset post-deletion.
+        The ObjectID index is reset post-deletion.
 
-        Args:
-            index (int): The position of the item to delete.
+        :param index: The position of the item to delete
+        :type index: int
 
-        Raises:
-            TypeError: If the provided index is not an integer.
+        :raises: TypeError
+            If the provided index is not an integer
+
         """
         if not isinstance(index, int):
             raise TypeError("index must be an integer")
@@ -122,29 +110,22 @@ class FeatureClass(MutableSequence):
         Retrieves rows or slices of the GeoDataFrame based on the given index.
 
         The method supports indexing by integer, slice, list of integers or slices,
-        and tuples of integers or slices. It allows extracting data in various formats
-        depending on the provided index and returns the corresponding subset of the
+        and tuples of integers or slices. It returns the corresponding subset of the
         GeoDataFrame.
 
-        Parameters:
-        index: int | slice | Sequence[int | slice]
-            The index or indices to retrieve rows or slices from the GeoDataFrame.
-            - If an integer is provided, the corresponding row is retrieved.
-            - If a slice is provided, the corresponding rows are retrieved as a slice.
-            - If a list of integers or slices is given, multiple specific rows or slices
-              are extracted.
-            - If a tuple is provided containing integers or slices, multiple rows or
-              slices are returned, concatenated as a single GeoDataFrame.
+        :param index: The index, indices, rows, or slices to retrieve from the GeoDataFrame
+        :type index: int | slice | Sequence[int | slice]
 
-        Returns:
-        gpd.GeoDataFrame
-            A GeoDataFrame containing the rows or slices of data matching the provided
-            index.
+            * If an integer is provided, the corresponding row is retrieved
+            * If a slice is provided, the corresponding rows are retrieved
+            * If a list or tuple of integers or slices is given, multiple specific rows or slices are retrieved
 
-        Raises:
-        KeyError
-            Raised when the provided index is not of a valid type (i.e., not an integer,
-            slice, list of integers or slices, or tuple containing these types).
+        :return: A GeoDataFrame containing the rows matching the provided index
+        :rtype: geopandas.GeoDataFrame
+
+        :raises KeyError:
+            Raised when the provided index is not of a valid type (i.e., not an integer, slice, or sequence of integers or slices)
+
         """
         if isinstance(index, int):
             return self._data.iloc[[index]]
@@ -168,27 +149,23 @@ class FeatureClass(MutableSequence):
 
     def __iter__(self) -> Iterator[tuple]:
         """
-        Returns an iterator over the rows of the internal data structure as tuples.
+        Returns an iterator over the rows of the GeoDataFrame as tuples.
 
-        The method provides a convenient way to iterate through each row of the
-        stored data, represented as a tuple. It enables easy data access in an
-        iterative context without directly exposing the underlying data.
+        This method wraps geopandas.GeoDataFrame.itertuples()
 
-        Returns:
-            Iterator[tuple]: An iterator that provides each row of the data as a tuple.
+        :return: An iterator that provides each row of the data as a tuple
+        :rtype: Iterator[tuple]:
+
         """
         return self._data.itertuples()
 
     def __len__(self) -> int:
         """
-        Returns the number of elements or items in the object.
+        Returns the number of rows in the GeoDataFrame.
 
-        This method allows retrieving the total count of elements contained
-        within the object by leveraging the length of its internal data
-        representation.
+        :return: The count of elements or items in the object
+        :rtype int:
 
-        Returns:
-            int: The count of elements or items in the object.
         """
         return self._data.shape[0]
 
@@ -198,22 +175,23 @@ class FeatureClass(MutableSequence):
         value: any,
     ) -> None:
         """
-        Assign a value to the specified cell in a two-dimensional data structure.
+        Assign a value to the specified cell in the GeoDataFrame using a tuple index
+        composed of a row integer, and a column integer or column name as a string.
 
-        This method allows the user to specify a target cell using a tuple index
-        composed of a row integer and a column integer or column name as a string.
         The value provided will overwrite the current content of the cell specified.
 
-        Parameters:
-            index (tuple[int, int | str]): A tuple where the first element is an
-                integer representing the row index and the second element
-                is either an integer for the column index or a string for the
-                column name.
-            value (any): The value to assign to the specified cell.
+        :param index:
+            A tuple where the first element is an integer representing the row index,
+            and the second element is either an integer for the column index or a
+            string for the column name
+        :type index: tuple[int, int | str]
 
-        Raises:
-            TypeError: If the row index is not an integer.
-            TypeError: If the column index is neither an integer nor a string.
+        :param value: The value to assign to the specified cell
+        :type value: any
+
+        :raises: TypeError
+            If the row index is not an integer, or if the column index is neither an integer nor a string
+
         """
         row, column = index
 
@@ -229,40 +207,35 @@ class FeatureClass(MutableSequence):
 
     def append(self, value: gpd.GeoDataFrame) -> None:
         """
-        Appends a value to the end of the collection.
+        Appends rows to the end of the GeoDataFrame.
 
-        Parameters:
-        value (gpd.GeoDataFrame): The value to append to the collection.
+        The appended data must be compatible with the GeoDataFrame data structure.
 
-        Returns:
-        None
+        :param value: The value to append to the collection.
+        :type value: geopandas.GeoDataFrame
+
         """
         self.insert(-1, value)
 
     def clear(self) -> None:
         """
-        Clears all elements from the internal data structure.
+        Remove all rows from the GeoDataFrame, leaving an empty schema.
 
-        Once called, all
-        previously stored data will no longer be accessible.
+        Note: This will delete all data from memory! Use with caution.
 
-        Returns
-        -------
-        None
-            This method does not return any value and modifies
-            the internal data structure in-place.
+        Use FeatureClass.save() to save to disk before deleting data.
+
         """
         self._data = self._data[0:0]
 
     def copy(self) -> "FeatureClass":
         """
-        Creates and returns a deep copy of the current FeatureClass instance, duplicating
-        its internal data to ensure the new object is independent of the original. This
-        operation provides a new instance with its data replicated.
+        Return a deep copy of the current FeatureClass instance, duplicating the GeoDataFrame
+        to ensure the new object is independent of the original.
 
-        Returns:
-            FeatureClass: A new instance of FeatureClass containing a deep copy of the
-                          internal data.
+        :return: A new instance of FeatureClass containing a deep copy of the internal data.
+        :rtype: FeatureClass
+
         """
         return FeatureClass(self._data.copy(deep=True))
 
@@ -271,16 +244,17 @@ class FeatureClass(MutableSequence):
         Provides a detailed description of the dataset, including its spatial reference
         system, fields, geometry type, index name, and row count.
 
-        Returns
-        -------
-        dict
-            A dictionary containing the following keys:
-            - 'crs': The name of the Coordinate Reference System (CRS) if defined;
-                     otherwise, None.
-            - 'fields': A list of field names in the dataset.
-            - 'geom_type': The geometry type of the dataset.
-            - 'index_name': The name of the index column of the dataset.
-            - 'row_count': The number of rows in the dataset.
+        The returned dictionary contains the following keys:
+
+            * `crs`: The name of the Coordinate Reference System (CRS) if defined; otherwise, None
+            * `fields`: A list of field names in the dataset
+            * `geom_type`: The geometry type of the dataset
+            * `index_name`: The name of the index column of the dataset
+            * `row_count`: The number of rows in the dataset
+
+        :return: A dictionary containing dataset information
+        :rtype: dict
+
         """
         if self.crs is None:
             crs = None
@@ -297,22 +271,19 @@ class FeatureClass(MutableSequence):
 
     def head(self, n: int = 10, silent: bool = False) -> gpd.GeoDataFrame:
         """
-        Returns the first `n` rows of the GeoDataFrame.
+        Returns the first `n` rows of the GeoDataFrame and prints them if `silent` is False.
 
         This method is used to retrieve a subset of the first rows from the
         GeoDataFrame stored in the object's internal `_data` attribute.
 
-        Parameters
-        ----------
-        n : int, default 10
-            Number of rows to return from the GeoDataFrame.
-        silent : bool, default False
-            If True, suppresses printing the retrieved rows.
+        :param n: Number of rows to return from the GeoDataFrame, defaults to 10
+        :type n: int
+        :param silent: If True, suppresses printing the retrieved rows, defaults to False
+        :type silent: bool
 
-        Returns
-        -------
-        gpd.GeoDataFrame
-            A GeoDataFrame containing the first `n` rows.
+        :return: A GeoDataFrame containing the first `n` rows
+        :rtype: geopandas.GeoDataFrame
+
         """
         h = self._data.head(n)
         if not silent:
@@ -321,28 +292,25 @@ class FeatureClass(MutableSequence):
 
     def insert(self, index: int, value: gpd.GeoDataFrame) -> None:
         """
-        Insert a GeoDataFrame into the current structure at a specified index, ensuring schema
-        compatibility, geometry type consistency, and proper handling of mixed geometries.
+        Insert a GeoDataFrame into the current structure at a specified index.
 
-        Parameters:
-        index: int
-            The position where the GeoDataFrame should be inserted. Must be an integer.
-        value: gpd.GeoDataFrame
-            The GeoDataFrame to insert. Must have the same schema as the current data.
+        Ensures schema compatibility, geometry type consistency, and proper handling of mixed geometries.
 
-        Raises:
-        TypeError
-            If `index` is not an integer.
-            If `value` is not an instance of gpd.GeoDataFrame.
-            If the geometry types within `value` are incompatible with the existing
-            geometry type constraints.
-        ValueError
-            If the schema of `value` does not match the schema of the existing data.
+        :param index: The position where the GeoDataFrame should be inserted
+        :type index: int
+        :param value: The GeoDataFrame to insert -- must have the same schema as the current data
+        :type value: geopandas.GeoDataFrame
+
+        :raises TypeError: If `index` is not an integer, if `value` is not an instance of geopandas.GeoDataFrame,
+                          or if the geometry types within `value` are incompatible with the existing
+                          geometry type constraints
+        :raises ValueError: If the schema of `value` does not match the schema of the existing data
+
         """
         if not isinstance(index, int):
             raise TypeError("Index must be an integer")
         if not isinstance(value, gpd.GeoDataFrame):
-            raise TypeError("Value must be an instance of gpd.GeoDataFrame")
+            raise TypeError("Value must be an instance of geopandas.GeoDataFrame")
 
         if len(self._data.columns) >= 1:
             try:
@@ -386,15 +354,16 @@ class FeatureClass(MutableSequence):
             c = [self._data.iloc[:index], value, self._data.iloc[index:]]
         self._data = pd.concat(c, ignore_index=True)  # will reindex after concat
 
-    def list_fields(self):
+    def list_fields(self) -> list[str]:
         """
-        Returns a list of field names in the data.
+        Return a list of field names in the data.
 
-        This method retrieves the column names of the underlying data and
+        This method retrieves the column names of the underlying GeoDataFrame and
         adds the index name as the first field in the list.
 
-        Returns:
-            list: A list of field names including the index name as the first item.
+        :return: A list of field names including the index name as the first item
+        :rtype: list[str]
+
         """
         fields = self._data.columns.to_list()
         fields.insert(0, self._data.index.name)
@@ -408,25 +377,21 @@ class FeatureClass(MutableSequence):
         overwrite: bool = False,
     ) -> None:
         """
-        Saves the current geodataframe to a file geodatabase within a specified feature class
-        and feature dataset, optionally allowing overwriting of any existing data.
+        Save the current GeoDataFrame to a file geodatabase.
 
-        Parameters:
-        gdb_path : os.PathLike | str
-            The path to the file geodatabase where the geodataframe will be saved.
-        fc_name : str
-            The name of the feature class within the geodatabase where the data will
-            be written.
-        feature_dataset : str, optional
-            The name of the feature dataset within the geodatabase to contain the feature
-            class. If not provided, the feature class will be saved at the root of the
-            geodatabase.
-        overwrite : bool, optional
-            If True, existing data in the specified feature class will be overwritten.
-            Defaults to False.
+        Saves with a specified feature class name within a specified feature dataset, optionally allowing
+        overwriting of any existing data.
 
-        Returns:
-        None
+        :param gdb_path: The path to the file geodatabase where the GeoDataFrame will be saved
+        :type gdb_path: os.PathLike | str
+        :param fc_name: The name of the feature class within the geodatabase where the data will be written
+        :type fc_name: str
+        :param feature_dataset: The name of the feature dataset within the geodatabase to contain the feature class;
+                                if not provided, the feature class will be saved at the root of the geodatabase
+        :type feature_dataset: str, optional
+        :param overwrite: If True, existing data in the specified feature class will be overwritten, defaults to False
+        :type overwrite: bool, optional
+
         """
         gdf_to_fc(
             gdf=self._data,
@@ -442,56 +407,44 @@ class FeatureClass(MutableSequence):
         ascending: bool = True,
     ) -> None:
         """
-        Sorts the data in the dataset based on a specific field.
+        Sort the GeoDataFrame based on a specific field.
 
-        This method orders the dataset according to the values of the specified
-        field name. The sorting can be performed in either ascending or descending
-        order based on the provided parameter.
+        Wraps the geopandas.GeoDataFrame.sort_values() method.
 
-        Parameters:
-        field_name : str
-            The name of the field in the dataset to sort by.
-        ascending : bool, optional
-            Determines the order of sorting. If True, the data will be sorted
-            in ascending order. If False, the data will be sorted in descending
-            order. Default is True.
+        :param field_name: The name of the field in the dataset to sort by
+        :type field_name: str
+        :param ascending: Defaults to True
+        :type ascending: bool, optional
+
         """
         self._data.sort_values(by=field_name, ascending=ascending, inplace=True)
 
     def to_geodataframe(self) -> gpd.GeoDataFrame:
         """
-        Converts the internal data into a GeoDataFrame.
+        Returns a deep copy of the internal GeoDataFrame.
 
-        This method returns a deep copy of the internal GeoDataFrame to ensure
-        the original data remains unmodified.
+        :return: A deep copy of the internal GeoDataFrame
+        :rtype: geopandas.GeoDataFrame
 
-        Returns:
-            gpd.GeoDataFrame: A deep copy of the internal GeoDataFrame.
         """
         return self._data.copy(deep=True)
 
     def to_geojson(
         self, filename: os.PathLike | str = None
     ) -> "None | geojson.FeatureCollection":
-        """
-        Converts the spatial data to the GeoJSON format, with an optional capability to save it to a file.
+        """Convert the spatial data to the GeoJSON format.
 
         When a filename is provided, the GeoJSON output will be written to that file. If no filename is
         specified, the GeoJSON format will be returned as a FeatureCollection object. The filename
-        is automatically suffixed with '.geojson' if not specified in the provided name. The data is
-        projected to the WGS84 coordinate system if no filename is used.
+        is automatically suffixed with '.geojson' if not specified in the provided name.
 
-        Parameters:
-            filename (os.PathLike | str, optional): The name of the file where the GeoJSON output
-                should be written. Defaults to None. If provided, the resulting GeoJSON data
-                will be saved to this file.
+        :param filename: The name of the file where the GeoJSON output should be written
+        :type filename: os.PathLike | str, optional
 
-        Returns:
-            None | geojson.FeatureCollection: Returns None when a filename is provided and the GeoJSON
-                data is written to disk. Otherwise, returns a GeoJSON FeatureCollection object.
+        :return: None when a filename is provided and the GeoJSON data is written to disk;
+                 otherwise, returns a geojson.FeatureCollection object
+        :rtype: None | geojson.FeatureCollection
 
-        Raises:
-            ValueError: Raised if specific conditions or constraints are violated (details omitted).
         """
         if filename:
             if not filename.endswith(".geojson"):
@@ -504,18 +457,26 @@ class FeatureClass(MutableSequence):
 
     def to_pyarrow(self) -> pa.Table:
         """
-        Converts internal data representation to a PyArrow Table.
+        Convert the GeoDataFrame to a PyArrow Table.
 
-        This method transforms the internal data structure into a PyArrow Table
-        format to facilitate compatibility with Apache Arrow ecosystem.
+        Wraps the geopandas.GeoDataFrame.to_arrow() method.
 
-        Returns:
-            pa.Table: A PyArrow Table object that represents the internal data.
+        :return: A PyArrow Table object
+        :rtype: pyarrow.Table
+
         """
         arrow_table = self._data.to_arrow()
         return pa.table(arrow_table)
 
     def to_shapefile(self, filename: os.PathLike | str) -> None:
+        """
+        Convert the GeoDataFrame to a shapefile.
+
+        Adds a '.shp' suffix to the filename if not in the filename provided.
+
+        :param filename: The name of the file where the shapefile will be saved
+        :type filename: os.PathLike | str
+        """
         if not filename.endswith(".shp"):
             filename += ".shp"
         self._data.to_file(filename=filename, driver="ESRI Shapefile")
@@ -523,41 +484,24 @@ class FeatureClass(MutableSequence):
 
 class FeatureDataset(MutableMapping):
     """
-    A dataset containing a collection of feature classes with support for spatial referencing.
+    A `dict`-like collection of feature classes with an enforced CRS.
 
-    FeatureDataset is a mutable mapping that organizes feature classes and enforces consistency
-    in their spatial referencing system (Coordinate Reference System, CRS). It provides methods
-    for managing feature classes, ensuring naming conventions, and validating CRS compatibility.
+    A FeatureDataset is a mutable mapping that organizes feature classes and enforces consistency
+    in their coordinate reference system (CRS).
 
-    Attributes:
-        crs: The coordinate reference system (CRS) associated with the feature dataset. This is
-             expected to be an instance of the CRS class or None. If None, it will inherit the CRS
-             from the first feature class added to the dataset.
-
-    Raises:
-        ValueError: Raised when attempting to set a feature class name that does not adhere to
-                    naming rules (e.g., starts with a digit or contains invalid characters).
-        TypeError: Raised when attempting to set a feature class with an invalid type.
-        KeyError: Raised when naming conflicts are detected with existing feature classes.
-        AttributeError: Raised when there is a mismatch between the CRS of the dataset and a
-                        feature class being added.
     """
 
     def __init__(self, crs: Any | CRS = None):
         """
-        Initializes an instance of the class, setting up the necessary attributes.
+        Initialize a new FeatureDataset instance with an optional coordinate reference system (CRS).
 
-        Attributes
-        ----------
-        crs : Any | CRS
-            The coordinate reference system associated with the object. It can
-            either be an instance of the CRS class, a compatible value, or None.
+        The CRS can be specified as any value compatible with the CRS class constructor.
 
-        Parameters
-        ----------
-        crs : Any | CRS, optional
-            The coordinate reference system to initialize the object with (default
-            is None).
+        :param crs: The coordinate reference system to initialize the dataset with
+        :type crs: Any | CRS
+
+        :raises TypeError: If the provided CRS value cannot be converted to a valid CRS object
+
         """
         self._fcs = dict()
         self._gdbs = set()
@@ -569,36 +513,32 @@ class FeatureDataset(MutableMapping):
 
     def __delitem__(self, key, /):
         """
-        Removes the item associated with the given key from the internal storage.
+        Remove the feature class from the feature dataset.
 
-        This method allows deletion of an item in the object using the specified key.
-        It modifies the internal data structure by removing the key-value pair that
-        matches the provided key.
+        The feature class object itself is not deleted, and may be referenced by other
+        feature datasets or geodatabases.
 
-        Parameters:
-        key: The key identifying the item to be removed. Must be a valid key present in
-        the internal storage.
+        :param key: The name of the feature class to be removed
+        :type key: str
+
+        :raises KeyError: If the name is not present in the feature dataset
+
         """
         del self._fcs[key]
 
     def __getitem__(self, key: int | str, /) -> FeatureClass:
         """
-        Implements retrieval of a feature class instance by either integer index or
-        string key. Provides access to elements within the feature classes collection.
+        Retrieve a feature class instance by either integer index or string key.
 
-        Parameters:
-        key (int | str): The index or key to retrieve the feature class. If an integer
-        is provided, it specifies the position of the feature class in the list. If a
-        string is provided, it specifies the key of the feature class.
+        :param key: The index or key to retrieve the feature class
+        :type key: int | str
 
-        Returns:
-        FeatureClass: The feature class instance corresponding to the provided key or
-        index.
+        :return: The feature class instance corresponding to the provided key or index
+        :rtype: FeatureClass
 
-        Raises:
-        IndexError: If an integer index is provided and it is out of the range of the
-        available feature classes.
-        KeyError: If a string key is provided and does not exist in the collection.
+        :raises IndexError: If an integer index is provided and it is out of range
+        :raises KeyError: If a string key is provided and does not exist in the collection
+
         """
         if isinstance(key, int):
             for idx, fc_obj in enumerate(self.feature_classes()):
@@ -609,55 +549,47 @@ class FeatureDataset(MutableMapping):
         else:
             return self._fcs[key]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict[str, FeatureClass]]:
         """
-        Returns an iterator over the internal collection.
+        Return an iterator over the feature dataset.
 
         This method provides an iterator over the elements within the internal
         collection structure, facilitating iteration in a standard Pythonic approach.
 
-        Returns:
-            Iterator: An iterator of the elements contained in the internal
-            collection.
+        :return: An iterator of a dict with the structure {name: FeatureClass}
+        :rtype: Iterator[dict[str, FeatureClass]]
+
         """
         return iter(self._fcs)
 
     def __len__(self):
         """
-        Returns the number of elements in the collection.
+        Return the number of feature classes in the feature dataset.
 
-        This method provides a way to determine the size of the collection
-        by returning the count of elements it contains.
+        :return: The number of elements in the collection
+        :rtype: int
 
-        Returns:
-            int: The number of elements in the collection.
         """
         return len(self._fcs)
 
     def __setitem__(self, key: str, value: FeatureClass, /):
         """
-        Sets a feature class to the specified key in the data structure. This method ensures
-        type validation and imposes strict rules on naming conventions for the feature class
-        key. It prevents duplication of feature class names and maintains consistency in
-        coordinate reference systems (CRS) across the dataset.
+        Set a feature class to the specified key in the data structure.
 
-        Parameters:
-        key: str
-            The name under which the `FeatureClass` should be stored. It must follow specific
-            naming rules including starting with a non-digit, and containing only alphanumeric
-            characters and underscores.
-        value: FeatureClass
-            The `FeatureClass` instance to be associated with the given key.
+        This method prevents duplication of feature class names and maintains consistency
+        in coordinate reference systems (CRS) across the dataset.
 
-        Raises:
-        TypeError
-            If the `value` is not an instance of `FeatureClass`.
-        ValueError
-            If the key starts with a digit or contains invalid characters.
-        KeyError
-            If the key already exists in the dataset.
-        AttributeError
-            If the CRS of the feature dataset and the feature class do not match.
+        :param key: The name under which to store the feature class. Must start with a non-digit,
+                    and contain only alphanumeric characters and underscores
+        :type key: str
+        :param value: The feature class instance to be associated with the given key
+        :type value: FeatureClass
+
+        :raises TypeError: If the value is not an instance of FeatureClass
+        :raises ValueError: If the key starts with a digit or contains invalid characters
+        :raises KeyError: If the key already exists in the dataset
+        :raises AttributeError: If the CRS of the feature dataset and feature class do not match
+
         """
         if not isinstance(value, FeatureClass):
             raise TypeError(f"Expected type ouroboros.FeatureClass: {value}")
@@ -690,17 +622,16 @@ class FeatureDataset(MutableMapping):
                 )
 
     def feature_classes(self) -> tuple[tuple[str | None, FeatureClass], ...]:
-        """
-        Returns a tuple of feature classes.
+        """Return a tuple of feature classes.
 
         This method compiles a list of all feature classes from the internal
         mapping and returns them as a tuple of tuples. Each tuple contains
         the feature class name and its corresponding feature class object.
 
-        Returns:
-            tuple[tuple[str | None, FeatureClass], ...]: A tuple of tuples
-            where each inner tuple consists of a feature class name and its
-            corresponding feature class object.
+        :return: A tuple of tuples where each inner tuple consists of a feature
+                 class name and its corresponding feature class object
+        :rtype: tuple[tuple[str | None, FeatureClass], ...]
+
         """
         fc_list = list()
         for fc_name, fc in self._fcs.items():
@@ -710,25 +641,25 @@ class FeatureDataset(MutableMapping):
 
 class GeoDatabase(MutableMapping):
     """
-    Represents a geodatabase that supports create, read, update, and delete operations on feature datasets
-    and feature classes.
+    A `dict`-like collection of feature datasets and feature classes.
 
     The GeoDatabase class is a mutable mapping that allows storing and managing spatial datasets
     organized into feature classes and feature datasets. It provides methods to interact with the stored
-    spatial data, including access, iteration, modification, and saving data to disk. The class is
-    designed to facilitate the organization and manipulation of spatial data within a geodatabase structure.
+    spatial data, including access, iteration, modification, and saving data to disk.
+
     """
 
     def __init__(self, path: None | os.PathLike | str = None):
         """
-        Initializes a new instance of the class. If a valid path is provided, it attempts to load
-        datasets and layers from the specified location on disk. This process involves creating
-        FeatureClasses and filling the FeatureDatasets accordingly. If no path is provided, the
-        instance starts with an empty collection of FeatureDatasets.
+        Initialize a new GeoDatabase instance.
 
-        Args:
-            path: Optional; The file path as None, a string, or os.PathLike object. If provided, it will
-                  load datasets and layers from the given path.
+        If a valid path is provided, attempts to load datasets and layers from the specified
+        location on disk. If no path is provided, the instance starts with an empty collection
+        of FeatureDatasets.
+
+        :param path: The file path to load datasets and layers from
+        :type path: None | os.PathLike | str
+
         """
         self._fds: dict[str | None : FeatureDataset] = dict()
         self._uuid = uuid4()
@@ -744,47 +675,40 @@ class GeoDatabase(MutableMapping):
                 self.__setitem__(fds_name, fds)
 
     # noinspection PyProtectedMember
-    def __delitem__(self, key, /):
+    def __delitem__(self, key: str, /):
         """
-        Removes the specified key and its associated value from the internal data structure.
+        Removes the specified FeatureDataset from the geodatabase.
 
-        The method deletes an item identified by the given key from the internal collection
-        and also ensures to remove the association of the current object from the referenced
-        resource in the removed item's context.
+        The FeatureDataset object itself is not deleted, and may be referenced by other
+        FeatureClasses or GeoDatabases.
 
-        Parameters
-        ----------
-        key : Any
-            The key associated with the item to be deleted.
+        :param key: The key associated with the FeatureDataset to be removed
+        :type key: str
 
-        Raises
-        ------
-        KeyError
-            If the key does not exist in the collection.
+        :raises KeyError: If the key does not exist in the GeoDatabase
+
         """
+
         fds = self._fds[key]
         del self._fds[key]
         fds._gdbs.remove(self)
 
     def __getitem__(self, key: int | str, /) -> FeatureClass | FeatureDataset:
         """
-        Provides access to elements of the GeoDatabase through indexing or key-based
-        retrieval. Supports retrieval of both feature classes and feature datasets
-        using either integer indexing or string-based keys.
+        Retrieve a feature class or feature dataset from the GeoDatabase.
 
-        Parameters:
-            key (int | str): The key to retrieve an element, where an integer refers
-                to the index of a feature class and a string refers to the name of
-                a feature class or dataset.
+        Provides access to elements through indexing or key-based retrieval. Supports both
+        feature classes and feature datasets using integer indexing or string-based keys.
 
-        Raises:
-            KeyError: Raised if the key provided is neither an integer nor string, or
-                if a non-existent string key is used.
-            IndexError: Raised if the integer-based index is out of range.
+        :param key: The key to retrieve an element
+        :type key: int | str
 
-        Returns:
-            FeatureClass | FeatureDataset: Returns the matched feature class or
-                feature dataset based on the provided key.
+        :return: The matched feature class or feature dataset
+        :rtype: FeatureClass | FeatureDataset
+
+        :raises KeyError: If key is neither an integer nor string, or if a non-existent string key is used
+        :raises IndexError: If the integer-based index is out of range
+
         """
         if not isinstance(key, int) and not isinstance(key, str) and key is not None:
             raise KeyError(f"Expected key to be an integer or string: {key}")
@@ -805,32 +729,32 @@ class GeoDatabase(MutableMapping):
 
     def __hash__(self) -> int:
         """
-        Calculates and returns the hash value for the object, ensuring that objects with
-        the same UUID have the same hash value.
+        Calculate and return the hash value for the GeoDatabase instance.
 
-        Returns:
-            int: The hash value of the object, generated from its UUID.
+        This method ensures that objects with the same UUID have consistent hash values,
+        making the GeoDatabase hashable and suitable for use in sets and as dictionary keys.
+
+        :return: The hash value of the object based on its UUID
+        :rtype: int
+
         """
         return hash(self._uuid)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict[str, FeatureDataset]]:
         """
-        Returns an iterator over the internal collection.
+        Return an iterator over the feature datasets.
 
-        Returns:
-            Iterator: An iterator over the internal collection.
+        :return: Iterator yielding (name, dataset) pairs for each feature dataset
+        :rtype: Iterator[dict[str, FeatureDataset]]
+
         """
         return iter(self._fds)
 
     def __len__(self):
         """
-        Returns the total number of file descriptors being tracked.
+        :return: The count of feature classes contained in the gedatabase
+        :rtype int:
 
-        This method calculates and returns the total number of file descriptors
-        by iterating over internal tracking storage and summing up their counts.
-
-        Returns:
-            int: The total count of file descriptors.
         """
         count = 0
         for fds in self._fds.values():
@@ -840,20 +764,20 @@ class GeoDatabase(MutableMapping):
     # noinspection PyProtectedMember
     def __setitem__(self, key: str, value: FeatureClass | FeatureDataset, /):
         """
-        Sets a key-value pair in the container, where the key is a string and the value must be
-        either a FeatureClass or a FeatureDataset. If the value is a FeatureClass, it ensures
-        an appropriate FeatureDataset exists and associates the key with the value. If the
-        value is a FeatureDataset, it associates the key with the FeatureDataset after validating
-        it. Type checks are performed to ensure the validity of the provided value.
+        Sets a key-value pair in the GeoDatabase.
 
-        Raises:
-            TypeError: If the value is neither a FeatureClass nor a FeatureDataset.
-            KeyError: If the key being added as a FeatureDataset already exists.
+        This method associates a key with either a FeatureClass or FeatureDataset value in the GeoDatabase.
+        For FeatureClass values, it ensures an appropriate FeatureDataset exists. For FeatureDataset
+        values, it validates and associates them directly.
 
-        Args:
-            key (str): The key to associate with the value in the container.
-            value (FeatureClass | FeatureDataset): The value, which must be either a FeatureClass
-                                                   or a FeatureDataset.
+        :param key: The key to associate with the object in the GeoDatabase
+        :type key: str
+        :param value: The object to be stored
+        :type value: FeatureClass | FeatureDataset
+
+        :raises TypeError: If the value is neither a FeatureClass nor a FeatureDataset
+        :raises KeyError: If the key being added as a FeatureDataset already exists
+
         """
         if isinstance(value, FeatureClass):
             crs = value.to_geodataframe().crs
@@ -872,15 +796,15 @@ class GeoDatabase(MutableMapping):
 
     def feature_classes(self) -> tuple[tuple[str | None, FeatureClass], ...]:
         """
-        Returns a tuple of all feature classes and their names within the dataset.
+        Return all feature classes and their names within the GeoDatabase.
 
-        This method compiles all feature classes from the internal dataset structure
-        and returns them as a tuple of tuples, where each inner tuple contains the
-        feature class name and the feature class object.
+        This method compiles all feature classes from the GeoDatabase and returns
+        them as a tuple of tuples. Each inner tuple contains the feature class name
+        and the feature class object.
 
-        Returns:
-            tuple[tuple[str | None, FeatureClass], ...]: A tuple containing all
-            feature classes and their corresponding names within the dataset.
+        :return: A tuple containing all feature classes and their corresponding names
+        :rtype: tuple[tuple[str | None, FeatureClass], ...]
+
         """
         fc_list = list()
         for fds in self._fds.values():
@@ -890,14 +814,19 @@ class GeoDatabase(MutableMapping):
 
     def feature_datasets(self) -> tuple[[str | None, FeatureDataset], ...]:
         """
-        Returns a tuple containing datasets and their corresponding names.
+        Return a tuple of FeatureDataset names and their objects in the GeoDatabase.
 
-        This method processes internal dataset storage and retrieves all datasets along with
-        their respective names as a tuple of name-dataset pairs. It ensures that all available
-        datasets are included in the returned collection.
+        Process internal dataset storage and retrieve all datasets along with their
+        respective names as name-dataset pairs. Ensures all available datasets are
+        included in the returned collection.
 
-        Returns:
-            tuple: A tuple containing pairs of datasets' names and their FeatureDataset objects.
+        FeatureClasses without a FeatureDataset are assigned to the FeatureDataset
+        with the key None.
+
+        :returns: A tuple containing pairs where each pair consists of a dataset name
+                  and its corresponding FeatureDataset object
+        :rtype: tuple[tuple[str | None, FeatureDataset], ...]
+
         """
         fds_list = list()
         for fds_name in self._fds:
@@ -905,19 +834,15 @@ class GeoDatabase(MutableMapping):
         return tuple(fds_list)
 
     def save(self, path: os.PathLike | str, overwrite: bool = False):
-        """
-        Saves the current data to a specified geodatabase (.gdb) file at the given path.
+        """Save the current contents of the GeoDatabase to a specified geodatabase (.gdb) file.
 
-        Parameters:
-        path (os.PathLike | str): The file system path where the geodatabase will be
-            saved. If the provided path does not include `.gdb`, the extension will
-            be automatically appended.
-        overwrite (bool): Flag indicating whether to overwrite the existing
-            geodatabase if it already exists at the specified path. Defaults to False.
+        :param path: The file system path where the geodatabase will be saved
+        :type path: os.PathLike | str
+        :param overwrite: Whether to overwrite existing geodatabase at the specified path, defaults to False
+        :type overwrite: bool
 
-        Raises:
-        AssertionError: If overwrite is enabled and the path still exists after
-            attempting to remove it.
+        :note: If the provided path does not include `.gdb`, the extension will be automatically appended
+
         """
         path = str(path)
         if not path.endswith(".gdb"):
@@ -943,25 +868,22 @@ def delete_fc(
     fc_name: str,
 ) -> bool:
     """
-    Deletes a feature class from the specified geodatabase if it exists.
+    Delete a feature class from the specified geodatabase if it exists.
 
     This function verifies the existence of the feature class within the
     geodatabase and removes it if found. It will not perform any operation
     if the feature class does not exist.
 
-    Parameters:
-    gdb_path : os.PathLike | str
-        The path to the geodatabase that contains the feature class.
-    fc_name : str
-        The name of the feature class to be deleted.
+    :param gdb_path: The path to the geodatabase that contains the feature class
+    :type gdb_path: os.PathLike | str
+    :param fc_name: The name of the feature class to be deleted
+    :type fc_name: str
 
-    Returns:
-    bool
-        True if the feature class was successfully deleted, False otherwise.
+    :returns: True if the feature class was successfully deleted, False otherwise
+    :rtype: bool
 
-    Raises:
-    TypeError
-        If the provided feature class name is not a string.
+    :raises TypeError: If the provided feature class name is not a string
+
     """
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
@@ -977,28 +899,22 @@ def fc_to_gdf(
     gdb_path: os.PathLike | str,
     fc_name: str,
 ) -> gpd.GeoDataFrame:
-    """
-    Convert a feature class in a File Geodatabase (GDB) to a GeoDataFrame.
+    """Convert a feature class in a geodatabase on disk to a GeoDataFrame.
 
-    This function reads in a specific feature class stored within a File Geodatabase
-    and converts it into a GeoDataFrame which can be used for geospatial analysis.
-    It ensures the GeoDataFrame's index is set to "ObjectID", corresponding to
-    the unique identifier of the feature class.
+    This function reads in a specific feature class stored on disk within a
+    geodatabase and converts it into a GeoDataFrame. It ensures the GeoDataFrame's
+    index is set to "ObjectID", corresponding to the unique identifier of the feature class.
 
-    Parameters:
-    gdb_path : os.PathLike | str
-        Path to the File Geodatabase (.gdb file) containing the feature class.
-    fc_name : str
-        The name of the feature class to be read and converted.
+    :param gdb_path: Path to the File Geodatabase (.gdb file) containing the feature class
+    :type gdb_path: os.PathLike | str
+    :param fc_name: The name of the feature class to be read and converted
+    :type fc_name: str
 
-    Returns:
-    gpd.GeoDataFrame
-        A GeoDataFrame representation of the feature class, with "ObjectID" set
-        as the index.
+    :return: A GeoDataFrame representation of the feature class, with "ObjectID" set as the index
+    :rtype: geopandas.GeoDataFrame
 
-    Raises:
-    TypeError
-        If the feature class name (`fc_name`) is not a string.
+    :raises TypeError: If the feature class name (`fc_name`) is not a string
+
     """
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
@@ -1022,50 +938,41 @@ def gdf_to_fc(
     reindex: bool = False,
 ):
     """
-    Converts a GeoDataFrame or GeoSeries to a feature class in a geodatabase.
+    Convert a GeoDataFrame or GeoSeries to a feature class in a geodatabase on disk.
 
-    This function allows for exporting a GeoDataFrame or GeoSeries to a file geodatabase
-    as a feature class. It includes options for specifying feature datasets, geometry types,
-    overwrite functionality, compatibility modes, and reindexing. When compatibility is enabled,
-    it ensures compatibility with specific ArcGIS versions. Reindexing can help optimize memory usage.
+    This function exports a GeoDataFrame or GeoSeries to a file geodatabase on disk as a feature class.
+    It includes options for specifying feature datasets, geometry types, overwrite functionality,
+    compatibility modes, and reindexing.
 
-    Attributes:
-        gdf (gpd.GeoDataFrame | gpd.GeoSeries): The input GeoDataFrame or GeoSeries to
-            be exported.
-        gdb_path (os.PathLike | str): File path to the geodatabase where the feature
-            class will be created.
-        fc_name (str): Name of the feature class to create.
-        feature_dataset (str, optional): Name of the feature dataset inside the geodatabase
-            where the feature class will be stored.
-        geometry_type (str, optional): Defines the geometry type for the output. It can be
-            used to enforce specific geometry constraints.
-        overwrite (bool, optional): If True and the feature class already exists, it will be
-            deleted and replaced.
-        compatibility (bool, optional): If True, compatibility settings such as
-            ArcGIS version targeting will be applied.
-        reindex (bool, optional): If True, uses in-memory spatial indexing for optimization.
+    :param gdf: The input GeoDataFrame or GeoSeries to be exported
+    :type gdf: geopandas.GeoDataFrame | geopandas.GeoSeries
+    :param gdb_path: File path to the geodatabase where the feature class will be created
+    :type gdb_path: os.PathLike | str
+    :param fc_name: Name of the feature class to create
+    :type fc_name: str
+    :param feature_dataset: Name of the feature dataset inside the geodatabase where the feature class will be stored
+    :type feature_dataset: str, optional
+    :param geometry_type: Defines the geometry type for the output
+    :type geometry_type: str, optional
+    :param overwrite: If True and the feature class already exists, it will be deleted and replaced
+    :type overwrite: bool, optional
+    :param compatibility: If True, compatibility settings such as ArcGIS version targeting will be applied, defaults to True
+    :type compatibility: bool, optional
+    :param reindex: If True, uses in-memory spatial indexing for optimization, defaults to False
+    :type reindex: bool, optional
 
-    Raises:
-        TypeError: If the input `gdf` is neither a GeoDataFrame nor a GeoSeries.
-        FileExistsError: If the feature class already exists and `overwrite` is set to False.
-        FileNotFoundError: If the specified geodatabase path does not exist or is invalid.
+    :raises TypeError: If the input `gdf` is neither a GeoDataFrame nor a GeoSeries
+    :raises FileExistsError: If the feature class already exists and `overwrite` is set to False
+    :raises FileNotFoundError: If the specified geodatabase path does not exist or is invalid
 
-    Parameters:
-        gdf: The input GeoDataFrame or GeoSeries to be exported.
-        gdb_path: File path to the geodatabase where the feature class will be created.
-        fc_name: Name of the feature class to create.
-        feature_dataset: Name of the feature dataset inside the geodatabase
-            (optional).
-        geometry_type: Defines the geometry type for the output (optional).
-        overwrite: Flag to overwrite an existing feature class (optional).
-        compatibility: Flag to apply compatibility settings for ArcGIS (optional).
-        reindex: Flag to use in-memory spatial indexing for optimization (optional).
     """
     if not isinstance(gdf, gpd.GeoDataFrame):
         if isinstance(gdf, gpd.GeoSeries):
             gdf = gpd.GeoDataFrame(gdf)
         else:
-            raise TypeError("Input must be a GeoDataFrame or GeoSeries")
+            raise TypeError(
+                "Input must be geopandas.GeoDataFrame or geopandas.GeoSeries"
+            )
 
     layer_options = {
         "TARGET_ARCGIS_VERSION": True if compatibility else False,
@@ -1104,20 +1011,24 @@ def gdf_to_fc(
 
 def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     """
-    Lists the datasets contained in a given geodatabase path.
+    Lists the feature datasets and feature classes contained in a geodatabase (.gdb) on disk.
 
-    This function processes the contents of a geodatabase file structure to identify
-    feature datasets and their corresponding feature classes. It returns a dictionary
-    mapping feature datasets to their feature classes. Feature classes that are not part
-    of any dataset are listed under a `None` key.
+    Processes the contents of a geodatabase file structure to identify feature datasets
+    and their corresponding feature classes. It returns a dictionary mapping feature datasets
+    to their feature classes. Feature classes that are not part of any dataset are listed under
+    a `None` key.
 
-    Parameters:
-        gdb_path (os.PathLike | str): The file path to the geodatabase.
+    :param gdb_path: The file path to the geodatabase on disk
+    :type gdb_path: os.PathLike | str
 
-    Returns:
-        dict[str | None, list[str]]: A dictionary containing feature datasets as keys
-        (or `None` for feature classes without a dataset) and lists of feature classes
-        as values.
+    :return: A dictionary containing feature datasets as keys (or `None` for feature
+             classes without a dataset) and lists of feature classes as values
+    :rtype: dict[str | None, list[str]]
+
+    References:
+        * https://gdal.org/en/stable/drivers/vector/openfilegdb.html
+        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
+
     """
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
 
@@ -1145,19 +1056,17 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     return out
 
 
-def list_layers(gdb_path: os.PathLike | str) -> list:
+def list_layers(gdb_path: os.PathLike | str) -> list[str]:
     """
-    Lists all layers within a specified GeoDatabase.
+    Lists all feature classes within a specified geodatabase on disk.
 
-    This function utilizes the `pyogrio` library to enumerate the layers present in
-    the given GeoDatabase file. If the GeoDatabase is empty or not valid,
-    an empty list is returned.
+    If the geodatabase is empty or not valid, an empty list is returned.
 
-    Args:
-        gdb_path (os.PathLike | str): The path to the GeoDatabase file to query.
+    :param gdb_path: The path to the geodatabase file
+    :type gdb_path: os.PathLike | str
+    :return: A list of feature classes in the specified geodatabase file
+    :rtype: list[str]
 
-    Returns:
-        list: A list of layer names available in the specified GeoDatabase.
     """
     # noinspection PyUnresolvedReferences
     try:

@@ -2,15 +2,16 @@
 
 ## 1.0.0-beta3
 
-- Built in export methods to various formats (shp, geojson, arrow, etc.)
 - Major refactor:
-  - use GeoPandas under the hood
-  - Added GeoDatabase and FeatureDataset classes for flexible OOP
-- Feature dataset reading reverse engineered
-- README updates
-- Black action working
-- Remove extraneous requirements files
-- Bump versions
+  - Dropped arcpy as a dependency
+  - Rereleased as ouroboros-gis on PyPI to reflect dropping arcpy
+  - Added GeoDatabase and FeatureDataset classes for OOP flexibility
+  - Using GeoPandas under the hood
+  - Added FeatureClass export methods to various formats (shp, geojson, arrow, etc.)
+  - Removed extraneous requirements files
+  - Reverse engineered feature datasets for `ouroboros.list_datasets` function
+- README and documentation updates
+- Added GitHub actions for cross-platform testing, black, pylint, and coverage
 
 ## 1.0.0-beta2
 
@@ -18,6 +19,7 @@
 
 ## 1.0.0-beta1
 
+- Initial release as ouroboros-arcpy in PyPI
 - Proof of concept class `ouroboros.core.FeatureClass`
 - Test suite (pytest) 
 - Sample data geodatabase

@@ -27,30 +27,38 @@ author = "Corbel"
 # -- General configuration
 
 extensions = [
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.duration",
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "myst_parser",
+    "nbsphinx",
 ]
 
 intersphinx_mapping = {
     "rtd": ("https://docs.readthedocs.io/en/stable/", None),
     "python": ("https://docs.python.org/3/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
+    # "geojson": ("https://geojson.readthedocs.io/en/latest/", None),
+    "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
+    "pyproj": ("https://pyproj4.github.io/pyproj/stable/", None),
 }
 intersphinx_disabled_domains = ["std"]
 
 templates_path = ["_templates"]
 
 html_theme_options = {
-    "style_external_links": True,
+    "style_external_links": False,
 }
 
-# -- Options for EPUB output
-epub_show_urls = "footnote"
-
+html_sidebars = {
+    "**": [
+        "globaltoc.html",
+    ]
+}
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
