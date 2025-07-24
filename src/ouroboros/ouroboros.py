@@ -1,10 +1,10 @@
 import os
-import pathlib
 import re
+import shutil
 import warnings
 from collections.abc import MutableMapping, MutableSequence
-from os import PathLike
-from typing import Iterator, Sequence
+from typing import Any, Iterator
+from uuid import uuid4
 
 import fiona
 import geojson
@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyogrio
+from pyproj.crs import CRS
 
 
 class FeatureClass(MutableSequence):
@@ -23,76 +24,50 @@ class FeatureClass(MutableSequence):
 
     def __init__(
         self,
-        fc_name: str,
         src: "None | os.PathLike | str | gpd.GeoDataFrame" = None,
-        feature_dataset: None | str = None,
     ):
-        # parse fc_name
-        if not isinstance(fc_name, str):
-            raise TypeError("fc_name must be a string")
-        if fc_name[0].isdigit():
-            fc_name = (
-                "_" + fc_name
-            )  # fc name cannot start with a digit, mimicking ArcGIS Pro renaming behavior
-        self.name = fc_name
+        """
+        src: None, path to .gdb, or a GeoDataFrame
+        """
+        self._data = None
+        self.crs = None
+        self.geom_type = None
 
-        # parse src and load data from file
-        self.gdb_path = None
-        self.saved = False
+        # parse src
         if isinstance(src, gpd.GeoDataFrame):
             self._data = src
-        elif isinstance(src, os.PathLike) or isinstance(src, str):
-            if (
-                not os.path.exists(src)
-                or not os.path.isdir(src)
-                or not src.endswith(".gdb")
-            ):
-                raise FileNotFoundError(src)
+            self._data.index.name = "ObjectID"
+        elif isinstance(src, os.PathLike) or isinstance(src, str):  # load data from gdb
+            src = os.path.abspath(src)
+            split_path = src.split(os.sep)
+            fc_name = split_path[-1]
+            if not split_path[-2].endswith(".gdb"):
+                # fds_name = split_path[-2]
+                gdb_path = os.sep.join(split_path[:-2])
             else:
-                self.gdb_path = pathlib.Path(os.path.abspath(src))
-                self._data: gpd.GeoDataFrame = fc_to_gdf(self.gdb_path, self.name)
-                self.fields = self._data.columns.to_list()
-                self.fields.insert(0, self._data.index.name)
-                self.saved = True
-        else:
+                # fds_name = None
+                gdb_path = os.sep.join(split_path[:-1])
+
+            self._data: gpd.GeoDataFrame = fc_to_gdf(gdb_path, fc_name)
+        elif src is None:
             self._data = gpd.GeoDataFrame()
-
-        # parse path
-        self.feature_dataset = feature_dataset
-        if self.gdb_path:
-            if self.feature_dataset:
-                self.path = os.path.join(self.gdb_path, self.feature_dataset, self.name)
-            # check if fc is in a feature dataset
-            elif self.name not in list_datasets(self.gdb_path)[None]:
-                for fds, fcs in list_datasets(self.gdb_path).items():
-                    if self.name in fcs:
-                        self.feature_dataset = fds
-                        self.path = os.path.join(
-                            self.gdb_path, self.feature_dataset, self.name
-                        )
-            else:
-                self.path = os.path.join(self.gdb_path, self.name)
         else:
-            self.path = self.name
+            raise TypeError(src)
 
-        # parse geometry, enforce only one geometry type
-        if "geometry" in self._data.columns:
-            self._data.set_geometry("geometry", inplace=True)
-            geoms = self._data.geom_type.unique()
-            if len(geoms) > 1:
-                raise TypeError(
-                    f"Feature classes cannot have multiple geometries: {geoms}"
-                )
-            elif len(geoms) == 0 or geoms[0] is None:
-                if not self.gdb_path:
-                    self.geom_type = "Unknown"
-                else:
-                    for fc, geom in pyogrio.list_layers(self.gdb_path):
-                        if fc == self.name:
-                            self.geom_type = geom
-            else:
-                self.geom_type = geoms[0]
-        else:
+        try:
+            self.crs = self._data.crs
+        except AttributeError:
+            self.crs = None
+
+        # parse geometry type
+        try:
+            geom_types = self._data.geom_type.unique()
+            if len(geom_types) == 1 and geom_types[0] is None:
+                self.geom_type = "Unknown"
+            elif len(geom_types) == 1 and geom_types[0] is not None:
+                self.geom_type = geom_types[0]
+
+        except AttributeError:
             self.geom_type = None
 
     def __delitem__(self, index) -> None:
@@ -102,7 +77,6 @@ class FeatureClass(MutableSequence):
         self._data = pd.concat(
             [self._data.iloc[: index - 1], self._data.iloc[index:]]
         ).reset_index(drop=True)
-        self.saved = False
 
     def __getitem__(
         self, index: "int | slice | Sequence[int | slice]"
@@ -136,12 +110,6 @@ class FeatureClass(MutableSequence):
         """Return count of rows"""
         return self._data.shape[0]
 
-    def __repr__(self) -> str:
-        """Representation of the object as a string that can be recreated with eval()"""
-        return (
-            f"ob.FeatureClass('{self.name}', gpd.GeoDataFrame({self._data.to_json()}))"
-        )
-
     def __setitem__(
         self,
         index: tuple[int, int | str],
@@ -164,12 +132,6 @@ class FeatureClass(MutableSequence):
         else:
             self._data.at[row, column] = value
 
-        self.saved = False
-
-    def __str__(self) -> str:
-        """Return full path of feature class on disk"""
-        return self.path
-
     def append(self, value: gpd.GeoDataFrame) -> None:
         """Append row(s) to the end of the GeoDataFrame. Schema must match."""
         self.insert(-1, value)
@@ -178,24 +140,26 @@ class FeatureClass(MutableSequence):
         """Delete all rows, leaving schema unchanged."""
         self._data = self._data[0:0]
 
+    def copy(self) -> "FeatureClass":
+        """Return a copy of the Feature Class"""
+        return FeatureClass(self._data.copy(deep=True))
+
     def describe(self) -> dict:
-        """Return dict of useful information."""
-        if self.saved:
-            ogr_info = pyogrio.read_info(self.gdb_path, self.name)
+        if self.crs is None:
+            crs = None
         else:
-            ogr_info = None
+            crs = self.crs.name
+
         return {
-            "saved": self.saved,
-            "name": self.name,
-            "feature_dataset": self.feature_dataset,
-            "gdb_path": str(self.gdb_path),
-            "path": str(self.path),
+            "crs": crs,
+            "fields": self.list_fields(),
             "geom_type": self.geom_type,
-            "ogr_info": ogr_info,
+            "index_name": self._data.index.name,
+            "row_count": len(self._data),
         }
 
     def head(self, n: int = 10, silent: bool = False) -> gpd.GeoDataFrame:
-        """Return a selection of rows. 'silent' prevents printing."""
+        """Print and return a selection of rows. 'silent' prevents printing."""
         h = self._data.head(n)
         if not silent:
             print(h)
@@ -228,7 +192,7 @@ class FeatureClass(MutableSequence):
         else:  # len(new_geoms) > 2:
             raise TypeError(f"Cannot mix geometry types: {new_geoms}")
 
-        # enforce new geometry types against existing
+        # validate geometry
         if self.geom_type is not None and self.geom_type == new_geom:
             pass
         elif self.geom_type in (None, "Unknown") and new_geom is not None:
@@ -251,29 +215,26 @@ class FeatureClass(MutableSequence):
         else:
             c = [self._data.iloc[:index], value, self._data.iloc[index:]]
         self._data = pd.concat(c, ignore_index=True)  # will reindex after concat
-        self.saved = False
 
-    def save(self) -> None:
-        """Save to disk"""
-        if not self.gdb_path:
-            raise AttributeError("gdb_path not set")
-        else:
-            # pyogrio can't infer geometry type from an empty geodataframe
-            if len(self._data) == 0:
-                geometry_type = self.geom_type
-            else:
-                geometry_type = None  # let pyogrio infer from dataset
+    def list_fields(self):
+        fields = self._data.columns.to_list()
+        fields.insert(0, self._data.index.name)
+        return fields
 
-            # save
-            gdf_to_fc(
-                self._data,
-                self.gdb_path,
-                self.name,
-                self.feature_dataset,
-                geometry_type=geometry_type,
-                overwrite=True,
-            )
-            self.saved = True
+    def save(
+        self,
+        gdb_path: os.PathLike | str,
+        fc_name: str,
+        feature_dataset: str = None,
+        overwrite: bool = False,
+    ) -> None:
+        gdf_to_fc(
+            gdf=self._data,
+            gdb_path=gdb_path,
+            fc_name=fc_name,
+            feature_dataset=feature_dataset,
+            overwrite=overwrite,
+        )
 
     def sort(
         self,
@@ -288,7 +249,7 @@ class FeatureClass(MutableSequence):
         return self._data.copy(deep=True)
 
     def to_geojson(
-        self, filename: PathLike | str = None
+        self, filename: os.PathLike | str = None
     ) -> "None | geojson.FeatureCollection":
         """Save to GeoJSON file if filename is given, otherwise return GeoJSON FeatureCollection object"""
         if filename:
@@ -305,105 +266,181 @@ class FeatureClass(MutableSequence):
         arrow_table = self._data.to_arrow()
         return pa.table(arrow_table)
 
-    def to_shapefile(self, filename: PathLike | str) -> None:
+    def to_shapefile(self, filename: os.PathLike | str) -> None:
         if not filename.endswith(".shp"):
             filename += ".shp"
         self._data.to_file(filename=filename, driver="ESRI Shapefile")
 
 
+class FeatureDataset(MutableMapping):
+    def __init__(self, crs: Any | CRS = None):
+        self._fcs = dict()
+        self._gdbs = set()
+
+        if isinstance(crs, CRS) or crs is None:
+            self.crs = crs
+        else:
+            self.crs = CRS(crs)
+
+    def __delitem__(self, key, /):
+        del self._fcs[key]
+
+    def __getitem__(self, key: int | str, /) -> FeatureClass:
+        if isinstance(key, int):
+            for idx, fc_obj in enumerate(self.feature_classes()):
+                fc_name, fc = fc_obj
+                if idx == key:
+                    return fc
+            raise IndexError(f"Index out of range: {key}")
+        else:
+            return self._fcs[key]
+
+    def __iter__(self):
+        return iter(self._fcs)
+
+    def __len__(self):
+        return len(self._fcs)
+
+    def __setitem__(self, key: str, value: FeatureClass, /):
+        if not isinstance(value, FeatureClass):
+            raise TypeError(f"Expected type ouroboros.FeatureClass: {value}")
+
+        if key[0].isdigit():
+            raise ValueError(f"Feature class name cannot start with a digit: {key} ")
+
+        for letter in key:
+            if not letter.isalpha() and not letter.isdigit() and not letter == "_":
+                raise ValueError(
+                    f"Feature class name can only contain letters, numbers, and underscores: {key}"
+                )
+
+        for gdb in self._gdbs:
+            for fds_name, fds in gdb.items():
+                for fc_name, fc in fds.items():
+                    if key == fc_name:
+                        raise KeyError(f"Feature class name already in use: {key}")
+
+        self._fcs[key] = value
+
+        if not self.crs:
+            self.crs = value.crs
+        else:
+            try:
+                assert self.crs == value.crs
+            except AssertionError:
+                raise AttributeError(
+                    f"Feature dataset CRS ({self.crs} does not match feature class CRS ({value.crs})"
+                )
+
+    def feature_classes(self) -> tuple[tuple[str | None, FeatureClass], ...]:
+        fc_list = list()
+        for fc_name, fc in self._fcs.items():
+            fc_list.append((fc_name, fc))
+        return tuple(fc_list)
+
+
 class GeoDatabase(MutableMapping):
-    """Dict of ouroboros.FeatureClass objects, loaded into memory"""
 
-    def __init__(self, gdb_path: os.PathLike | str):
-        if not os.path.exists(gdb_path):
-            raise FileNotFoundError(gdb_path)
+    def __init__(self, path: None | os.PathLike | str = None):
+        self._fds: dict[str | None : FeatureDataset] = dict()
+        self._uuid = uuid4()
 
-        self.path = os.path.abspath(gdb_path)
-        self._data = dict()
-        self.feature_classes = list()
-        self.feature_datasets = list()
-        self.saved = False
-        self.reload()
+        if path:  # load from disk
+            datasets = list_datasets(path)
+            lyrs = list_layers(path)
+            for fds_name in datasets:
+                fds = FeatureDataset()
+                for fc_name in lyrs:
+                    if fc_name in datasets[fds_name]:
+                        fds[fc_name] = FeatureClass(fc_to_gdf(path, fc_name))
+                self.__setitem__(fds_name, fds)
 
-    def __delitem__(self, fc_name: str, /) -> None:
-        """Delete feature class from object in memory. Must use 'save' method to actually delete from disk."""
-        if not isinstance(fc_name, str):
-            raise TypeError("Feature class name must be a string")
-        if fc_name in self._data:
-            del self._data[fc_name]
-            self.saved = False
+    # noinspection PyProtectedMember
+    def __delitem__(self, key, /):
+        fds = self._fds[key]
+        del self._fds[key]
+        fds._gdbs.remove(self)
 
-    def __getitem__(self, index: int | str, /) -> FeatureClass:
-        """Return feature class object by name or by index."""
-        if isinstance(index, str):
-            return self._data.get(index)
-        elif isinstance(index, int):
-            fc_name = self.feature_classes[index]
-            return self._data.get(fc_name)
+    def __getitem__(self, key: int | str, /) -> FeatureClass | FeatureDataset:
+        if not isinstance(key, int) and not isinstance(key, str) and key is not None:
+            raise KeyError(f"Expected key to be an integer or string: {key}")
+
+        if key in self._fds:
+            return self._fds[key]
+        elif isinstance(key, int):
+            for idx, fc_obj in enumerate(self.feature_classes()):
+                fc_name, fc = fc_obj
+                if idx == key:
+                    return fc
+            raise IndexError(f"Index out of range: {key}")
         else:
-            raise TypeError(index)
+            for fc_name, fc in self.feature_classes():
+                if fc_name == key:
+                    return fc
+        raise KeyError(f"'{key}' does not exist in the GeoDatabase")
 
-    def __iter__(self) -> Iterator[FeatureClass]:
-        """Return iterator over feature class objects."""
-        return iter(self._data.values())
+    def __hash__(self) -> int:
+        return hash(self._uuid)
 
-    def __len__(self) -> int:
-        """Return count of feature classes in the GeoDatabase object."""
-        return len(self._data)
+    def __iter__(self):
+        """Return iterator of fds_name, fds_object"""
+        return iter(self._fds)
 
-    def __setitem__(self, fc_name: str, fc: FeatureClass, /) -> None:
-        """Set feature class object by name. Cannot overwrite existing features."""
-        if not isinstance(fc_name, str):
-            raise TypeError("Feature class name must be a string")
-        if not isinstance(fc, FeatureClass):
-            raise TypeError("Input must be an ouroboros.FeatureClass object")
+    def __len__(self):
+        """Return count of feature classes"""
+        count = 0
+        for fds in self._fds.values():
+            count += len(fds)
+        return count
 
-        if fc_name in self._data:
-            raise KeyError(f"Feature class '{fc_name}' already exists")
+    # noinspection PyProtectedMember
+    def __setitem__(self, key: str, value: FeatureClass | FeatureDataset, /):
+        if isinstance(value, FeatureClass):
+            crs = value.to_geodataframe().crs
+            if None not in self._fds:
+                self._fds[None] = FeatureDataset(crs=crs)
+            self._fds[None]._gdbs.add(self)
+            self._fds[None][key] = value
+        elif isinstance(value, FeatureDataset):
+            if key in self._fds:
+                raise KeyError(f"Feature dataset name already in use: {key}")
+            else:
+                self._fds[key] = value
+                self._fds[key]._gdbs.add(self)
         else:
-            self._data[fc_name] = fc
-            self._data[fc_name].name = fc_name
-            self.saved = False
+            raise TypeError(f"Expected FeatureClass or FeatureDataset: {value}")
 
-            self.feature_classes.append(fc_name)
-            self.feature_classes.sort()
+    def feature_classes(self) -> tuple[tuple[str | None, FeatureClass], ...]:
+        fc_list = list()
+        for fds in self._fds.values():
+            for fc_name, fc in fds.items():
+                fc_list.append((fc_name, fc))
+        return tuple(fc_list)
 
-            if (
-                fc.feature_dataset not in self.feature_datasets
-                and fc.feature_dataset is not None
-            ):
-                self.feature_datasets.append(fc.feature_dataset)
-                self.feature_datasets.sort()
+    def feature_datasets(self) -> tuple[[str | None, FeatureDataset], ...]:
+        fds_list = list()
+        for fds_name in self._fds:
+            fds_list.append((fds_name, self._fds[fds_name]))
+        return tuple(fds_list)
 
-    def reload(self) -> None:  # TODO test zipped gdbs as inputs
-        """Load from disk, overwriting data in memory"""
-        self.feature_classes = sorted(list_layers(self.path))
-        self._data = dict()
-        for fc_name in self.feature_classes:
-            self._data[fc_name] = FeatureClass(fc_name, self.path)
+    def save(self, path: os.PathLike | str, overwrite: bool = False):
+        path = str(path)
+        if not path.endswith(".gdb"):
+            path += ".gdb"
 
-        fds = list(list_datasets(self.path).keys())
-        if None in fds:
-            fds.remove(None)
-        self.feature_datasets = sorted(fds)
+        if overwrite and os.path.exists(path):
+            shutil.rmtree(path)
+            assert not os.path.exists(path)
 
-        self.saved = True
-
-    def save(self) -> None:
-        """
-        Save in-memory object data to disk, and delete any feature classes on disk that have been removed from the object.
-        """
-        # Delete fcs that are not in _data
-        gdb_fcs = list_layers(self.path)
-        for fc_name in gdb_fcs:
-            if fc_name not in self._data:
-                delete_fc(self.path, fc_name)
-
-        # Add or overwrite feature classes on disk from _data
-        for fc in self._data.values():
-            # noinspection PyProtectedMember
-            gdf_to_fc(fc._data, self.path, fc.name, fc.feature_dataset, overwrite=True)
-        self.saved = True
+        for fds_name, fds in self._fds.items():
+            for fc_name, fc in fds.items():
+                gdf_to_fc(
+                    fc.to_geodataframe(),
+                    gdb_path=path,
+                    fc_name=fc_name,
+                    feature_dataset=fds_name,
+                    overwrite=overwrite,
+                )
 
 
 def delete_fc(
@@ -411,9 +448,6 @@ def delete_fc(
     fc_name: str,
 ) -> bool:
     """Delete feature class from disk, returns False if feature class doesn't exist"""
-    if not os.path.exists(gdb_path):
-        raise FileNotFoundError(gdb_path)
-
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
@@ -429,9 +463,6 @@ def fc_to_gdf(
     fc_name: str,
 ) -> gpd.GeoDataFrame:
     """Load Feature Class to GeoDataFrame"""
-    if not os.path.exists(gdb_path):
-        raise FileNotFoundError(gdb_path)
-
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
@@ -444,7 +475,7 @@ def fc_to_gdf(
 
 
 def gdf_to_fc(
-    gdf: gpd.GeoDataFrame,
+    gdf: gpd.GeoDataFrame | gpd.GeoSeries,
     gdb_path: os.PathLike | str,
     fc_name: str,
     feature_dataset: str = None,
@@ -465,15 +496,6 @@ def gdf_to_fc(
             gdf = gpd.GeoDataFrame(gdf)
         else:
             raise TypeError("Input must be a GeoDataFrame or GeoSeries")
-
-    # if not os.path.exists(gdb_path):  # TODO this breaks pytest
-    #     raise FileNotFoundError(gdb_path)
-
-    if not isinstance(fc_name, str):
-        raise TypeError("Feature class name must be a string")
-
-    if feature_dataset and not isinstance(feature_dataset, str):
-        raise TypeError("Feature dataset name must be a string")
 
     layer_options = {
         "TARGET_ARCGIS_VERSION": True if compatibility else False,
@@ -497,18 +519,22 @@ def gdf_to_fc(
     gdf["ObjectID"] = gdf["ObjectID"].astype(np.int32)
     gdf["ObjectID"] = gdf["ObjectID"] + 1
 
-    gdf.to_file(
-        gdb_path,
-        driver="OpenFileGDB",
-        layer=fc_name,
-        layer_options=layer_options,
-        geometry_type=geometry_type,
-    )
+    # noinspection PyUnresolvedReferences
+    try:
+        gdf.to_file(
+            gdb_path,
+            driver="OpenFileGDB",
+            layer=fc_name,
+            layer_options=layer_options,
+            geometry_type=geometry_type,
+        )
+    except pyogrio.errors.DataSourceError:
+        raise FileNotFoundError(gdb_path)
 
 
 def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     """
-    Lists feature datasets and their child feature classes
+    Lists names of feature datasets and their child feature classes
 
     Returns a dict of {feature_dataset: [feature_class, ...]}
 
@@ -518,8 +544,6 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     - https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
     """
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
-    if not os.path.exists(gdbtable) or "a00000004.gdbtable" not in os.listdir(gdb_path):
-        raise FileNotFoundError(gdbtable)
 
     fcs = list_layers(gdb_path)
     if len(fcs) == 0:  # no feature classes returns empty dict
@@ -549,10 +573,8 @@ def list_layers(gdb_path: os.PathLike | str) -> list:
     """
     List feature classes in geodatabase
     """
-    if not os.path.exists(gdb_path):
-        raise FileNotFoundError(gdb_path)
-
+    # noinspection PyUnresolvedReferences
     try:
         return [fc[0] for fc in pyogrio.list_layers(gdb_path)]
-    except pyogrio.errors.DataSourceError:  # noqa # empty GeoDatabase
+    except pyogrio.errors.DataSourceError:  # empty GeoDatabase
         return list()
