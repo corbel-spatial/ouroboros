@@ -16,7 +16,7 @@
 
 ## Introduction
 
-ouroboros is Python module that provides helpful functions and classes for manipulating spatial data stored in a [File GeoDatabase](https://en.wikipedia.org/wiki/Geodatabase_(Esri)). 
+ouroboros is a Python module that provides helpful functions and classes for manipulating spatial data stored in a [File GeoDatabase](https://en.wikipedia.org/wiki/Geodatabase_(Esri)). 
 
 The data (.gdb) are read from disk into memory as `FeatureClass` objects, using [GeoPandas](https://geopandas.org/en/stable/getting_started/introduction.html) 
 under the hood for efficient analysis and easy conversion to other spatial data formats.
