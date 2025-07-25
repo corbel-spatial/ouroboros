@@ -482,7 +482,9 @@ class FeatureClass(MutableSequence):
         """
         if not filename.endswith(".shp"):
             filename += ".shp"
-        self._data.to_file(filename=filename, driver="ESRI Shapefile")
+        with warnings.catch_warnings():  # hide pyogrio driver warnings
+            warnings.simplefilter("ignore")
+            self._data.to_file(filename=filename, driver="ESRI Shapefile")
 
 
 class FeatureDataset(MutableMapping):
@@ -1014,13 +1016,15 @@ def gdf_to_fc(
 
     # noinspection PyUnresolvedReferences
     try:
-        gdf.to_file(
-            gdb_path,
-            driver="OpenFileGDB",
-            layer=fc_name,
-            layer_options=layer_options,
-            geometry_type=geometry_type,
-        )
+        with warnings.catch_warnings():  # hide pyogrio driver warnings
+            warnings.simplefilter("ignore")
+            gdf.to_file(
+                gdb_path,
+                driver="OpenFileGDB",
+                layer=fc_name,
+                layer_options=layer_options,
+                geometry_type=geometry_type,
+            )
     except pyogrio.errors.DataSourceError:
         raise FileNotFoundError(gdb_path)
 
