@@ -1,7 +1,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/ouroboros-gis?logo=pypi)](https://pypi.org/project/ouroboros-gis/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-gis)](https://pypistats.org/packages/ouroboros-gis)
-[![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-gis?logo=python)
+[![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=)](https://github.com/corbel-spatial/ouroboros/blob/main/LICENSE)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-gis?logo=python)](https://pypi.org/project/ouroboros-gis/)
 
 [![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcorbel-spatial%2Fouroboros%2Frefs%2Fheads%2Fmain%2Fdocs%2Fpytest_coverage.json&query=%24.totals.percent_covered_display&suffix=%25&label=coverage)](https://raw.githubusercontent.com/corbel-spatial/ouroboros/refs/heads/main/docs/pytest_coverage.json)
 [![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/black.yml?label=Black&logo=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/black.yml)
