@@ -491,7 +491,7 @@ class FeatureDataset(MutableMapping):
 
     """
 
-    def __init__(self, crs: Any | CRS = None):
+    def __init__(self, crs: Any | CRS = None, enforce_crs: bool = True):
         """
         Initialize a new FeatureDataset instance with an optional coordinate reference system (CRS).
 
@@ -500,16 +500,25 @@ class FeatureDataset(MutableMapping):
         :param crs: The coordinate reference system to initialize the dataset with
         :type crs: Any | CRS
 
+        :param enforce_crs: Whether to enforce the CRS in the dataset, defaults to True
+        :type crs: bool
+
         :raises TypeError: If the provided CRS value cannot be converted to a valid CRS object
 
         """
+        self.enforce_crs = enforce_crs
+
+        self.crs = None
         self._fcs = dict()
         self._gdbs = set()
 
-        if isinstance(crs, CRS) or crs is None:
-            self.crs = crs
+        if self.enforce_crs:
+            if isinstance(crs, CRS) or crs is None:
+                self.crs = crs
+            else:
+                self.crs = CRS(crs)
         else:
-            self.crs = CRS(crs)
+            self.crs = None
 
     def __delitem__(self, key, /):
         """
@@ -611,15 +620,16 @@ class FeatureDataset(MutableMapping):
 
         self._fcs[key] = value
 
-        if not self.crs:
-            self.crs = value.crs
-        else:
-            try:
-                assert self.crs == value.crs
-            except AssertionError:
-                raise AttributeError(
-                    f"Feature dataset CRS ({self.crs} does not match feature class CRS ({value.crs})"
-                )
+        if self.enforce_crs:
+            if not self.crs:
+                self.crs = value.crs
+            else:
+                try:
+                    assert self.crs == value.crs
+                except AssertionError:
+                    raise AttributeError(
+                        f"Feature dataset CRS ({self.crs} does not match feature class CRS ({value.crs})"
+                    )
 
     def feature_classes(self) -> tuple[tuple[str | None, FeatureClass], ...]:
         """Return a tuple of feature classes.
@@ -668,7 +678,10 @@ class GeoDatabase(MutableMapping):
             datasets = list_datasets(path)
             lyrs = list_layers(path)
             for fds_name in datasets:
-                fds = FeatureDataset()
+                if fds_name is None:
+                    fds = FeatureDataset(enforce_crs=False)
+                else:
+                    fds = FeatureDataset(enforce_crs=True)
                 for fc_name in lyrs:
                     if fc_name in datasets[fds_name]:
                         fds[fc_name] = FeatureClass(fc_to_gdf(path, fc_name))
