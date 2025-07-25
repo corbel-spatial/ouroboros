@@ -1,12 +1,12 @@
-[![PyPI - Version](https://img.shields.io/pypi/v/ouroboros-arcpy?logo=pypi)](https://pypi.org/project/ouroboros-arcpy/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-arcpy)](https://pypistats.org/packages/ouroboros-arcpy)
+[![PyPI - Version](https://img.shields.io/pypi/v/ouroboros-gis?logo=pypi)](https://pypi.org/project/ouroboros-gis/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-gis)](https://pypistats.org/packages/ouroboros-gis)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=)](https://github.com/corbel-spatial/ouroboros?tab=MIT-1-ov-file)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-arcpy?logo=python)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-gis?logo=python)
 
 [![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcorbel-spatial%2Fouroboros%2Frefs%2Fheads%2Fmain%2Fdocs%2Fpytest_coverage.json&query=%24.totals.percent_covered_display&suffix=%25&label=coverage)](https://raw.githubusercontent.com/corbel-spatial/ouroboros/refs/heads/main/docs/pytest_coverage.json)
 [![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/black.yml?label=Black&logo=black)](https://github.com/corbel-spatial/ouroboros/actions/workflows/black.yml)
 [![GitHub Actions Workflow Status: Pylint](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pylint.yml?label=Pylint)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pylint.yml)
-[![Read the Docs](https://img.shields.io/readthedocs/ouroboros-arcpy?logo=readthedocs)](https://ouroboros-arcpy.readthedocs.io/)
+[![Read the Docs](https://img.shields.io/readthedocs/ouroboros-gis?logo=readthedocs)](https://ouroboros-gis.readthedocs.io/)
 
 [![GitHub Actions Workflow Status: Linux](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-linux.yml?label=Linux&logo=linux)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-linux.yml)
 [![GitHub Actions Workflow Status: macOS](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-macos.yml?label=macOS&logo=apple)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-macos.yml)
@@ -14,22 +14,77 @@
 
 # ouroboros
 
-A module that provides classes to manipulate File GeoDatabase feature classes in a more pythonic way. 
+## Introduction
 
-Uses GDAL wrappers under the hood (GeoPandas, Fiona, Pyogrio) and does not depend on arcpy. Thus it builds on a completely open stack and is cross-platform.
+ouroboros is Python module that provides helpful functions and classes for manipulating spatial data stored in a [File GeoDatabase](https://en.wikipedia.org/wiki/Geodatabase_(Esri)). 
 
-Tested on Python 3.10 - 3.13 on Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
+The data (.gdb) are read from disk into memory as `FeatureClass` objects, using [GeoPandas](https://geopandas.org/en/stable/getting_started/introduction.html) 
+under the hood for efficient analysis and easy conversion to other spatial data formats.
+`FeatureClass` objects can exist on their own, or they can be grouped into `FeatureDataset` and `GeoDatabase` objects 
+which can be accessed like dictionaries. For example:
+
+    >>> import ouroboros as ob
+
+    # Explore an existing dataset
+
+    >>> gdb_file = "spam_and_eggs.gdb"
+    >>> ob.list_datasets(gdb_file)
+    {'egg_dataset': ['eggs_fc', 'bad_eggs_fc'],
+    {'spam_dataset': ['spam_fc'],
+     None: ['ham_fc']}
+
+    # Load a feature class and convert to GeoPandas
+
+    >>> fc = ob.FeatureClass("spam_and_eggs.gdb/egg_dataset/eggs_fc")
+    >>> gdf = fc.to_geodataframe()
+    >>> type(gdf)
+    <class 'geopandas.geodataframe.GeoDataFrame'>
+    
+    # Assemble a new geodatabase in memory
+
+    >>> gdb = ob.GeoDatabase()
+    >>> gdb['good_egg_dataset'] = ob.FeatureDataset()
+    >>> gdb['good_egg_dataset']['eggs_fc'] = ob.FeatureClass("spam_and_eggs.gdb/eggs_fc")
+
+    # Save geodatabase to disk
+
+    >>> gdb.save("good_eggs.gdb")
+    >>> ob.list_datasets("good_eggs.gdb")
+    {'good_egg_dataset': ['eggs_fc'], None: []}
+
+Please see the [Documentation](https://ouroboros-gis.readthedocs.io/en/latest/) for more usage examples.
+
+## About
+
+ouroboros is released under a permissive open source license, it builds on mature open source GIS projects like 
+[GDAL](https://gdal.org/), and importantly it **does not use Esri's arcpy.**
+Therefore, ouroboros does not require any paid licenses and it runs on macOS and Linux as well as Windows.
+
+The main goal of this project is to allow traditional GIS users working primarily in the Esri/ArcGIS ecosystem to take
+advantage of the features and speed offered by modern data science tools. Second, it will provide a no-cost and
+user-friendly way to convert geodatabases to open data formats. And along the way, this project aims to develop a 
+suite of tools that align with [pythonic](https://peps.python.org/pep-0020/) design principles, and also bring a
+little more joy and beauty to the task of wrangling spatial data.
+
+This project is under active development and beta releases will be provided for the time being. Feedback, suggestions, and questions are welcomed in the [Issues](https://github.com/corbel-spatial/ouroboros/issues) section.
 
 ## Installation
 
-For a standard Python package installation in a terminal via pip:
+For a standard Python package installation in a terminal via **pip**:
 
     python -m pip install ouroboros-gis --user
 
-To install in an ArcGIS Pro conda environment, run the above command in the [Python Command Prompt](https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt), which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
+To install in an ArcGIS Pro conda environment, run the above command in the 
+[Python Command Prompt](https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt), 
+which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
+
+
+## Notes
+
+- Tested on Python 3.10, 3.11, 3.12, and 3.13 on Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
 
 ## Resources
 
- - [Documentation](https://ouroboros-gis.readthedocs.io/latest/)
+ - [Documentation](https://ouroboros-gis.readthedocs.io/en/latest/)
  - [GitHub Repository](https://github.com/corbel-spatial/ouroboros)
  - [Python Package Index](https://pypi.org/project/ouroboros-gis/)
