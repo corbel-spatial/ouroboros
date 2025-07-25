@@ -23,36 +23,38 @@ under the hood for efficient analysis and easy conversion to other spatial data 
 `FeatureClass` objects can exist on their own, or they can be grouped into `FeatureDataset` and `GeoDatabase` objects 
 which can be accessed like dictionaries. For example:
 
-    >>> import ouroboros as ob
+```python
+>>> import ouroboros as ob
 
-    # Explore an existing dataset
+# Explore an existing dataset
 
-    >>> gdb_file = "spam_and_eggs.gdb"
-    >>> ob.list_datasets(gdb_file)
-    {'egg_dataset': ['eggs_fc', 'bad_eggs_fc'],
-    {'spam_dataset': ['spam_fc'],
-     None: ['ham_fc']}
+>>> gdb_file = "spam_and_eggs.gdb"
+>>> ob.list_datasets(gdb_file)
+{'egg_dataset': ['eggs_fc', 'bad_eggs_fc'],
+{'spam_dataset': ['spam_fc'],
+ None: ['ham_fc']}
 
-    # Load a feature class and convert to GeoPandas
+# Load a feature class and convert to GeoPandas
 
-    >>> fc = ob.FeatureClass("spam_and_eggs.gdb/egg_dataset/eggs_fc")
-    >>> gdf = fc.to_geodataframe()
-    >>> type(gdf)
-    <class 'geopandas.geodataframe.GeoDataFrame'>
-    
-    # Assemble a new geodatabase in memory
+>>> fc = ob.FeatureClass("spam_and_eggs.gdb/egg_dataset/eggs_fc")
+>>> gdf = fc.to_geodataframe()
+>>> type(gdf)
+<class 'geopandas.geodataframe.GeoDataFrame'>
 
-    >>> gdb = ob.GeoDatabase()
-    >>> gdb['good_egg_dataset'] = ob.FeatureDataset()
-    >>> gdb['good_egg_dataset']['eggs_fc'] = ob.FeatureClass("spam_and_eggs.gdb/eggs_fc")
+# Assemble a new geodatabase in memory
 
-    # Save geodatabase to disk
+>>> gdb = ob.GeoDatabase()
+>>> gdb['good_egg_dataset'] = ob.FeatureDataset()
+>>> gdb['good_egg_dataset']['eggs_fc'] = ob.FeatureClass("spam_and_eggs.gdb/eggs_fc")
 
-    >>> gdb.save("good_eggs.gdb")
-    >>> ob.list_datasets("good_eggs.gdb")
-    {'good_egg_dataset': ['eggs_fc'], None: []}
+# Save geodatabase to disk
 
-Please see the [Documentation](https://ouroboros-gis.readthedocs.io/en/latest/) for more usage examples.
+>>> gdb.save("good_eggs.gdb")
+>>> ob.list_datasets("good_eggs.gdb")
+{'good_egg_dataset': ['eggs_fc'], None: []}
+```
+
+Please see the [Documentation](https://ouroboros-gis.readthedocs.io/en/latest/) or the [example notebooks](https://github.com/corbel-spatial/ouroboros/tree/main/docs/notebooks) for more usage examples.
 
 ## About
 

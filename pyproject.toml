@@ -42,7 +42,8 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-docs = ["jupyter", "myst-parser", "nbsphinx", "notebook", "sphinx", "sphinx-rtd-theme"]
+docs = ["jupyter", "myst-parser", "nbsphinx", "notebook",
+        "pydata-sphinx-theme", "sphinx", "sphinx-rtd-theme"]
 lint = ["black"]
 test = ["pytest", "coverage", "pytest-xdist"]
 dev = [

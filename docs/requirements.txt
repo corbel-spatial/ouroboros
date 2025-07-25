@@ -4,3 +4,4 @@ nbsphinx
 notebook
 sphinx
 sphinx-rtd-theme
+pydata-sphinx-theme
