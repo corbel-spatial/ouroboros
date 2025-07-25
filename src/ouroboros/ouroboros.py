@@ -25,7 +25,7 @@ class FeatureClass(MutableSequence):
 
     def __init__(
         self,
-        src: "None | os.PathLike | str | gpd.GeoDataFrame" = None,
+        src: "None | os.PathLike | str | gpd.GeoDataFrame | gpd.GeoSeries" = None,
     ):
         """
         Initializes the geospatial data container by parsing the source and extracting
@@ -38,7 +38,7 @@ class FeatureClass(MutableSequence):
               - A GeoDataFrame to initialize directly
               - A string or os.PathLike path pointing to a file or a geodatabase dataset
               - None, for initializing an empty GeoDataFrame
-        :type src: None | os.PathLike | str | geopandas.GeoDataFrame
+        :type src: None | os.PathLike | str | geopandas.GeoDataFrame | geopandas.GeoSeries
 
         :raises TypeError: Raised when the provided source type is unsupported or invalid
 
@@ -50,6 +50,9 @@ class FeatureClass(MutableSequence):
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
             self._data = src
+            self._data.index.name = "ObjectID"
+        elif isinstance(src, gpd.GeoSeries):
+            self._data = gpd.GeoDataFrame(geometry=src)
             self._data.index.name = "ObjectID"
         elif isinstance(src, os.PathLike) or isinstance(src, str):  # load data from gdb
             src = os.path.abspath(src)
