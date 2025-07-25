@@ -36,7 +36,7 @@ classifiers = [
 
 [project.urls]
 homepage = "https://pypi.org/project/ouroboros-gis/"
-documentation = "https://app.readthedocs.org/projects/ouroboros-gis/"
+documentation = "https://ouroboros-gis.readthedocs.io/en/latest/"
 repository = "https://github.com/corbel-spatial/ouroboros"
 issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
