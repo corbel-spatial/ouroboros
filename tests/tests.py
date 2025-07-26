@@ -1,5 +1,6 @@
 import os
 import uuid
+import zipfile
 from random import uniform
 from pprint import pprint
 
@@ -77,6 +78,14 @@ def gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
     gdb["test_fds"] = fds
     gdb.save(gdb_path)
     return gdb, gdb_path
+
+
+@pytest.fixture
+def gdb_data_test(tmp_path):
+    gdb_path = os.path.abspath(os.path.join(".", "tests", "test_data.gdb.zip"))
+    zf = zipfile.ZipFile(gdb_path, "r")
+    zf.extractall(tmp_path)
+    return os.path.join(tmp_path, "test_data.gdb")
 
 
 def test_gdb_fixture(gdb):
@@ -709,29 +718,29 @@ class TestUsage:
 
 
 class TestRaster:
-    def test_raster_to_tif(self, tmp_path):
+    def test_raster_to_tif(self, tmp_path, gdb_data_test):
         ob.raster_to_tif(
-            gdb_path="tests\\test_data.gdb.zip",
+            gdb_path=gdb_data_test,
             raster_name="random_raster",
             tif_path=None,
         )
 
         tif_path = tmp_path / "test"
         ob.raster_to_tif(
-            gdb_path="tests\\test_data.gdb.zip",
+            gdb_path=gdb_data_test,
             raster_name="random_raster",
             tif_path=str(tif_path),
         )
 
         tif_path = tmp_path / "test.tif"
         ob.raster_to_tif(
-            gdb_path="tests\\test_data.gdb.zip",
+            gdb_path=gdb_data_test,
             raster_name="random_raster",
             tif_path=str(tif_path),
         )
 
         assert tif_path.exists()
 
-    def test_tif_to_raster(self, tmp_path):
+    def test_tif_to_raster(self):
         with pytest.raises(NotImplementedError):
             ob.tif_to_raster(tif_path="test.tif", gdb_path="test.gdb")
