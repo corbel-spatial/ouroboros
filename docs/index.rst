@@ -1,12 +1,11 @@
-.. include:: ../README.md
-   :parser: myst_parser.sphinx_
-
-Documentation
-=============
-
 .. toctree::
+   :hidden:
    :maxdepth: 1
 
-   notebooks/basic_usage
-   examples
+   installation
+   user_guide
    api
+   references
+
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_

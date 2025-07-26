@@ -163,3 +163,4 @@ cython_debug/
 *.lock
 /docs/docstrings.md
 *.gdb
+*.tif

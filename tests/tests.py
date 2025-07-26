@@ -103,6 +103,9 @@ class TestFeatureClass:
         fc2 = ob.FeatureClass(fds_fc_points)
         assert isinstance(fc2.to_geodataframe(), gpd.GeoDataFrame)
 
+        fc3 = ob.FeatureClass(gpd.GeoSeries([Point(0, 1)]))
+        assert isinstance(fc3.to_geodataframe(), gpd.GeoDataFrame)
+
     def test_instatiate_gdf(self):
         fc1 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[Point(0, 1)]))
         assert isinstance(fc1.to_geodataframe(), gpd.GeoDataFrame)
@@ -703,3 +706,32 @@ class TestUsage:
         for fc_name, fc in this_fds.feature_classes():
             assert isinstance(fc_name, str)
             assert isinstance(fc, ob.FeatureClass)
+
+
+class TestRaster:
+    def test_raster_to_tif(self, tmp_path):
+        ob.raster_to_tif(
+            gdb_path="tests\\test_data.gdb.zip",
+            raster_name="random_raster",
+            tif_path=None,
+        )
+
+        tif_path = tmp_path / "test"
+        ob.raster_to_tif(
+            gdb_path="tests\\test_data.gdb.zip",
+            raster_name="random_raster",
+            tif_path=str(tif_path),
+        )
+
+        tif_path = tmp_path / "test.tif"
+        ob.raster_to_tif(
+            gdb_path="tests\\test_data.gdb.zip",
+            raster_name="random_raster",
+            tif_path=str(tif_path),
+        )
+
+        assert tif_path.exists()
+
+    def test_tif_to_raster(self, tmp_path):
+        with pytest.raises(NotImplementedError):
+            ob.tif_to_raster(tif_path="test.tif", gdb_path="test.gdb")
