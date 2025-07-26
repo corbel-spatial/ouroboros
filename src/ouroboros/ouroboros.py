@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyogrio
+import rasterio
 from pyproj.crs import CRS
 
 
@@ -1029,6 +1030,7 @@ def gdf_to_fc(
         raise FileNotFoundError(gdb_path)
 
 
+# TODO list_datasets also lists raster datasets
 def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     """
     Lists the feature datasets and feature classes contained in a geodatabase (.gdb) on disk.
@@ -1093,3 +1095,74 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
         return [fc[0] for fc in pyogrio.list_layers(gdb_path)]
     except pyogrio.errors.DataSourceError:  # empty GeoDatabase
         return list()
+
+
+def raster_to_tif(
+    gdb_path: os.PathLike | str,
+    raster_name: str,
+    tif_path: None | os.PathLike | str = None,
+):
+    """
+    Converts a raster stored in a File Geodatabase (GDB) to a GeoTIFF file.
+
+    Reads the raster from the input GDB, including masking data, and saves it as a GeoTIFF
+    file at the specified output path.
+
+    :param gdb_path: The path to the input geodatabase file containing the raster
+    :type gdb_path: os.PathLike | str
+    :param raster_name: The name of the raster in the GDB to be converted
+    :type raster_name: str
+    :param tif_path: The optional path where the GeoTIFF file should be saved. If not
+        provided, the output GeoTIFF file will be saved with the same name as the raster
+        in the GDB directory. Defaults to None.
+    :type tif_path: None | os.PathLike | str
+    """
+    if tif_path is None:
+        tif_path = os.path.join(os.path.dirname(gdb_path), raster_name + ".tif")
+
+    if not tif_path.endswith(".tif"):
+        tif_path += ".tif"
+
+    dataset: rasterio.DatasetReader
+    with rasterio.open(f"OpenFileGDB:{gdb_path}:{raster_name}") as dataset:
+        print(f"\nOpened: {os.path.join(gdb_path, raster_name)}")
+
+        mask = dataset.dataset_mask()
+        img = dataset.read()
+        meta = dataset.meta
+        meta["driver"] = "GTiff"
+
+        with rasterio.open(
+            fp=tif_path,
+            mode="w",
+            **meta,
+        ) as tif:
+            tif.write(img)
+            tif.write_mask(mask)
+            print(f"\nSaved: {tif_path}")
+
+
+def tif_to_raster(  # TODO
+    tif_path: str,
+    gdb_path: os.PathLike | str,
+):
+    """
+    Not Implemented: the OpenFileGDB driver does not yet support writing raster datasets
+    """
+    raise NotImplementedError(
+        "The OpenFileGDB driver does not yet support writing raster datasets"
+    )
+    # The below raises:
+    # rasterio.errors.RasterioIOError: OpenFileGDB::Create(): only vector datasets supported
+    #
+    # with rasterio.open(tif_path) as dataset:
+    #     img = dataset.read()
+    #     meta = dataset.meta
+    #     meta["driver"] = "OpenFileGDB"
+    #
+    #     with rasterio.open(
+    #         fp=f"OpenFileGDB:{gdb_path}:{os.path.basename(tif_path)}",
+    #         mode="w",
+    #         **meta,
+    #     ) as tif:
+    #         tif.write(img)

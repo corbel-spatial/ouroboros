@@ -3,8 +3,6 @@ name: Pytest - macOS
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 jobs:
   build:
     strategy:

@@ -3,8 +3,6 @@ name: Pytest - Windows
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 jobs:
   build:
     strategy:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-beta6
+
+- Added a utility function for exporting raster datasets to GeoTIFF
+- Docs updates
+
 ## 1.0.0-beta5
 
 - Switched sphinx theme to PyData for dark mode

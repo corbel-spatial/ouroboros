@@ -83,10 +83,4 @@ which can be launched from the Start Menu > All Programs > ArcGIS > Python Comma
 
 ## Notes
 
-- Tested on Python 3.10, 3.11, 3.12, and 3.13 on Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
-
-## Resources
-
- - [Documentation](https://ouroboros-gis.readthedocs.io/en/latest/)
- - [GitHub Repository](https://github.com/corbel-spatial/ouroboros)
- - [Python Package Index](https://pypi.org/project/ouroboros-gis/)
+Tested on Python 3.10, 3.11, 3.12, and 3.13 on Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).

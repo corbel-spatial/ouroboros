@@ -12,6 +12,7 @@ API
     * Save a GeoDataFrame to a feature class: `ouroboros.gdf_to_fc <#ouroboros.gdf_to_fc>`__
     * List the structure of feature datasets and feature classes in a geodatabase: `ouroboros.list_datasets <#ouroboros.list_datasets>`__
     * List feature classes in a geodatabase: `ouroboros.list_layers <#ouroboros.list_layers>`__
+    * Export a raster dataset in a geodatabase to GeoTIFF: `ouroboros.raster_to_tif <#ouroboros.raster_to_tif>`__
 
 Classes
 -------
@@ -35,3 +36,4 @@ Utility Functions
 .. autofunction:: ouroboros.gdf_to_fc
 .. autofunction:: ouroboros.list_datasets
 .. autofunction:: ouroboros.list_layers
+.. autofunction:: ouroboros.raster_to_tif
