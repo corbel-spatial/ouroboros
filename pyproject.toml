@@ -9,10 +9,7 @@ dependencies = [
     "geoarrow-pyarrow",
     "geojson",
     "geopandas",
-    "numpy",
-    "pandas",
     "pyarrow",
-    "pyogrio",
     "rasterio"
 ]
 description = "Towards more pythonic use of GeoDatabases"
@@ -68,5 +65,4 @@ package-dir = { "" = "src" }
 # .\docs\make html; .\docs\make html; start .\docs\_build\html\index.html
 #
 # generate coverage
-# coverage run -m pytest .\tests\tests.py; coverage html; start .\htmlcov\index.html
-# coverage run -m pytest .\tests\tests.py; coverage json -o .\docs\pytest_coverage.json  --pretty-print
+# coverage run -m pytest .\tests\tests.py; coverage html; start .\htmlcov\index.html; coverage json -o .\docs\pytest_coverage.json  --pretty-print

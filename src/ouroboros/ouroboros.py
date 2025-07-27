@@ -1122,10 +1122,12 @@ def raster_to_tif(
     :type tif_path: None | os.PathLike | str
     :param write_kwargs: Additional keyword arguments for writing the GeoTIFF file
     :type write_kwargs: dict
+
+    :raises RuntimeError: If the OpenFileGDB driver is not available in Rasterio
     """
     if "gdb" not in rasterio.drivers.raster_driver_extensions():
         raise RuntimeError(
-            "This rasterio installation does not support the OpenFileGDB driver\n"
+            "This Rasterio installation does not support the OpenFileGDB driver\n"
             "See installation documentation: https://ouroboros-gis.readthedocs.io/en/latest/installation.html"
         )
 

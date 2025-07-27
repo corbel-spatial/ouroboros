@@ -2,7 +2,8 @@
 
 ## 1.0.0-beta7
 
-- Can pass kwargs to write operation on GeoTIFF
+- conda-forge distribution
+- Pass kwargs to the GeoTIFF write operation
 
 ## 1.0.0-beta6
 
