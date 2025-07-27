@@ -19,12 +19,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install python3-pip python3-pytest python3-rasterio python3-geojson python3-geopandas python3-fiona -y
-        python3 -m pip install --upgrade pip
-        python3 -m pip install build pytest
-        python3 -m build
-        python3 -m pip install .
+        python -m pip install --upgrade pip
+        python -m pip install pytest
+        python -m pip install -e .
+        rio --gdal-version
     - name: Test with pytest
       run: |
         python -m pytest ./tests/tests.py
