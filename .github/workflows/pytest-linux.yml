@@ -19,6 +19,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo apt install rasterio -y
         python -m pip install --upgrade pip
         python -m pip install pytest
         python -m pip install -e .
