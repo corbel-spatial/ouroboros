@@ -20,7 +20,8 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install python3-build python3-pip python3-pytest python3-rasterio -y
+        sudo apt install python3-pip python3-pytest python3-rasterio -y
+        python3 -m pip install build
         python3 -m build
         python3 -m pip install .
     - name: Test with pytest
