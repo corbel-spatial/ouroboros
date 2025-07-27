@@ -56,7 +56,10 @@ def fds_fc_points(tmp_path, gdf_points):
 
 @pytest.fixture
 def gdf_polygons(gdf_points):
-    return gpd.GeoDataFrame(geometry=gdf_points.buffer(5.0))
+    polys = gdf_points.to_crs("EPSG:3857")
+    polys = polys.buffer(5.0)
+    polys = polys.to_crs("EPSG:4326")
+    return gpd.GeoDataFrame(geometry=polys)
 
 
 @pytest.fixture
@@ -723,7 +726,7 @@ class TestRaster:
         if (
             "gdb" not in rasterio.drivers.raster_driver_extensions()
         ):  # TODO get this working on macOS and Linux test runners
-            return False
+            assert False
 
         ob.raster_to_tif(
             gdb_path=gdb_data_test,
@@ -743,6 +746,7 @@ class TestRaster:
             gdb_path=gdb_data_test,
             raster_name="random_raster",
             tif_path=str(tif_path),
+            write_kwargs={"tiled": True},
         )
 
         # assert tif_path.exists()

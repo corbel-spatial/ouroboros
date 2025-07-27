@@ -33,6 +33,7 @@ intersphinx_mapping = {
     # "geojson": ("https://geojson.readthedocs.io/en/latest/", None),
     "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable/", None),
+    "rasterio": ("https://rasterio.readthedocs.io/en/stable/", None),
 }
 intersphinx_disabled_domains = ["std"]
 

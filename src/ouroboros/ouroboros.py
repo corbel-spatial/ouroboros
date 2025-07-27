@@ -1101,12 +1101,16 @@ def raster_to_tif(
     gdb_path: os.PathLike | str,
     raster_name: str,
     tif_path: None | os.PathLike | str = None,
+    write_kwargs: None | dict = None,
 ):
     """
     Converts a raster stored in a File Geodatabase (GDB) to a GeoTIFF file.
 
     Reads the raster from the input GDB, including masking data, and saves it as a GeoTIFF
     file at the specified output path.
+
+    Wraps the rasterio.open() function for read/write. Additional Rasterio/GDAL keyword arguments
+    can be passed to the write operation.
 
     :param gdb_path: The path to the input geodatabase file containing the raster
     :type gdb_path: os.PathLike | str
@@ -1116,6 +1120,8 @@ def raster_to_tif(
         provided, the output GeoTIFF file will be saved with the same name as the raster
         in the GDB directory. Defaults to None.
     :type tif_path: None | os.PathLike | str
+    :param write_kwargs: Additional keyword arguments for writing the GeoTIFF file
+    :type write_kwargs: dict
     """
     if "gdb" not in rasterio.drivers.raster_driver_extensions():
         raise RuntimeError(
@@ -1136,13 +1142,11 @@ def raster_to_tif(
         mask = dataset.dataset_mask()
         img = dataset.read()
         meta = dataset.meta
+        if write_kwargs:
+            meta.update(write_kwargs)
         meta["driver"] = "GTiff"
 
-        with rasterio.open(
-            fp=tif_path,
-            mode="w",
-            **meta,
-        ) as tif:
+        with rasterio.open(fp=tif_path, mode="w", **meta) as tif:
             tif.write(img)
             tif.write_mask(mask)
             print(f"\nSaved: {tif_path}")

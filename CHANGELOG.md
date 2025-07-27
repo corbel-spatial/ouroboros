@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-beta7
+
+- Can pass kwargs to write operation on GeoTIFF
+
 ## 1.0.0-beta6
 
 - Added a utility function for exporting raster datasets to GeoTIFF
