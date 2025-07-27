@@ -1117,6 +1117,12 @@ def raster_to_tif(
         in the GDB directory. Defaults to None.
     :type tif_path: None | os.PathLike | str
     """
+    if "gdb" not in rasterio.drivers.raster_driver_extensions():
+        raise RuntimeError(
+            "This rasterio installation does not support the OpenFileGDB driver\n"
+            "See installation documentation: https://ouroboros-gis.readthedocs.io/en/latest/installation.html"
+        )
+
     if tif_path is None:
         tif_path = os.path.join(os.path.dirname(gdb_path), raster_name + ".tif")
 

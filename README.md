@@ -70,17 +70,6 @@ little more joy and beauty to the task of wrangling spatial data.
 
 This project is under active development and beta releases will be provided for the time being. Feedback, suggestions, and questions are welcomed in the [Issues](https://github.com/corbel-spatial/ouroboros/issues) section.
 
-## Installation
-
-For a standard Python package installation in a terminal via **pip**:
-
-    python -m pip install ouroboros-gis --user
-
-To install in an ArcGIS Pro conda environment, run the above command in the 
-[Python Command Prompt](https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt), 
-which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
-
-
 ## Notes
 
 Tested on Python 3.10, 3.11, 3.12, and 3.13 on Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
