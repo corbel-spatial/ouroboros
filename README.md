@@ -54,7 +54,7 @@ which can be accessed like dictionaries. For example:
 {'good_egg_dataset': ['eggs_fc'], None: []}
 ```
 
-Please see the [Documentation](https://ouroboros-gis.readthedocs.io/en/latest/) or the [example notebooks](https://github.com/corbel-spatial/ouroboros/tree/main/docs/notebooks) for more usage examples.
+Please see the [User Guide](https://ouroboros-gis.readthedocs.io/en/latest/user_guide.html) for more usage examples.
 
 ## About
 
