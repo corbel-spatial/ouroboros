@@ -1097,6 +1097,14 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
         return list()
 
 
+def list_rasters(gdb_path: os.PathLike | str):
+    dataset: rasterio.DatasetReader
+    with rasterio.open(gdb_path, driver="OpenFileGDB") as dataset:
+        print(dataset.name)
+        print(dataset.subdatasets)
+        return dataset.subdatasets
+
+
 def raster_to_tif(
     gdb_path: os.PathLike | str,
     raster_name: str,

@@ -721,6 +721,12 @@ class TestUsage:
 
 
 class TestRaster:
+    def test_list_raster(self, gdb_data_test):
+        rasters = ob.list_rasters(gdb_data_test)
+        assert len(rasters) == 1
+        for raster in rasters:
+            assert isinstance(raster, str)
+
     def test_raster_to_tif(self, tmp_path, gdb_data_test):
 
         ob.raster_to_tif(
