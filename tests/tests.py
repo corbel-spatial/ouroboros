@@ -660,7 +660,7 @@ class TestUtilityFunctions:
         rasters = ob.list_rasters(gdb_path)
         assert len(rasters) == 0
 
-    def test_raster_to_tif(self, tmp_path, esri_gdb):
+    def test_raster_to_tif(self, tmp_path, esri_gdb):  # TODO failing on macOS and Linux
 
         ob.raster_to_tif(
             gdb_path=esri_gdb,
