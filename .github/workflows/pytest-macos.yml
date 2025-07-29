@@ -1,26 +1,29 @@
-# https://github.com/marketplace/actions/setup-miniconda#example-13-apple-silicon
+# https://github.com/marketplace/actions/setup-miniconda
 name: Pytest - macOS
 on:
   push:
     branches: [ "main" ]
 jobs:
-  example-13:
-    name: Ex13 (os=${{ matrix.os }})
+  pytest-macos:
+    name: (os=${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ["macos-latest"]
-        python-version: ["3.13"]
+        os: [macos-15, macos-14, macos-13]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-      - name: Conda info
+      - name: Install dependencies
         shell: bash -el {0}
-        run: conda info
-      - name: Conda list
-        shell: pwsh
-        run: conda list
+        run: |
+          conda install pytest rasterio libgdal>=3.8
+          python -m pip install --upgrade pip
+          python -m pip install .
+      - name: Test with pytest
+        run: |
+          pytest ./tests/tests.py
