@@ -1063,7 +1063,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
             try:
                 # catch and ignore bad tags
                 item.encode("utf-8")
-                assert len(item) > 3
+                assert len(item) > 4
                 for letter in item:
                     assert letter.isascii()
                     assert letter not in ("\t", "\x17", "$")
