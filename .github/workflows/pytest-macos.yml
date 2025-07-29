@@ -23,9 +23,10 @@ jobs:
         shell: bash -el {0}
         run: |
           conda activate test
-          conda install pytest rasterio
+          conda install pytest rasterio libgdal>=3.8
           pip install .
       - name: Test with pytest
+        shell: bash -el {0}
         run: |
           conda activate test
           python -m pytest ./tests/tests.py
