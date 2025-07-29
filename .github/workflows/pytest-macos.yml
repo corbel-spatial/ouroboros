@@ -19,11 +19,15 @@ jobs:
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install conda dependencies
         shell: bash -el {0}
         run: |
           conda activate test
-          conda install pytest rasterio libgdal>=3.8
+          conda install pytest rasterio libgdal=3.10.3 -c conda-forge
+      - name: Install pip dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate test
           pip install .
       - name: Test with pytest
         shell: bash -el {0}
