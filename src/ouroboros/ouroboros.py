@@ -1066,7 +1066,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
                 assert len(item) > 3
                 for letter in item:
                     assert letter.isascii()
-                    assert letter not in ("\t", "\x17")
+                    assert letter not in ("\t", "\x17", "$")
             except (AssertionError, UnicodeEncodeError):
                 continue
             if item != "" and not item.startswith("<?xml"):
