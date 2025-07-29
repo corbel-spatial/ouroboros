@@ -1066,7 +1066,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
                 assert len(item) > 4
                 for letter in item:
                     assert letter.isascii()
-                    assert letter not in ("\t", "\x17", "$")
+                    assert letter != "\x17"
             except (AssertionError, UnicodeEncodeError):
                 continue
             if item != "" and not item.startswith("<?xml"):
@@ -1076,8 +1076,9 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     xml_tags = "\n".join(xml_tags)
     try:
         et = ElementTree.fromstring(xml_tags)
-    except ElementTree.ParseError as e:
-        raise ElementTree.ParseError((e, xml_tags))
+    except (ElementTree.ParseError, TypeError) as e:
+        raise RuntimeError(f"Error parsing gdbtable: {e}")
+        # raise ElementTree.ParseError((e, xml_tags))
     ElementInclude.include(et)
 
     # assemble output

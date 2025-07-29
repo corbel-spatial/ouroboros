@@ -1,23 +1,29 @@
 Installation
 ============
 
-Installing with conda
----------------------
+conda (cross-platform)
+----------------------
 
-In an active Anaconda environment::
+Coming soon!
 
-    conda install ouroboros-gis
+..
+    In an active `conda <https://www.anaconda.com/docs/getting-started/getting-started>`__ environment::
 
-Installing with pip
--------------------
+        conda install ourboros-gis -c conda-forge
 
-ouroboros depends on Rasterio for reading raster datasets from geodatabases, which must be installed with GDAL
-version 3.8 or higher. Installation of ouroboros with raster support is different for each platform.
+pip
+---
+
+Feature class and feature dataset (vector driver) support should work cross-platform with a simple
+:code:`pip install ouroboros-gis`. However, ouroboros depends on `Rasterio <https://rasterio.readthedocs.io/en/stable/installation.html>`__
+for reading raster datasets from geodatabases, which must be installed with `GDAL <https://gdal.org/en/stable/download.html#binaries>`__
+version 3.8 or higher for GDB support. Installation of ouroboros with raster support is thus slightly different
+for each platform.
 
 Windows
 ^^^^^^^
 
-Simply do a standard Python package installation in a terminal via **pip**::
+Simply do a standard Python package installation in a terminal via :code:`pip`::
 
     python -m pip install ouroboros-gis --user
 
@@ -31,16 +37,16 @@ which can be launched from the Start Menu > All Programs > ArcGIS > Python Comma
 Linux
 ^^^^^
 
-First install Rasterio using your distribution's package manager, for example, on Ubuntu::
+First install GDAL and Rasterio using your distribution's package manager, and then install with :code:`pip`. For example, on Ubuntu::
 
-    sudo apt install rasterio
+    sudo apt install gdal rasterio
     python -m pip install ouroboros-gis --user
 
 macOS
 ^^^^^
 
-First install Rasterio with `Hombrew <https://formulae.brew.sh/formula/rasterio>`__ and then install with **pip**::
+First install GDAL and Rasterio with `Hombrew <https://formulae.brew.sh/formula/rasterio>`__ and then install with :code:`pip`::
 
-    brew install rasterio
+    brew install gdal rasterio
     python -m pip install ouroboros-gis --user
 

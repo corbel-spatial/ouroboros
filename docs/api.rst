@@ -10,6 +10,7 @@ API
     * Delete a feature class: `ouroboros.delete_fc() <#ouroboros.delete_fc>`__
     * Load a feature class into a GeoDataFrame: `ouroboros.fc_to_gdf() <#ouroboros.fc_to_gdf>`__
     * Save a GeoDataFrame to a feature class: `ouroboros.gdf_to_fc() <#ouroboros.gdf_to_fc>`__
+    * Get detailed metadata about the contents of a geodatabase: `ouroboros.get_info() <#ouroboros.get_info>`__
     * List the structure of feature datasets and feature classes in a geodatabase: `ouroboros.list_datasets() <#ouroboros.list_datasets>`__
     * List feature classes in a geodatabase: `ouroboros.list_layers() <#ouroboros.list_layers>`__
     * List raster datasets in a geodatabase: `ouroboros.list_rasters() <#ouroboros.list_rasters>`__

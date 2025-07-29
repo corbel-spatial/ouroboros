@@ -3,6 +3,7 @@ name: Pytest - macOS
 on:
   push:
     branches: [ "main" ]
+    paths: [ "src/**" ]
 jobs:
   build:
     runs-on: ${{ matrix.os }}

@@ -54,7 +54,11 @@ which can be accessed like dictionaries. For example:
 {'good_egg_dataset': ['eggs_fc'], None: []}
 ```
 
-Please see the [User Guide](https://ouroboros-gis.readthedocs.io/en/latest/user_guide.html) for more usage examples.
+## Getting Started
+
+[Installation](https://ouroboros-gis.readthedocs.io/en/latest/installation.html)
+
+[User Guide](https://ouroboros-gis.readthedocs.io/en/latest/user_guide.html)
 
 ## About
 
@@ -72,4 +76,4 @@ This project is under active development and beta releases will be provided for 
 
 ## Notes
 
-Tested on Python 3.10, 3.11, 3.12, and 3.13 on Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
+Tested on Python 3.10, 3.11, 3.12, and 3.13 on the latest Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).

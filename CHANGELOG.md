@@ -2,9 +2,11 @@
 
 ## 1.0.0-beta7
 
-- conda-forge distribution
+- conda-forge distribution set up
 - Pass kwargs to the GeoTIFF write operation
 - Added get_info() and list_rasters() utility functions
+- Docs additions and updates
+- CI cross-platform testing fixes
 
 ## 1.0.0-beta6
 
