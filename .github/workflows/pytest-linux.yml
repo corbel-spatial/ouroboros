@@ -1,4 +1,4 @@
-# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# https://github.com/marketplace/actions/setup-miniconda
 name: Pytest - Linux
 on:
   push:
@@ -8,25 +8,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [ubuntu-24.04, ubuntu-22.04]
-        # python-version: ["3.10", "3.11", "3.12", "3.13"]
-        os: [ubuntu-24.04]
-        python-version: ["3.13"]
+         os: [ubuntu-24.04, ubuntu-22.04]
+         python-version: ["3.10", "3.11", "3.12", "3.13"]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install rasterio -y
-        python -m pip install --upgrade pip
-        python -m pip install pytest
-        python -m pip install .
-        rio --gdal-version
-    - name: Test with pytest
-      run: |
-        python -m pytest ./tests/tests.py
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+      - name: Install conda dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          conda install pytest rasterio libgdal=3.10.3 -c conda-forge
+      - name: Install pip dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          pip install .
+      - name: Test with pytest
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          python -m pytest ./tests/tests.py
