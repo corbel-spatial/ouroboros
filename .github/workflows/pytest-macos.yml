@@ -23,6 +23,7 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
+        brew install --cask anaconda
         conda env update --file environment.yml --name base
         conda install pytest rasterio libgdal-core>=3.8 -c conda-forge
         python -m pip install --upgrade pip
