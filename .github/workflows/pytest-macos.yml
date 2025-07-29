@@ -17,14 +17,18 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Add conda to system path
+    - uses: ./
+      id: setup-miniforge
+      continue-on-error: true
+      with:
+        miniforge-version: latest
+    - name: Check arm64
+      shell: bash -el {0}
       run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+        conda install -y python
+        python -c "import platform; assert platform.machine() == 'arm64', platform.machine()"
     - name: Install dependencies
       run: |
-        brew install --cask anaconda
-        conda env update --file environment.yml --name base
         conda install pytest rasterio libgdal-core>=3.8 -c conda-forge
         python -m pip install --upgrade pip
         python -m pip install .
