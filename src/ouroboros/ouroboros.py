@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import warnings
+from xml.etree import ElementTree, ElementInclude
 from collections.abc import MutableMapping, MutableSequence
 from typing import Any, Iterator
 from uuid import uuid4
@@ -1030,7 +1031,67 @@ def gdf_to_fc(
         raise FileNotFoundError(gdb_path)
 
 
-# TODO list_datasets also lists raster datasets
+def get_info(gdb_path: os.PathLike | str) -> dict:
+    gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
+
+    # get all XML tags and parse
+    with open(gdbtable, "r", encoding="MacRoman") as f:
+        contents = f.read()
+    re_matches = re.findall(
+        r"(</.*?>)|(<.*?>.*?</.*?>)|(<.*?>)",
+        contents,
+    )
+    xml_tags = [r'<?xml version="1.0" encoding="UTF-8"?>']
+    for match in re_matches:
+        for item in match:
+            try:
+                item.encode("utf-8")
+                for letter in item:
+                    assert letter.isascii()
+            except (AssertionError, UnicodeEncodeError):
+                continue
+            if item != "" and not item.startswith("<?xml"):
+                xml_tags.append(item.strip())
+    xml_tags.insert(1, "<root>")
+    xml_tags.append("</root>")
+    xml_tags = "\n".join(xml_tags)
+    try:
+        et = ElementTree.fromstring(xml_tags)
+    except ElementTree.ParseError:
+        raise ElementTree.ParseError(xml_tags)
+    ElementInclude.include(et)
+
+    # assemble output
+    out = dict()
+    for elm1 in et:  # TODO use recursion
+        out_elm = {"DatasetType": str(elm1.text).strip()}
+        out_elm_name = None
+        # print("\n", elm1.tag, elm1.attrib, elm1.text)
+        for elm2 in elm1:
+            if elm2.tag == "Name":
+                out_elm_name = elm2.text
+            out_elm[elm2.tag] = str(elm2.text)
+            # print("\t", elm2.tag, elm2.attrib, elm2.text)
+            for elm3 in elm2:
+                if isinstance(out_elm[elm2.tag], str):
+                    out_elm[elm2.tag] = dict()  # noqa
+                out_elm[elm2.tag][elm3.tag] = str(elm3.text)  # noqa
+                # print("\t\t", elm3.tag, elm3.attrib, elm3.text)
+                for elm4 in elm3:
+                    if isinstance(out_elm[elm2.tag][elm3.tag], str):  # noqa
+                        out_elm[elm2.tag][elm3.tag] = dict()  # noqa
+                    out_elm[elm2.tag][elm3.tag][elm4.tag] = str(elm4.text)  # noqa
+                    # print("\t\t\t", elm4.tag, elm4.attrib, elm4.text)
+
+        elm_type = out_elm["DatasetType"].replace("esriDT", "")
+        if elm_type not in ["\n", "", None, "None"]:
+            if elm_type not in out:
+                out[elm_type] = dict()
+            out[elm_type][out_elm_name] = out_elm
+
+    return out
+
+
 def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     """
     Lists the feature datasets and feature classes contained in a geodatabase (.gdb) on disk.
@@ -1052,29 +1113,24 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
         * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
 
     """
-    gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
-
-    fcs = list_layers(gdb_path)
-    if len(fcs) == 0:  # no feature classes returns empty dict
-        return dict()
-
-    # get \feature_dataset\feature_class paths
-    with open(gdbtable, "r", encoding="MacRoman") as f:
-        contents = f.read()
-    re_matches = re.findall(
-        r"<CatalogPath>\\([a-zA-Z0-9_]+)\\([a-zA-Z0-9_]+)</CatalogPath>",
-        contents,
-    )
-
-    # assemble output
+    info = get_info(gdb_path)
     out = dict()
-    for fds, fc in re_matches:
-        if fds not in out:
-            out[fds] = list()
-        out[fds].append(fc)
-        if fc in fcs:
-            fcs.remove(fc)
-    out[None] = fcs  # remainder fcs outside of feature datasets
+    if "FeatureClass" in info:
+        for fc_name, fc in info["FeatureClass"].items():
+            split_path = fc["CatalogPath"].strip("\\").split("\\")
+            if len(split_path) == 1:
+                fds_name = None
+            else:
+                fds_name = split_path[0]
+
+            if fds_name not in out:
+                out[fds_name] = list()
+            out[fds_name].append(fc_name)
+
+    if "FeatureDataset" in info:
+        for fds_name, fds in info["FeatureDataset"].items():
+            if fds_name not in out:
+                out[fds_name] = list()
     return out
 
 
@@ -1090,19 +1146,19 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
     :rtype: list[str]
 
     """
-    # noinspection PyUnresolvedReferences
-    try:
-        return [fc[0] for fc in pyogrio.list_layers(gdb_path)]
-    except pyogrio.errors.DataSourceError:  # empty GeoDatabase
+    info = get_info(gdb_path)
+    if "FeatureClass" in info:
+        return list(info["FeatureClass"].keys())
+    else:
         return list()
 
 
-def list_rasters(gdb_path: os.PathLike | str):
-    dataset: rasterio.DatasetReader
-    with rasterio.open(gdb_path, driver="OpenFileGDB") as dataset:
-        print(dataset.name)
-        print(dataset.subdatasets)
-        return dataset.subdatasets
+def list_rasters(gdb_path: os.PathLike | str) -> list[str]:
+    info = get_info(gdb_path)
+    if "RasterDataset" in info:
+        return list(info["RasterDataset"].keys())
+    else:
+        return list()
 
 
 def raster_to_tif(

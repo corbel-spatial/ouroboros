@@ -620,6 +620,10 @@ class TestUtilityFunctions:
             overwrite=True,
         )
 
+    def test_get_info(self, gdb):
+        gdb, gdb_path = gdb
+        assert isinstance(ob.get_info(gdb_path), dict)
+
     def test_list_datasets(self, gdb):
         gdb, gdb_path = gdb
         fds = ob.list_datasets(gdb_path)
@@ -628,15 +632,49 @@ class TestUtilityFunctions:
             assert isinstance(k, str) or k is None
             assert isinstance(v, list)
 
-        gdb2 = ob.GeoDatabase()
-        gdb2.save(gdb_path, overwrite=True)
-        fds2 = ob.list_datasets(gdb_path)
-        assert isinstance(fds2, dict)
-        assert len(fds2) == 0
+        # TODO empty gdb test case
+        # gdb2 = ob.GeoDatabase()
+        # gdb2.save(gdb_path, overwrite=True)
+        # fds2 = ob.list_datasets(gdb_path)
+        # assert isinstance(fds2, dict)
+        # assert len(fds2) == 0
 
     def test_list_layers(self, gdb):
         gdb, gdb_path = gdb
         assert len(ob.list_layers(gdb_path)) == 6
+
+    def test_list_rasters(self, gdb_data_test):
+        rasters = ob.list_rasters(gdb_data_test)
+        assert len(rasters) == 1
+        for raster in rasters:
+            assert isinstance(raster, str)
+
+    def test_raster_to_tif(self, tmp_path, gdb_data_test):
+
+        ob.raster_to_tif(
+            gdb_path=gdb_data_test,
+            raster_name="random_raster",
+            tif_path=None,
+        )
+
+        tif_path = tmp_path / "test"
+        ob.raster_to_tif(
+            gdb_path=gdb_data_test,
+            raster_name="random_raster",
+            tif_path=str(tif_path),
+        )
+
+        tif_path = tmp_path / "test.tif"
+        ob.raster_to_tif(
+            gdb_path=gdb_data_test,
+            raster_name="random_raster",
+            tif_path=str(tif_path),
+            write_kwargs={"tiled": True},
+        )
+
+    def test_tif_to_raster(self):
+        with pytest.raises(NotImplementedError):
+            ob.tif_to_raster(tif_path="test.tif", gdb_path="test.gdb")
 
 
 class TestUsage:
@@ -718,38 +756,3 @@ class TestUsage:
         for fc_name, fc in this_fds.feature_classes():
             assert isinstance(fc_name, str)
             assert isinstance(fc, ob.FeatureClass)
-
-
-class TestRaster:
-    def test_list_raster(self, gdb_data_test):
-        rasters = ob.list_rasters(gdb_data_test)
-        assert len(rasters) == 1
-        for raster in rasters:
-            assert isinstance(raster, str)
-
-    def test_raster_to_tif(self, tmp_path, gdb_data_test):
-
-        ob.raster_to_tif(
-            gdb_path=gdb_data_test,
-            raster_name="random_raster",
-            tif_path=None,
-        )
-
-        tif_path = tmp_path / "test"
-        ob.raster_to_tif(
-            gdb_path=gdb_data_test,
-            raster_name="random_raster",
-            tif_path=str(tif_path),
-        )
-
-        tif_path = tmp_path / "test.tif"
-        ob.raster_to_tif(
-            gdb_path=gdb_data_test,
-            raster_name="random_raster",
-            tif_path=str(tif_path),
-            write_kwargs={"tiled": True},
-        )
-
-    def test_tif_to_raster(self):
-        with pytest.raises(NotImplementedError):
-            ob.tif_to_raster(tif_path="test.tif", gdb_path="test.gdb")

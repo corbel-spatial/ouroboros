@@ -24,7 +24,7 @@ Simply do a standard Python package installation in a terminal via **pip**::
 ArcGIS Pro
 ..........
 
-To install in the default ArcGIS Pro conda environment, run the above command in the
+To install in an ArcGIS Pro conda environment, run the above command in the
 `Python Command Prompt <https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt>`__,
 which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
 
