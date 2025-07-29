@@ -4,8 +4,7 @@ on:
   push:
     branches: [ "main" ]
 jobs:
-  pytest-macos:
-    name: (os=${{ matrix.os }})
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -26,4 +25,4 @@ jobs:
           python -m pip install .
       - name: Test with pytest
         run: |
-          pytest ./tests/tests.py
+          python -m pytest ./tests/tests.py
