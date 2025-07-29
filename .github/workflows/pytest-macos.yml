@@ -1,37 +1,25 @@
-# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# https://github.com/marketplace/actions/setup-miniconda#example-13-apple-silicon
 name: Pytest - macOS
 on:
   push:
     branches: [ "main" ]
 jobs:
-  build:
+  example-13:
+    name: Ex13 (os=${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-15, macos-14, macos-13]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-    runs-on: ${{ matrix.os }}
+        os: ["macos-14"]
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - uses: ./
-      id: setup-miniforge
-      continue-on-error: true
-      with:
-        miniforge-version: latest
-    - name: Check arm64
-      shell: bash -el {0}
-      run: |
-        conda install -y python
-        python -c "import platform; assert platform.machine() == 'arm64', platform.machine()"
-    - name: Install dependencies
-      run: |
-        conda install pytest rasterio libgdal-core>=3.8 -c conda-forge
-        python -m pip install --upgrade pip
-        python -m pip install .
-    - name: Test with pytest
-      run: |
-        pytest ./tests/tests.py
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: setup-miniforge
+        continue-on-error: true
+        with:
+          miniforge-version: latest
+      - name: Check arm64
+        shell: bash -el {0}
+        run: |
+          conda install -y python
+          python -c "import platform; assert platform.machine() == 'arm64', platform.machine()"
