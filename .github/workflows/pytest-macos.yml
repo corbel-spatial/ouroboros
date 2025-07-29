@@ -23,7 +23,8 @@ jobs:
         shell: bash -el {0}
         run: |
           conda activate test
-          conda install .
+          conda install pytest rasterio
+          pip install .
       - name: Test with pytest
         run: |
           conda activate test
