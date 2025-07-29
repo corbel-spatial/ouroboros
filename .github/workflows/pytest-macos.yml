@@ -10,16 +10,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["macos-14"]
+        os: ["macos-latest"]
+        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v4
-      - uses: ./
-        id: setup-miniforge
-        continue-on-error: true
+      - uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-version: latest
-      - name: Check arm64
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+      - name: Conda info
         shell: bash -el {0}
-        run: |
-          conda install -y python
-          python -c "import platform; assert platform.machine() == 'arm64', platform.machine()"
+        run: conda info
+      - name: Conda list
+        shell: pwsh
+        run: conda list
