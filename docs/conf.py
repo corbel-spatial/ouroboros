@@ -33,6 +33,7 @@ intersphinx_mapping = {
     # "geojson": ("https://geojson.readthedocs.io/en/latest/", None),
     "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable/", None),
+    "rasterio": ("https://rasterio.readthedocs.io/en/stable/", None),
 }
 intersphinx_disabled_domains = ["std"]
 
@@ -45,10 +46,10 @@ html_theme_options = {
     "show_nav_level": 2,
     "navigation_depth": 2,
     "show_toc_level": 2,
-    # "external_links": [
-    #     {"name": "GitHub", "url": "https://github.com/corbel-spatial/ouroboros"},
-    #     {"name": "PyPI", "url": "https://pypi.org/project/ouroboros-gis/"},
-    # ],
+    "external_links": [
+        {"name": "GitHub", "url": "https://github.com/corbel-spatial/ouroboros"},
+        # {"name": "PyPI", "url": "https://pypi.org/project/ouroboros-gis/"},
+    ],
 }
 
 html_sidebars = {

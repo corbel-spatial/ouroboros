@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta7
+
+- conda-forge distribution
+- Pass kwargs to the GeoTIFF write operation
+- Added get_info() and list_rasters() utility functions
+
 ## 1.0.0-beta6
 
 - Added a utility function for exporting raster datasets to GeoTIFF

@@ -8,3 +8,5 @@ User Guide
    notebooks/fc_conversions
    notebooks/geoprocessing
    notebooks/pyarrow_demo
+
+These pages can also be downloaded as Jupyter notebooks `here <https://github.com/corbel-spatial/ouroboros/tree/main/docs/notebooks>`__.

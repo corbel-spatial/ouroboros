@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import warnings
+from xml.etree import ElementTree, ElementInclude
 from collections.abc import MutableMapping, MutableSequence
 from typing import Any, Iterator
 from uuid import uuid4
@@ -1030,7 +1031,85 @@ def gdf_to_fc(
         raise FileNotFoundError(gdb_path)
 
 
-# TODO list_datasets also lists raster datasets
+def get_info(gdb_path: os.PathLike | str) -> dict:
+    """
+    Return a dictionary view of the contents of a geodatabase on disk.
+
+    The contents and their metadata are read directly from the ``a00000004.gdbtable`` file
+    in the geodatabase.
+
+    :param gdb_path: Path to the geodatabase
+    :type gdb_path: os.PathLike | str
+    :return: A dictionary where keys represent dataset types, and values are nested
+        dictionaries with dataset names and their corresponding metadata.
+    :rtype: dict
+
+    Reference:
+        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
+
+    """
+    gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
+
+    # get all XML tags and parse
+    with open(gdbtable, "r", encoding="MacRoman") as f:
+        contents = f.read()
+    re_matches = re.findall(
+        r"(</.*?>)|(<.*?>.*?</.*?>)|(<.*?>)",
+        contents,
+    )
+    xml_tags = [r'<?xml version="1.0" encoding="UTF-8"?>']
+    for match in re_matches:
+        for item in match:
+            try:
+                # catch and ignore bad tags
+                item.encode("utf-8")
+                for letter in item:
+                    assert letter.isascii()
+                assert "\\x" not in item
+            except (AssertionError, UnicodeEncodeError):
+                continue
+            if item != "" and not item.startswith("<?xml"):
+                xml_tags.append(item.strip())
+    xml_tags.insert(1, "<root>")
+    xml_tags.append("</root>")
+    xml_tags = "\n".join(xml_tags)
+    try:
+        et = ElementTree.fromstring(xml_tags)
+    except ElementTree.ParseError as e:
+        raise ElementTree.ParseError((e, xml_tags))
+    ElementInclude.include(et)
+
+    # assemble output
+    out = dict()
+    for elm1 in et:
+        out_elm = {"DatasetType": str(elm1.text).strip()}
+        out_elm_name = None
+        # print("\n", elm1.tag, elm1.attrib, elm1.text)
+        for elm2 in elm1:
+            if elm2.tag == "Name":
+                out_elm_name = elm2.text
+            out_elm[elm2.tag] = str(elm2.text)
+            # print("\t", elm2.tag, elm2.attrib, elm2.text)
+            for elm3 in elm2:
+                if isinstance(out_elm[elm2.tag], str):
+                    out_elm[elm2.tag] = dict()  # noqa
+                out_elm[elm2.tag][elm3.tag] = str(elm3.text)  # noqa
+                # print("\t\t", elm3.tag, elm3.attrib, elm3.text)
+                for elm4 in elm3:
+                    if isinstance(out_elm[elm2.tag][elm3.tag], str):  # noqa
+                        out_elm[elm2.tag][elm3.tag] = dict()  # noqa
+                    out_elm[elm2.tag][elm3.tag][elm4.tag] = str(elm4.text)  # noqa
+                    # print("\t\t\t", elm4.tag, elm4.attrib, elm4.text)
+
+        elm_type = out_elm["DatasetType"].replace("esriDT", "")
+        if elm_type not in ["\n", "", None, "None"]:
+            if elm_type not in out:
+                out[elm_type] = dict()
+            out[elm_type][out_elm_name] = out_elm
+
+    return out
+
+
 def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
     """
     Lists the feature datasets and feature classes contained in a geodatabase (.gdb) on disk.
@@ -1047,34 +1126,25 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
              classes without a dataset) and lists of feature classes as values
     :rtype: dict[str | None, list[str]]
 
-    References:
-        * https://gdal.org/en/stable/drivers/vector/openfilegdb.html
-        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
-
     """
-    gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
-
-    fcs = list_layers(gdb_path)
-    if len(fcs) == 0:  # no feature classes returns empty dict
-        return dict()
-
-    # get \feature_dataset\feature_class paths
-    with open(gdbtable, "r", encoding="MacRoman") as f:
-        contents = f.read()
-    re_matches = re.findall(
-        r"<CatalogPath>\\([a-zA-Z0-9_]+)\\([a-zA-Z0-9_]+)</CatalogPath>",
-        contents,
-    )
-
-    # assemble output
+    info = get_info(gdb_path)
     out = dict()
-    for fds, fc in re_matches:
-        if fds not in out:
-            out[fds] = list()
-        out[fds].append(fc)
-        if fc in fcs:
-            fcs.remove(fc)
-    out[None] = fcs  # remainder fcs outside of feature datasets
+    if "FeatureClass" in info:
+        for fc_name, fc in info["FeatureClass"].items():
+            split_path = fc["CatalogPath"].strip("\\").split("\\")
+            if len(split_path) == 1:
+                fds_name = None
+            else:
+                fds_name = split_path[0]
+
+            if fds_name not in out:
+                out[fds_name] = list()
+            out[fds_name].append(fc_name)
+
+    if "FeatureDataset" in info:
+        for fds_name, fds in info["FeatureDataset"].items():
+            if fds_name not in out:
+                out[fds_name] = list()
     return out
 
 
@@ -1090,10 +1160,29 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
     :rtype: list[str]
 
     """
-    # noinspection PyUnresolvedReferences
-    try:
-        return [fc[0] for fc in pyogrio.list_layers(gdb_path)]
-    except pyogrio.errors.DataSourceError:  # empty GeoDatabase
+    info = get_info(gdb_path)
+    if "FeatureClass" in info:
+        return list(info["FeatureClass"].keys())
+    else:
+        return list()
+
+
+def list_rasters(gdb_path: os.PathLike | str) -> list[str]:
+    """
+    Lists all raster datasets within a specified geodatabase on disk.
+
+    If the geodatabase is empty or not valid, an empty list is returned.
+
+    :param gdb_path: The path to the geodatabase file
+    :type gdb_path: os.PathLike | str
+    :return: A list of raster datasets in the specified geodatabase file
+    :rtype: list[str]
+
+    """
+    info = get_info(gdb_path)
+    if "RasterDataset" in info:
+        return list(info["RasterDataset"].keys())
+    else:
         return list()
 
 
@@ -1101,12 +1190,16 @@ def raster_to_tif(
     gdb_path: os.PathLike | str,
     raster_name: str,
     tif_path: None | os.PathLike | str = None,
+    write_kwargs: None | dict = None,
 ):
     """
     Converts a raster stored in a File Geodatabase (GDB) to a GeoTIFF file.
 
     Reads the raster from the input GDB, including masking data, and saves it as a GeoTIFF
     file at the specified output path.
+
+    Wraps the rasterio.open() function for read/write. Additional Rasterio/GDAL keyword arguments
+    can be passed to the write operation.
 
     :param gdb_path: The path to the input geodatabase file containing the raster
     :type gdb_path: os.PathLike | str
@@ -1116,10 +1209,14 @@ def raster_to_tif(
         provided, the output GeoTIFF file will be saved with the same name as the raster
         in the GDB directory. Defaults to None.
     :type tif_path: None | os.PathLike | str
+    :param write_kwargs: Additional keyword arguments for writing the GeoTIFF file
+    :type write_kwargs: dict
+
+    :raises RuntimeError: If the OpenFileGDB driver is not available in Rasterio
     """
     if "gdb" not in rasterio.drivers.raster_driver_extensions():
         raise RuntimeError(
-            "This rasterio installation does not support the OpenFileGDB driver\n"
+            "This Rasterio installation does not support the OpenFileGDB driver\n"
             "See installation documentation: https://ouroboros-gis.readthedocs.io/en/latest/installation.html"
         )
 
@@ -1136,13 +1233,11 @@ def raster_to_tif(
         mask = dataset.dataset_mask()
         img = dataset.read()
         meta = dataset.meta
+        if write_kwargs:
+            meta.update(write_kwargs)
         meta["driver"] = "GTiff"
 
-        with rasterio.open(
-            fp=tif_path,
-            mode="w",
-            **meta,
-        ) as tif:
+        with rasterio.open(fp=tif_path, mode="w", **meta) as tif:
             tif.write(img)
             tif.write_mask(mask)
             print(f"\nSaved: {tif_path}")
