@@ -1032,6 +1032,22 @@ def gdf_to_fc(
 
 
 def get_info(gdb_path: os.PathLike | str) -> dict:
+    """
+    Return a dictionary view of the contents of a geodatabase on disk.
+
+    The contents and their metadata are read directly from the ``a00000004.gdbtable`` file
+    in the geodatabase.
+
+    :param gdb_path: Path to the geodatabase
+    :type gdb_path: os.PathLike | str
+    :return: A dictionary where keys represent dataset types, and values are nested
+        dictionaries with dataset names and their corresponding metadata.
+    :rtype: dict
+
+    Reference:
+        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
+
+    """
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
 
     # get all XML tags and parse
@@ -1045,9 +1061,11 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     for match in re_matches:
         for item in match:
             try:
+                # catch and ignore bad tags
                 item.encode("utf-8")
                 for letter in item:
                     assert letter.isascii()
+                assert "\\x" not in item
             except (AssertionError, UnicodeEncodeError):
                 continue
             if item != "" and not item.startswith("<?xml"):
@@ -1057,13 +1075,13 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     xml_tags = "\n".join(xml_tags)
     try:
         et = ElementTree.fromstring(xml_tags)
-    except ElementTree.ParseError:
-        raise ElementTree.ParseError(xml_tags)
+    except ElementTree.ParseError as e:
+        raise ElementTree.ParseError((e, xml_tags))
     ElementInclude.include(et)
 
     # assemble output
     out = dict()
-    for elm1 in et:  # TODO use recursion
+    for elm1 in et:
         out_elm = {"DatasetType": str(elm1.text).strip()}
         out_elm_name = None
         # print("\n", elm1.tag, elm1.attrib, elm1.text)
@@ -1108,10 +1126,6 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
              classes without a dataset) and lists of feature classes as values
     :rtype: dict[str | None, list[str]]
 
-    References:
-        * https://gdal.org/en/stable/drivers/vector/openfilegdb.html
-        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
-
     """
     info = get_info(gdb_path)
     out = dict()
@@ -1154,6 +1168,17 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
 
 
 def list_rasters(gdb_path: os.PathLike | str) -> list[str]:
+    """
+    Lists all raster datasets within a specified geodatabase on disk.
+
+    If the geodatabase is empty or not valid, an empty list is returned.
+
+    :param gdb_path: The path to the geodatabase file
+    :type gdb_path: os.PathLike | str
+    :return: A list of raster datasets in the specified geodatabase file
+    :rtype: list[str]
+
+    """
     info = get_info(gdb_path)
     if "RasterDataset" in info:
         return list(info["RasterDataset"].keys())

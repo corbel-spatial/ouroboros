@@ -18,7 +18,7 @@ import ouroboros as ob
 SAMPLES = 1000
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def gdb_path(tmp_path_factory):
     gdb_path = tmp_path_factory.mktemp("test") / "test.gdb"
     return str(gdb_path)
@@ -67,7 +67,7 @@ def gdf_lines(gdf_polygons):
 
 
 @pytest.fixture
-def gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
+def ob_gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
     gdb = ob.GeoDatabase()
     gdb["test_points1"] = ob.FeatureClass(gdf_points)
     gdb["test_lines1"] = ob.FeatureClass(gdf_lines)
@@ -84,23 +84,25 @@ def gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
 
 
 @pytest.fixture
-def gdb_data_test(tmp_path):
+def esri_gdb(tmp_path):
     gdb_path = os.path.abspath(os.path.join(".", "tests", "test_data.gdb.zip"))
     zf = zipfile.ZipFile(gdb_path, "r")
     zf.extractall(tmp_path)
     return os.path.join(tmp_path, "test_data.gdb")
 
 
-def test_gdb_fixture(gdb):
-    gdb, gdb_path = gdb
-    assert isinstance(gdb, ob.GeoDatabase)
-    for fds_name, fds in gdb.items():
-        assert isinstance(fds_name, str) or fds_name is None
-        assert isinstance(fds, ob.FeatureDataset)
+def test_gdb_fixtures(ob_gdb, esri_gdb):
+    gdb, gdb_path = ob_gdb
 
-        for fc_name, fc in fds.items():
-            assert isinstance(fc_name, str)
-            assert isinstance(fc, ob.FeatureClass)
+    for this_gdb in [gdb, ob.GeoDatabase(esri_gdb)]:
+        assert isinstance(this_gdb, ob.GeoDatabase)
+        for fds_name, fds in this_gdb.items():
+            assert isinstance(fds_name, str) or fds_name is None
+            assert isinstance(fds, ob.FeatureDataset)
+
+            for fc_name, fc in fds.items():
+                assert isinstance(fc_name, str)
+                assert isinstance(fc, ob.FeatureClass)
 
 
 class TestFeatureClass:
@@ -359,8 +361,8 @@ class TestFeatureClass:
 
 
 class TestFeatureDataset:
-    def test_instantiate(self, gdb):
-        gdb, gdb_path = gdb
+    def test_instantiate(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds_name, fds in gdb.items():
             assert isinstance(fds_name, str) or fds_name is None
             assert isinstance(fds, ob.FeatureDataset)
@@ -371,16 +373,16 @@ class TestFeatureDataset:
 
         fds = ob.FeatureDataset("EPSG:4326")
 
-    def test_delitem(self, gdb):
-        gdb, gdb_path = gdb
+    def test_delitem(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds in gdb.values():
             fcs = fds.feature_classes()
             for fc_name, fc in fcs:
                 del fds[fc_name]
             assert len(fds) == 0
 
-    def test_getitem(self, gdb):
-        gdb, gdb_path = gdb
+    def test_getitem(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds in gdb.values():
             fc_names = fds.keys()
             for fc_name in fc_names:
@@ -389,19 +391,19 @@ class TestFeatureDataset:
             with pytest.raises(IndexError):
                 f = fds[999]
 
-    def test_iter(self, gdb):
-        gdb, gdb_path = gdb
+    def test_iter(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds in gdb.values():
             for fc_name in fds:
                 assert isinstance(fds[fc_name], ob.FeatureClass)
 
-    def test_len(self, gdb):
-        gdb, gdb_path = gdb
+    def test_len(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds in gdb.values():
             assert len(fds) == 3
 
-    def test_setitem(self, gdb):
-        gdb, gdb_path = gdb
+    def test_setitem(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         with pytest.raises(KeyError):
             fds: ob.FeatureDataset
             for fds in gdb.values():
@@ -435,15 +437,15 @@ class TestFeatureDataset:
             with pytest.raises(ValueError):
                 fds.__setitem__("bad!@#$", ob.FeatureClass())
 
-    def test_feature_classes(self, gdb):
-        gdb, gdb_path = gdb
+    def test_feature_classes(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds in gdb.values():
             for fc_name, fc in fds.feature_classes():
                 assert isinstance(fc_name, str)
                 assert isinstance(fc, ob.FeatureClass)
 
-    def test_crs(self, gdb):
-        gdb, gdb_path = gdb
+    def test_crs(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for idx, fds in enumerate(gdb.values()):
             test_fc = ob.FeatureClass()
             with pytest.raises(AttributeError):
@@ -456,16 +458,16 @@ class TestFeatureDataset:
 
 
 class TestGeoDatabase:
-    def test_instantiate(self, gdb):
-        gdb, gdb_path = gdb
+    def test_instantiate(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         assert isinstance(gdb, ob.GeoDatabase)
 
         gdb2 = ob.GeoDatabase(gdb_path)
         assert len(gdb2.feature_datasets()) == 2
         assert len(gdb2.feature_classes()) == 6
 
-    def test_delitem(self, gdb):
-        gdb, gdb_path = gdb
+    def test_delitem(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
 
         for fds_name, fds in gdb.feature_datasets():
             for fc_name, fc in gdb.feature_classes():
@@ -479,8 +481,8 @@ class TestGeoDatabase:
 
         assert len(gdb) == 0
 
-    def test_getitem(self, gdb):
-        gdb, gdb_path = gdb
+    def test_getitem(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds_name, fds in gdb.feature_datasets():
             for fc_name, fc in fds.feature_classes():
                 assert isinstance(gdb[fds_name][fc_name], ob.FeatureClass)
@@ -501,21 +503,21 @@ class TestGeoDatabase:
         fc = gdb["test_points1"]
         assert isinstance(fc, ob.FeatureClass)
 
-    def test_hash(self, gdb):
-        gdb, gdb_path = gdb
+    def test_hash(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         assert isinstance(gdb.__hash__(), int)
 
-    def test_iter(self, gdb):
-        gdb, gdb_path = gdb
+    def test_iter(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for gdf_name in gdb:
             assert isinstance(gdf_name, str) or gdf_name is None
 
-    def test_len(self, gdb):
-        gdb, gdb_path = gdb
+    def test_len(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         assert len(gdb) == 6
 
-    def test_setitem(self, gdb):
-        gdb, gdb_path = gdb
+    def test_setitem(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         new_gdb = ob.GeoDatabase()
         for fds_name, fds in gdb.feature_datasets():
             new_gdb[fds_name] = fds
@@ -526,20 +528,20 @@ class TestGeoDatabase:
             # noinspection PyTypeChecker
             gdb["bad"] = 99
 
-    def test_feature_classes(self, gdb):
-        gdb, gdb_path = gdb
+    def test_feature_classes(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fc_name, fc in gdb.feature_classes():
             assert isinstance(fc_name, str)
             assert isinstance(fc, ob.FeatureClass)
 
-    def test_feature_datasets(self, gdb):
-        gdb, gdb_path = gdb
+    def test_feature_datasets(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fds_name, fds in gdb.feature_datasets():
             assert isinstance(fds_name, str) or fds_name is None
             assert isinstance(fds, ob.FeatureDataset)
 
-    def test_save(self, tmp_path, gdb):
-        gdb, gdb_path = gdb
+    def test_save(self, tmp_path, ob_gdb):
+        gdb, gdb_path = ob_gdb
         out_path = tmp_path / "out.gdb"
         gdb.save(out_path, overwrite=False)
         assert len(ob.list_layers(out_path)) > 0
@@ -556,8 +558,8 @@ class TestGeoDatabase:
 
 
 class TestUtilityFunctions:
-    def test_delete_fc(self, gdb):
-        gdb, gdb_path = gdb
+    def test_delete_fc(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         fcs = ob.list_layers(gdb_path)
         count = len(fcs)
         for fc_name in fcs:
@@ -570,8 +572,8 @@ class TestUtilityFunctions:
             # noinspection PyTypeChecker
             ob.delete_fc(gdb_path, 0)
 
-    def test_fc_to_gdf(self, gdb):
-        gdb, gdb_path = gdb
+    def test_fc_to_gdf(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         for fc in ob.list_layers(gdb_path):
             gdf = ob.fc_to_gdf(gdb_path, fc)
             assert isinstance(gdf, gpd.GeoDataFrame)
@@ -579,8 +581,8 @@ class TestUtilityFunctions:
             # noinspection PyTypeChecker
             ob.fc_to_gdf(gdb_path, 0)
 
-    def test_gdf_to_fc(self, gdb):
-        gdb, gdb_path = gdb
+    def test_gdf_to_fc(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         count = 0
         for fds in gdb.values():
             for fc_name, fc in fds.items():
@@ -620,53 +622,62 @@ class TestUtilityFunctions:
             overwrite=True,
         )
 
-    def test_get_info(self, gdb):
-        gdb, gdb_path = gdb
+    def test_get_info(self, ob_gdb, esri_gdb):
+        gdb, gdb_path = ob_gdb
         assert isinstance(ob.get_info(gdb_path), dict)
+        assert isinstance(ob.get_info(esri_gdb), dict)
 
-    def test_list_datasets(self, gdb):
-        gdb, gdb_path = gdb
-        fds = ob.list_datasets(gdb_path)
-        assert len(fds) == 2
-        for k, v in fds.items():
+    def test_list_datasets(self, ob_gdb, esri_gdb):
+        gdb, gdb_path = ob_gdb
+        fds1 = ob.list_datasets(gdb_path)
+        assert len(fds1) == 2
+        for k, v in fds1.items():
             assert isinstance(k, str) or k is None
             assert isinstance(v, list)
 
-        # TODO empty gdb test case
-        # gdb2 = ob.GeoDatabase()
-        # gdb2.save(gdb_path, overwrite=True)
-        # fds2 = ob.list_datasets(gdb_path)
-        # assert isinstance(fds2, dict)
-        # assert len(fds2) == 0
+        for fc in ob.list_layers(gdb_path):
+            ob.delete_fc(gdb_path, fc)
+        fds2 = ob.list_datasets(gdb_path)
+        print(fds2)
+        assert isinstance(fds2, dict)
+        assert len(fds2) == 1
 
-    def test_list_layers(self, gdb):
-        gdb, gdb_path = gdb
+        fds3 = ob.list_datasets(esri_gdb)
+        assert isinstance(fds3, dict)
+        assert len(fds3) == 0
+
+    def test_list_layers(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
         assert len(ob.list_layers(gdb_path)) == 6
 
-    def test_list_rasters(self, gdb_data_test):
-        rasters = ob.list_rasters(gdb_data_test)
+    def test_list_rasters(self, ob_gdb, esri_gdb):
+        rasters = ob.list_rasters(esri_gdb)
         assert len(rasters) == 1
         for raster in rasters:
             assert isinstance(raster, str)
 
-    def test_raster_to_tif(self, tmp_path, gdb_data_test):
+        gdb, gdb_path = ob_gdb
+        rasters = ob.list_rasters(gdb_path)
+        assert len(rasters) == 0
+
+    def test_raster_to_tif(self, tmp_path, esri_gdb):
 
         ob.raster_to_tif(
-            gdb_path=gdb_data_test,
+            gdb_path=esri_gdb,
             raster_name="random_raster",
             tif_path=None,
         )
 
         tif_path = tmp_path / "test"
         ob.raster_to_tif(
-            gdb_path=gdb_data_test,
+            gdb_path=esri_gdb,
             raster_name="random_raster",
             tif_path=str(tif_path),
         )
 
         tif_path = tmp_path / "test.tif"
         ob.raster_to_tif(
-            gdb_path=gdb_data_test,
+            gdb_path=esri_gdb,
             raster_name="random_raster",
             tif_path=str(tif_path),
             write_kwargs={"tiled": True},
@@ -731,8 +742,8 @@ class TestUsage:
             # noinspection PyTypeChecker
             gdb1["fds1"]["bad"]["fc_1"] = fc1
 
-    def test_iters(self, gdb):
-        gdb, gdb_path = gdb
+    def test_iters(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
 
         for fds_name, fds in gdb.items():
             for fc_name, fc in fds.items():

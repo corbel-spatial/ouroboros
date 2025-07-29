@@ -4,6 +4,7 @@
 
 - conda-forge distribution
 - Pass kwargs to the GeoTIFF write operation
+- Added get_info() and list_rasters() utility functions
 
 ## 1.0.0-beta6
 
