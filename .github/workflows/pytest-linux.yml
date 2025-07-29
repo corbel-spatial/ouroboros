@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
          os: [ubuntu-latest]
-         python-version: ["3.13"]
+         python-version: ["3.10", "3.11", "3.12", "3.13"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda activate test
-          conda install pytest rasterio "libgdal>=3.8" -c conda-forge
+          conda install pytest rasterio "libgdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" -c conda-forge
       - name: Install pip dependencies
         shell: bash -el {0}
         run: |
