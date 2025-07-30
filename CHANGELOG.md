@@ -1,8 +1,16 @@
 # Changelog
 
+## 1.0.0 (planned)
+
+- Release on conda-forge
+
+## 1.0.0-beta8
+
+- Added TODO.md list for long-term goals
+- Removed Rasterio and Fiona dependencies, instead using GDAL directly
+
 ## 1.0.0-beta7
 
-- conda-forge distribution set up
 - Pass kwargs to the GeoTIFF write operation
 - Added get_info() and list_rasters() utility functions
 - Docs additions and updates
