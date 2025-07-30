@@ -108,7 +108,7 @@ class FeatureClass(MutableSequence):
             [self._data.iloc[: index - 1], self._data.iloc[index:]]
         ).reset_index(drop=True)
 
-    def __getitem__(
+    def __getitem__(  # TODO return FeatureClass
         self, index: "int | slice | Sequence[int | slice]"
     ) -> gpd.GeoDataFrame:
         """
@@ -221,6 +221,16 @@ class FeatureClass(MutableSequence):
 
         """
         self.insert(-1, value)
+
+    def calculate(self, column, expression):  # TODO
+        """
+        Field calculator style operation on a column
+
+        Use column names in quotes to use them in expressions
+
+        If column doesn't exist it will be created
+        """
+        raise NotImplementedError
 
     def clear(self) -> None:
         """
@@ -405,6 +415,14 @@ class FeatureClass(MutableSequence):
             feature_dataset=feature_dataset,
             overwrite=overwrite,
         )
+
+    def select_columns(self, columns, geometry=True):  # TODO
+        """Return feature class of selected columns, optionally drop geometry column."""
+        raise NotImplementedError
+
+    def select_rows(self, field_name, where_clause):  # TODO
+        """SQL style filtering, return FeatureClass"""
+        raise NotImplementedError
 
     def sort(
         self,

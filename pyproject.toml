@@ -1,5 +1,5 @@
 [project]
-version = "1.0.0b7"
+version = "1.0.0b8"
 name = "ouroboros-gis"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
@@ -40,7 +40,7 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
-docs = ["jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
+docs = ["jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook", "opencv-python",
         "pydata-sphinx-theme", "sphinx", "sphinx-copybutton", "sphinx-rtd-theme"]
 lint = ["black"]
 test = ["pytest", "coverage", "pytest-xdist"]
