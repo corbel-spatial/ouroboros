@@ -8,7 +8,7 @@ dependencies = [
     "gdal>=3.8",
     "geoarrow-pyarrow",
     "geojson",
-    "geopandas",
+    "geopandas"
 ]
 description = "Towards more pythonic use of GeoDatabases"
 readme = "README.md"
@@ -40,7 +40,7 @@ changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 [dependency-groups]
 docs = ["jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
         "pydata-sphinx-theme", "sphinx", "sphinx-copybutton"]  # docs also require pandoc: https://pandoc.org/installing.html
-lint = ["black"]
+lint = ["black", "pandas-stubs", "pylint"]
 test = ["coverage", "pytest", "pytest-xdist"]
 dev = [
     { include-group = "docs" },
