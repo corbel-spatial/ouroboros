@@ -1077,11 +1077,16 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     """
     fc_info = {fc: pyogrio.read_info(gdb_path, fc) for fc in list_layers(gdb_path)}
 
-    fds_info = {  # TODO get feature dataset spatial ref from gdbtable
-        ds: None for ds in list_datasets(gdb_path).keys()
+    fds_info = {
+        ds: {"contents": list(fcs)} for ds, fcs in list_datasets(gdb_path).items()
     }
+    # remove placeholder None dataset
     if None in fds_info:
         del fds_info[None]
+    # get crs of the first feature class
+    for ds_name, ds_info in fds_info.items():
+        if len(ds_info["contents"]) >= 1:
+            ds_info["crs"] = fc_info[ds_info["contents"][0]]["crs"]
 
     result = {"FeatureClass": fc_info, "FeatureDataset": fds_info}
 
@@ -1089,13 +1094,18 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     if gdal_installed:
         for raster_name in list_rasters(gdb_path):
             raster: gdal.Dataset
-            with gdal.Open(
-                f"OpenFileGDB:{gdb_path}:{raster_name}"  # TODO add more GDAL info
-            ) as raster:
+            with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
                 raster_info[raster_name] = {
+                    "block_size": raster.GetRasterBand(1).GetBlockSize(),
                     "crs": f"EPSG:{CRS(raster.GetProjectionRef()).to_epsg()}",
+                    "category_names": raster.GetRasterBand(1).GetRasterCategoryNames(),
+                    "color_interpretation": raster.GetRasterBand(
+                        1
+                    ).GetRasterColorInterpretation(),
                     "dataset_metadata": raster.GetMetadata_Dict(),
+                    "nodata_value": raster.GetRasterBand(1).GetNoDataValue(),
                     "raster_count": raster.RasterCount,
+                    "unit": raster.GetRasterBand(1).GetUnitType(),
                     "x_size": raster.RasterXSize,
                     "y_size": raster.RasterYSize,
                 }
