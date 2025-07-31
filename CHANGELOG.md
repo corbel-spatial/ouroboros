@@ -3,11 +3,15 @@
 ## 1.0.0 (planned)
 
 - Release on conda-forge
+- Add data manipulation methods to help with feature class processing
+- Provide more details with get_info()
 
 ## 1.0.0-beta8
 
-- Added TODO.md list for long-term goals
 - Removed Rasterio dependency, instead using GDAL directly
+- GDAL raster support by default in conda, optional in pip install
+- Dev environment setup/test/build batch scripts
+- Added TODO.md list for long-term goals
 
 ## 1.0.0-beta7
 

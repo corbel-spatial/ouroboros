@@ -672,27 +672,27 @@ class TestUtilityFunctions:
         assert len(rasters) == 0
 
     def test_raster_to_tif(self, tmp_path, esri_gdb):
+        if ob.gdal_installed:
+            ob.raster_to_tif(
+                gdb_path=esri_gdb,
+                raster_name="random_raster",
+                tif_path=None,
+            )
 
-        ob.raster_to_tif(
-            gdb_path=esri_gdb,
-            raster_name="random_raster",
-            tif_path=None,
-        )
+            tif_path = tmp_path / "test"
+            ob.raster_to_tif(
+                gdb_path=esri_gdb,
+                raster_name="random_raster",
+                tif_path=str(tif_path),
+            )
 
-        tif_path = tmp_path / "test"
-        ob.raster_to_tif(
-            gdb_path=esri_gdb,
-            raster_name="random_raster",
-            tif_path=str(tif_path),
-        )
-
-        tif_path = tmp_path / "test.tif"
-        ob.raster_to_tif(
-            gdb_path=esri_gdb,
-            raster_name="random_raster",
-            tif_path=str(tif_path),
-            options={"TILED": "YES"},
-        )
+            tif_path = tmp_path / "test.tif"
+            ob.raster_to_tif(
+                gdb_path=esri_gdb,
+                raster_name="random_raster",
+                tif_path=str(tif_path),
+                options={"TILED": "YES"},
+            )
 
 
 class TestUsage:

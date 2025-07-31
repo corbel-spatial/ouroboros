@@ -11,7 +11,6 @@ Project Pages
 Core Dependencies
 -----------------
 * `GeoPandas <https://geopandas.org>`__
-* `Rasterio <https://rasterio.readthedocs.io>`__
 * `GDAL OpenFileGDB Vector Driver <https://gdal.org/en/stable/drivers/vector/openfilegdb.html>`__
 * `GDAL OpenFileGDB Raster Driver <https://gdal.org/en/stable/drivers/raster/openfilegdb.html>`__
 * `Fiona <https://fiona.readthedocs.io>`__

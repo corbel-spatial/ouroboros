@@ -33,7 +33,7 @@ GOTO :EOF
 SETLOCAL
 ECHO %m% Create %env_name% %m%
 CALL :acceptTOS
-CALL %conda% create -n %env_name% python=3.13 conda-build conda-index "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" -c conda-forge -y
+CALL %conda% create -n %env_name% python=3.13 conda-build conda-index "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" uv -c conda-forge -y
 ENDLOCAL
 GOTO :EOF
 
@@ -52,8 +52,13 @@ CALL :acceptTOS
 CALL %conda% update --all -c conda-forge -y -n %env_name%
 
 ECHO %m% pip install other dependencies %m%
-CALL %conda% run -n %env_name% python -m pip install --upgrade -e . --group dev
-CALL %conda% run -n %env_name% python -m pip uninstall ouroboros-gis -y
+CALL %conda% run -n %env_name% uv pip install --upgrade -e . --group dev
+CALL %conda% run -n %env_name% uv pip uninstall ouroboros-gis
 
 ECHO %m% Set project source as an editable install %m%
 CALL %conda% run -n %env_name% conda develop .\src
+
+ECHO %m% Create venv without GDAL %m%
+IF NOT EXIST .venv CALL python -m venv .venv
+CALL .venv\Scripts\activate.bat
+CALL python -m pip install --upgrade -e . --group dev

@@ -12,19 +12,25 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pyarrow as pa
-from osgeo import gdal
+import pyogrio
 from pyogrio.errors import DataSourceError
 from pyproj.crs import CRS
 
 
+# Check for optional install of GDAL>=3.8 for raster support
 try:
-    import osgeo  # noqa
-
+    from osgeo import gdal  # noqa # fmt: skip
     gdal_installed = True
-    gdal_version = osgeo.__version__  # TODO check GDAL version
-except ImportError:
+    gdal_version = gdal.__version__
+except ModuleNotFoundError:
     gdal_installed = False
     gdal_version = None
+if gdal_version:
+    version_split = gdal_version.split(".")
+    if int(version_split[0]) < 3 or int(version_split[1]) < 8:
+        raise ImportError(
+            "GDAL version must be >= 3.8, please upgrade to a newer version"
+        )
 
 
 class FeatureClass(MutableSequence):
@@ -910,25 +916,6 @@ class GeoDatabase(MutableMapping):
                 )
 
 
-def _open_gdb(gdb_path: os.PathLike | str, update: bool = True) -> gdal.Dataset:
-    """
-    Return an open gdal.Dataset object from the specified path.
-
-    Recommended to use a context manager::
-
-        with _open_gdb(gdb_path) as gdb:
-            lyr_count = gdb.GetLayerCount()
-
-    """
-    gdal.UseExceptions()
-    drv: gdal.Driver = gdal.GetDriverByName("OpenFileGDB")
-    if drv is None:
-        raise ImportError(
-            f"OpenFileGDB driver is not available in GDAL version {gdal.__version__}, must install GDAL >= 3.8"
-        )
-    return drv.Open(gdb_path, update=update)
-
-
 def delete_fc(
     gdb_path: os.PathLike | str,
     fc_name: str,
@@ -1088,26 +1075,33 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     :rtype: dict
 
     """
-    if gdal_installed:  # TODO get more detail from GDAL
-        result = {
-            "FeatureClass": {
-                fc: None for fc in list_layers(gdb_path)
-            },  # TODO get more detail from pyogrio
-            "FeatureDataset": {
-                ds: None for ds in list_datasets(gdb_path).keys()
-            },  # TODO remove key None
-            "RasterDataset": {ds: None for ds in list_rasters(gdb_path)},
-        }
-    else:
-        result = {
-            "FeatureClass": {
-                fc: None for fc in list_layers(gdb_path)
-            },  # TODO get more detail from pyogrio
-            "FeatureDataset": {
-                ds: None for ds in list_datasets(gdb_path).keys()
-            },  # TODO remove key None
-            "RasterDataset": {ds: None for ds in list_rasters(gdb_path)},
-        }
+    fc_info = {fc: pyogrio.read_info(gdb_path, fc) for fc in list_layers(gdb_path)}
+
+    fds_info = {  # TODO get feature dataset spatial ref from gdbtable
+        ds: None for ds in list_datasets(gdb_path).keys()
+    }
+    if None in fds_info:
+        del fds_info[None]
+
+    result = {"FeatureClass": fc_info, "FeatureDataset": fds_info}
+
+    raster_info = dict()
+    if gdal_installed:
+        for raster_name in list_rasters(gdb_path):
+            raster: gdal.Dataset
+            with gdal.Open(
+                f"OpenFileGDB:{gdb_path}:{raster_name}"  # TODO add more GDAL info
+            ) as raster:
+                raster_info[raster_name] = {
+                    "crs": f"EPSG:{CRS(raster.GetProjectionRef()).to_epsg()}",
+                    "dataset_metadata": raster.GetMetadata_Dict(),
+                    "raster_count": raster.RasterCount,
+                    "x_size": raster.RasterXSize,
+                    "y_size": raster.RasterYSize,
+                }
+
+    result["RasterDataset"] = raster_info
+
     return result
 
 

@@ -30,6 +30,9 @@ classifiers = [
 
 ]
 
+[project.optional-dependencies]
+raster = ["gdal>=3.8"]
+
 [project.urls]
 homepage = "https://pypi.org/project/ouroboros-gis/"
 documentation = "https://ouroboros-gis.readthedocs.io/en/latest/"
@@ -41,7 +44,6 @@ changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 docs = ["jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
         "pydata-sphinx-theme", "sphinx", "sphinx-copybutton"]  # docs also require pandoc: https://pandoc.org/installing.html
 lint = ["black", "pandas-stubs", "pylint"]
-raster = ["gdal>=3.8"]
 test = ["coverage", "pytest", "pytest-xdist"]
 dev = [
     { include-group = "docs" },
