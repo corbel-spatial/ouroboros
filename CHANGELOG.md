@@ -7,7 +7,7 @@
 ## 1.0.0-beta8
 
 - Added TODO.md list for long-term goals
-- Removed Rasterio and Fiona dependencies, instead using GDAL directly
+- Removed Rasterio dependency, instead using GDAL directly
 
 ## 1.0.0-beta7
 

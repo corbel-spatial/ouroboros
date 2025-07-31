@@ -5,7 +5,7 @@ authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.10"
 dependencies = [
-    "gdal>=3.8",
+    "fiona",
     "geoarrow-pyarrow",
     "geojson",
     "geopandas"
@@ -41,6 +41,7 @@ changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 docs = ["jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
         "pydata-sphinx-theme", "sphinx", "sphinx-copybutton"]  # docs also require pandoc: https://pandoc.org/installing.html
 lint = ["black", "pandas-stubs", "pylint"]
+raster = ["gdal>=3.8"]
 test = ["coverage", "pytest", "pytest-xdist"]
 dev = [
     { include-group = "docs" },

@@ -624,8 +624,13 @@ class TestUtilityFunctions:
 
     def test_get_info(self, ob_gdb, esri_gdb):
         gdb, gdb_path = ob_gdb
-        assert isinstance(ob.get_info(gdb_path), dict)
-        assert isinstance(ob.get_info(esri_gdb), dict)
+        ob_info = ob.get_info(gdb_path)
+        assert isinstance(ob_info, dict)
+        pprint(ob_info)
+
+        esri_info = ob.get_info(esri_gdb)
+        assert isinstance(esri_info, dict)
+        print(esri_info)
 
     def test_list_datasets(self, ob_gdb, esri_gdb):
         gdb, gdb_path = ob_gdb
@@ -634,13 +639,13 @@ class TestUtilityFunctions:
         for k, v in fds1.items():
             assert isinstance(k, str) or k is None
             assert isinstance(v, list)
+        print(fds1)
 
         for fc in ob.list_layers(gdb_path):
             ob.delete_fc(gdb_path, fc)
         fds2 = ob.list_datasets(gdb_path)
-        print(fds2)
         assert isinstance(fds2, dict)
-        assert len(fds2) == 1
+        assert len(fds2) == 0
 
         fds3 = ob.list_datasets(esri_gdb)
         assert isinstance(fds3, dict)
@@ -648,7 +653,9 @@ class TestUtilityFunctions:
 
     def test_list_layers(self, ob_gdb):
         gdb, gdb_path = ob_gdb
-        assert len(ob.list_layers(gdb_path)) == 6
+        lyrs = ob.list_layers(gdb_path)
+        print(lyrs)
+        assert len(lyrs) == 6
 
     def test_list_rasters(self, ob_gdb, esri_gdb):
         rasters = ob.list_rasters(esri_gdb)
@@ -680,12 +687,8 @@ class TestUtilityFunctions:
             gdb_path=esri_gdb,
             raster_name="random_raster",
             tif_path=str(tif_path),
-            write_kwargs={"tiled": True},
+            write_kwargs={"TILED": "YES"},
         )
-
-    def test_tif_to_raster(self):
-        with pytest.raises(NotImplementedError):
-            ob.tif_to_raster(tif_path="test.tif", gdb_path="test.gdb")
 
 
 class TestUsage:
