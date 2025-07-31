@@ -85,7 +85,11 @@ def ob_gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
 
 @pytest.fixture
 def esri_gdb(tmp_path):
-    gdb_path = os.path.abspath(os.path.join(".", "tests", "test_data.gdb.zip"))
+    z = os.path.join("tests", "test_data.gdb.zip")
+    if os.path.exists(os.path.join(".", z)):
+        gdb_path = os.path.abspath(os.path.join(".", z))
+    else:
+        gdb_path = os.path.abspath(os.path.join("..", z))
     zf = zipfile.ZipFile(gdb_path, "r")
     zf.extractall(tmp_path)
     return os.path.join(tmp_path, "test_data.gdb")
@@ -687,7 +691,7 @@ class TestUtilityFunctions:
             gdb_path=esri_gdb,
             raster_name="random_raster",
             tif_path=str(tif_path),
-            write_kwargs={"TILED": "YES"},
+            options={"TILED": "YES"},
         )
 
 

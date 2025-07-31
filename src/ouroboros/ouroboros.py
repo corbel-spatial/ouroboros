@@ -12,7 +12,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pyarrow as pa
-from osgeo import gdal, ogr, osr
+from osgeo import gdal
 from pyogrio.errors import DataSourceError
 from pyproj.crs import CRS
 
@@ -1081,61 +1081,34 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     """
     Return a dictionary view of the contents of a geodatabase on disk.
 
-    The contents and their metadata are read directly from the ``a00000004.gdbtable`` file
-    in the geodatabase.
-
     :param gdb_path: Path to the geodatabase
     :type gdb_path: os.PathLike | str
     :return: A dictionary where keys represent dataset types, and values are nested
         dictionaries with dataset names and their corresponding metadata.
     :rtype: dict
 
-    Reference:
-        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
-
     """
-    if gdal_installed:
-        result: dict[str, dict[str, Any]] = {
-            "FeatureClass": {},
-            "FeatureDataset": {},  # TODO
-            "RasterDataset": {},  # TODO
+    if gdal_installed:  # TODO get more detail from GDAL
+        result = {
+            "FeatureClass": {
+                fc: None for fc in list_layers(gdb_path)
+            },  # TODO get more detail from pyogrio
+            "FeatureDataset": {
+                ds: None for ds in list_datasets(gdb_path).keys()
+            },  # TODO remove key None
+            "RasterDataset": {ds: None for ds in list_rasters(gdb_path)},
         }
-
-        with _open_gdb(gdb_path) as gdb:
-            for idx in range(gdb.GetLayerCount()):
-                lyr: ogr.Layer = gdb.GetLayerByIndex(idx)
-                if lyr is None:
-                    continue
-
-                lyr_name = lyr.GetName()
-                lyr_def = lyr.GetLayerDefn()
-
-                geom_type = ogr.GeometryTypeToName(lyr_def.GetGeomType())
-
-                fields = []
-                for i in range(lyr_def.GetFieldCount()):
-                    field_defn = lyr_def.GetFieldDefn(i)
-                    fields.append(
-                        {
-                            "name": field_defn.GetName(),
-                            "type": field_defn.GetTypeName(),
-                        }
-                    )
-
-                # Determine if it's a feature class or table based on geometry presence
-                sr: osr.SpatialReference = lyr.GetSpatialRef()
-                if sr:
-                    sr = f"{sr.GetAuthorityName(None)}:{sr.GetAuthorityCode(None)}"  # noqa
-                lyr_info = {
-                    "Name": lyr_name,
-                    "Fields": fields,
-                    "Row Count": lyr.GetFeatureCount(),
-                    "Spatial Reference": sr,
-                }
-
-                result["FeatureClass"][lyr_name] = lyr_info
-
-            return result
+    else:
+        result = {
+            "FeatureClass": {
+                fc: None for fc in list_layers(gdb_path)
+            },  # TODO get more detail from pyogrio
+            "FeatureDataset": {
+                ds: None for ds in list_datasets(gdb_path).keys()
+            },  # TODO remove key None
+            "RasterDataset": {ds: None for ds in list_rasters(gdb_path)},
+        }
+    return result
 
 
 def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
@@ -1154,6 +1127,9 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
              classes without a dataset) and lists of feature classes as values
     :rtype: dict[str | None, list[str]]
 
+    Reference:
+        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
+
     """
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
 
@@ -1168,7 +1144,6 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
         r"<CatalogPath>\\([a-zA-Z0-9_]+)\\([a-zA-Z0-9_]+)</CatalogPath>",
         contents,
     )
-
     # assemble output
     out = dict()
     for fds, fc in re_matches:
@@ -1211,19 +1186,37 @@ def list_rasters(gdb_path: os.PathLike | str) -> list[str]:
     :return: A list of raster datasets in the specified geodatabase file
     :rtype: list[str]
 
+    Reference:
+        * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
+
     """
-    info = get_info(gdb_path)
-    if "RasterDataset" in info:
-        return list(info["RasterDataset"].keys())
-    else:
-        return list()
+    gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
+    fcs = list_layers(gdb_path)
+    fds = list_datasets(gdb_path)
+
+    # get \dataset paths
+    with open(gdbtable, "r", encoding="MacRoman") as f:
+        contents = f.read()
+    rasters = re.findall(
+        r"<CatalogPath>\\([a-zA-Z0-9_]+)</CatalogPath>",
+        contents,
+    )
+
+    # remove the feature classes
+    for fc in fcs:
+        if fc in rasters:
+            rasters.remove(fc)
+    for fd in fds.keys():
+        if fd in rasters:
+            rasters.remove(fd)
+    return rasters
 
 
 def raster_to_tif(
     gdb_path: os.PathLike | str,
     raster_name: str,
     tif_path: None | os.PathLike | str = None,
-    write_kwargs: None | dict = None,
+    options: None | dict = None,
 ):
     """
     Converts a raster stored in a File Geodatabase (GDB) to a GeoTIFF file.
@@ -1239,8 +1232,8 @@ def raster_to_tif(
         provided, the output GeoTIFF file will be saved with the same name as the raster
         in the GDB directory. Defaults to None.
     :type tif_path: None | os.PathLike | str
-    :param write_kwargs: Additional keyword arguments for writing the GeoTIFF file, see the documentation: https://gdal.org/en/stable/drivers/raster/gtiff.html#creation-options
-    :type write_kwargs: dict
+    :param options: Additional keyword arguments for writing the GeoTIFF file, see the documentation: https://gdal.org/en/stable/drivers/raster/gtiff.html#creation-options
+    :type options: dict
     """
     if not gdal_installed:
         raise ImportError(
@@ -1257,7 +1250,7 @@ def raster_to_tif(
     gdal.UseExceptions()
     with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
         tif_drv: gdal.Driver = gdal.GetDriverByName("GTiff")
-        if write_kwargs:
-            tif_drv.CreateCopy(tif_path, raster, strict=0, options=write_kwargs)
+        if options:
+            tif_drv.CreateCopy(tif_path, raster, strict=0, options=options)
         else:
             tif_drv.CreateCopy(tif_path, raster, strict=0)
