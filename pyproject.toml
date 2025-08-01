@@ -1,5 +1,5 @@
 [project]
-version = "1.0.0b7"
+version = "1.0.0"
 name = "ouroboros-gis"
 authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
@@ -8,9 +8,7 @@ dependencies = [
     "fiona",
     "geoarrow-pyarrow",
     "geojson",
-    "geopandas",
-    "pyarrow",
-    "rasterio"
+    "geopandas"
 ]
 description = "Towards more pythonic use of GeoDatabases"
 readme = "README.md"
@@ -32,6 +30,9 @@ classifiers = [
 
 ]
 
+[project.optional-dependencies]
+raster = ["gdal>=3.8"]
+
 [project.urls]
 homepage = "https://pypi.org/project/ouroboros-gis/"
 documentation = "https://ouroboros-gis.readthedocs.io/en/latest/"
@@ -41,9 +42,9 @@ changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 docs = ["jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
-        "pydata-sphinx-theme", "sphinx", "sphinx-copybutton", "sphinx-rtd-theme"]
-lint = ["black"]
-test = ["pytest", "coverage", "pytest-xdist"]
+        "pydata-sphinx-theme", "sphinx", "sphinx-copybutton"]  # docs also require pandoc: https://pandoc.org/installing.html
+lint = ["black", "pandas-stubs", "pylint"]
+test = ["coverage", "pytest", "pytest-xdist"]
 dev = [
     { include-group = "docs" },
     { include-group = "lint" },
@@ -56,13 +57,3 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
-
-# dev install steps
-# python -m build
-# python -m pip install -e . --group dev
-#
-# build docs
-# .\docs\make html; .\docs\make html; start .\docs\_build\html\index.html
-#
-# generate coverage
-# coverage run -m pytest .\tests\tests.py; coverage html; start .\htmlcov\index.html; coverage json -o .\docs\pytest_coverage.json  --pretty-print

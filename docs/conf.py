@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "src")))
 
 project = "ouroboros"
 copyright = "2025"
-author = "Corbel"
+author = "Peter Von der Porten"
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,6 +31,10 @@ intersphinx_mapping = {
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
     "geopandas": ("https://geopandas.org/en/stable/", None),
     # "geojson": ("https://geojson.readthedocs.io/en/latest/", None),
+    "pandas": (
+        "https://pandas.pydata.org/pandas-docs/version/2.3/",
+        None,
+    ),
     "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable/", None),
     "rasterio": ("https://rasterio.readthedocs.io/en/stable/", None),
