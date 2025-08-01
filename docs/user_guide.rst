@@ -3,6 +3,7 @@ User Guide
 
 .. toctree::
 
+   notebooks/introduction
    notebooks/basic_usage
    notebooks/database_structure
    notebooks/fc_conversions
