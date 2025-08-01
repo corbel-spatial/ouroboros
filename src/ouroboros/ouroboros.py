@@ -438,9 +438,17 @@ class FeatureClass(MutableSequence):
             overwrite=overwrite,
         )
 
-    def select_columns(self, columns: str | Sequence[str], geometry: bool = True):
+    def select_columns(
+        self, columns: str | Sequence[str], geometry: bool = True
+    ) -> "FeatureClass":
         """
         Return a FeatureClass of only the specified columns.
+
+        :param columns: The names of the columns to select, can be a list of names or a single name
+        :type columns: str | Sequence[str]
+
+        :param geometry: Return the geometry column as well, defaults to True
+        :type geometry: bool
 
         """
         if not isinstance(columns, str):
@@ -459,12 +467,26 @@ class FeatureClass(MutableSequence):
 
         return FeatureClass(self._data[columns])
 
-    def select_rows(self, column_name, where_clause):  # TODO
+    def select_rows(self, expr: str) -> "FeatureClass":
+        # noinspection PyUnresolvedReferences
         """
-        Return a FeatureClass of the rows that match a SQL-style where clause.
+        Return a FeatureClass of the rows that match a query expression.
+
+        Wrapper for `pandas.DataFrame.query <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html>`__
+
+        :param expr: The query expression to use for filtering the rows
+        :type expr: str
+
+        Example::
+
+            fc.query("colA > colB")
+
+            ObjectID    colA    colB
+            42          10      9
+            99          201     0
 
         """
-        raise NotImplementedError
+        return FeatureClass(gpd.GeoDataFrame(self._data.query(expr, inplace=False)))
 
     def sort(
         self,

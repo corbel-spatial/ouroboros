@@ -1,14 +1,14 @@
 # Changelog
 
-## 1.0.0
+## 1.0.0 🎉
 
 - Released on conda-forge
-- Added data manipulation methods FeatureClass to help with processing
-- Provideed more details with get_info()
+- GDAL raster support by default in conda, optional in pip install
 - Removed Rasterio dependency, instead using GDAL directly
+- Added data manipulation methods FeatureClass to help with processing
 - Pass FeatureClass and FeatureDataset sequences on instantiation
 - Getter methods return dicts instead of tuples
-- GDAL raster support by default in conda, optional in pip install
+- Provided more details with get_info()
 - Dev environment setup/test/build batch scripts
 - Added TODO.md list for long-term goals
 

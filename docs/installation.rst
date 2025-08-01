@@ -16,12 +16,6 @@ In an active `conda <https://www.anaconda.com/docs/getting-started/getting-start
 
     conda install ourboros-gis -c conda-forge
 
-ArcGIS Pro
-..........
-
-To install in an ArcGIS Pro conda environment, run the above command in the
-`Python Command Prompt <https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt>`__,
-which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
 
 Pip
 ---
@@ -33,4 +27,18 @@ For vector feature class support only::
 For vector *and* raster dataset support you must have already installed `GDAL <https://gdal.org/en/stable/download.html#binaries>`__ binaries (version >= 3.8), then::
 
     python -m pip install ouroboros-gis[raster]
+
+
+ArcGIS Pro
+----------
+
+To install in an ArcGIS Pro conda environment:
+
+- Clone and activate an editable environment (`instructions here <https://pro.arcgis.com/en/pro-app/3.3/arcpy/get-started/clone-an-environment.htm>`__)
+
+- Open the `Python Command Prompt <https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt>`__, which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
+
+- Install with this command::
+
+    conda install ourboros-gis -c conda-forge --user`
 

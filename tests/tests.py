@@ -339,6 +339,13 @@ class TestFeatureClass:
         with pytest.raises(KeyError):
             bad_cols = fc1.select_columns(["bad"])
 
+    def test_select_rows(self, gdf_points):
+        fc1 = ob.FeatureClass(gdf_points)
+        rows1 = fc1.select_rows("ObjectID < 10")
+        assert len(rows1) == 10
+        rows1 = fc1.select_rows("sample1 > sample2")
+        assert len(rows1) < SAMPLES
+
     def test_sort(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         case1 = fc1[0].iat[0, 0]
