@@ -67,13 +67,10 @@ class FeatureClass(MutableSequence):
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
             self._data = src
-            self._data.index.name = "ObjectID"
         elif isinstance(src, gpd.GeoSeries):
             self._data = gpd.GeoDataFrame(geometry=src)
-            self._data.index.name = "ObjectID"
         elif isinstance(src, FeatureClass):
             self._data = src.to_geodataframe()
-            self._data.index.name = "ObjectID"
         elif isinstance(src, os.PathLike) or isinstance(src, str):  # load data from gdb
             src = os.path.abspath(src)
             split_path = src.split(os.sep)
@@ -89,6 +86,7 @@ class FeatureClass(MutableSequence):
             self._data = gpd.GeoDataFrame()
         else:
             raise TypeError(src)
+        self._data.index.name = "ObjectID"
 
         try:
             self.crs = self._data.crs
@@ -599,10 +597,9 @@ class FeatureDataset(MutableMapping):
 
         """
         if isinstance(key, int):
-            for idx, fc_obj in enumerate(self.feature_classes()):
-                fc_name, fc = fc_obj
+            for idx, fc_obj in enumerate(self.feature_classes().values()):
                 if idx == key:
-                    return fc
+                    return fc_obj
             raise IndexError(f"Index out of range: {key}")
         else:
             return self._fcs[key]
@@ -675,24 +672,13 @@ class FeatureDataset(MutableMapping):
                         f"Feature dataset CRS ({self.crs} does not match FeatureClass CRS ({value.crs})"
                     )
 
-    def feature_classes(
-        self,
-    ) -> tuple[tuple[str | None, FeatureClass], ...]:  # TODO use dicts
+    def feature_classes(self) -> dict[str, FeatureClass]:
         """
-        Return a tuple of FeatureClass objects.
-
-        This method compiles a list of all FeatureClass instances from the internal
-        mapping and returns them as a tuple of tuples. Each tuple contains
-        the FeatureClass name and its corresponding FeatureClass object.
-
-        :return: A tuple of tuples where each inner tuple consists of a FeatureClass name and its corresponding FeatureClass object
-        :rtype: tuple[tuple[str | None, FeatureClass], ...]
+        :return: Return a dict of the FeatureClass names and their objects contained by the FeatureDataset
+        :rtype: dict[str, FeatureClass]
 
         """
-        fc_list = list()
-        for fc_name, fc in self._fcs.items():
-            fc_list.append((fc_name, fc))
-        return tuple(fc_list)
+        return self._fcs
 
 
 class GeoDatabase(MutableMapping):
@@ -775,13 +761,12 @@ class GeoDatabase(MutableMapping):
         if key in self._fds:
             return self._fds[key]
         elif isinstance(key, int):
-            for idx, fc_obj in enumerate(self.feature_classes()):
-                fc_name, fc = fc_obj
+            for idx, fc_obj in enumerate(self.feature_classes().values()):
                 if idx == key:
-                    return fc
+                    return fc_obj
             raise IndexError(f"Index out of range: {key}")
         else:
-            for fc_name, fc in self.feature_classes():
+            for fc_name, fc in self.feature_classes().items():
                 if fc_name == key:
                     return fc
         raise KeyError(f"'{key}' does not exist in the GeoDatabase")
@@ -839,7 +824,10 @@ class GeoDatabase(MutableMapping):
 
         """
         if isinstance(value, FeatureClass):
-            crs = value.to_geodataframe().crs
+            try:
+                crs = value.to_geodataframe().crs
+            except AttributeError:
+                crs = None
             if None not in self._fds:
                 self._fds[None] = FeatureDataset(crs=crs)
             self._fds[None]._gdbs.add(self)
@@ -853,44 +841,25 @@ class GeoDatabase(MutableMapping):
         else:
             raise TypeError(f"Expected FeatureClass or FeatureDataset: {value}")
 
-    def feature_classes(
-        self,
-    ) -> tuple[tuple[str | None, FeatureClass], ...]:  # TODO use dicts
+    def feature_classes(self) -> dict[str, FeatureClass]:
         """
-        Return all FeatureClass objects and their names within the GeoDatabase.
-
-        This method compiles all FeatureClass objects from the GeoDatabase and returns
-        them as a tuple of tuples. Each inner tuple contains the FeatureClass name
-        and the FeatureClass object.
-
-        :return: A tuple containing all FeatureClass objects and their corresponding names
-        :rtype: tuple[tuple[str | None, FeatureClass], ...]
+        :return: A dict of the FeatureClass names and their objects contained by the GeoDatabase
+        :rtype: dict[str, FeatureClass]
 
         """
-        fc_list = list()
+        fcs = dict()
         for fds in self._fds.values():
             for fc_name, fc in fds.items():
-                fc_list.append((fc_name, fc))
-        return tuple(fc_list)
+                fcs[fc_name] = fc
+        return fcs
 
-    def feature_datasets(
-        self,
-    ) -> tuple[[str | None, FeatureDataset], ...]:  # TODO use dicts
+    def feature_datasets(self) -> dict[str, FeatureDataset]:
         """
-        Return a tuple of FeatureDataset names and their objects in the GeoDatabase.
-
-        FeatureClasses without a FeatureDataset are assigned to the FeatureDataset
-        with the key :code:None.
-
-        :returns: A tuple containing pairs where each pair consists of a FeatureDataset name
-                  and its corresponding FeatureDataset object
-        :rtype: tuple[tuple[str | None, FeatureDataset], ...]
+        :return: A dict of the FeatureDataset names and their objects contained by the GeoDatabase
+        :rtype: dict[str, FeatureDataset]
 
         """
-        fds_list = list()
-        for fds_name in self._fds:
-            fds_list.append((fds_name, self._fds[fds_name]))
-        return tuple(fds_list)
+        return self._fds
 
     def save(self, path: os.PathLike | str, overwrite: bool = False):
         """Save the current contents of the GeoDatabase to a specified geodatabase (.gdb) file.
@@ -1026,11 +995,11 @@ def gdf_to_fc(
 
     """
     if not isinstance(gdf, gpd.GeoDataFrame):
-        if isinstance(gdf, gpd.GeoSeries):
+        if isinstance(gdf, gpd.GeoSeries) or isinstance(gdf, pd.DataFrame):
             gdf = gpd.GeoDataFrame(gdf)
         else:
             raise TypeError(
-                "Input must be geopandas.GeoDataFrame or geopandas.GeoSeries"
+                f"{fc_name} data must be geopandas.GeoDataFrame or geopandas.GeoSeries"
             )
 
     layer_options = {
