@@ -3,7 +3,7 @@ import re
 import shutil
 import warnings
 from collections.abc import MutableMapping, MutableSequence
-from typing import Any, Iterator
+from typing import Any, Iterator, Sequence
 from uuid import uuid4
 
 import fiona
@@ -538,11 +538,19 @@ class FeatureDataset(MutableMapping):
 
     """
 
-    def __init__(self, crs: Any | CRS = None, enforce_crs: bool = True):
+    def __init__(
+        self,
+        contents: None | dict[str, FeatureClass] = None,
+        crs: Any | CRS = None,
+        enforce_crs: bool = True,
+    ):
         """
         Initialize a new FeatureDataset instance with an optional coordinate reference system (CRS).
 
         The CRS can be specified as any value compatible with the CRS class constructor.
+
+        :param contents: A dict of FeatureClass names and their objects to initialize the FeatureDataset with
+        :type contents: None | dict[str, FeatureClass]
 
         :param crs: The coordinate reference system to initialize the FeatureDataset with
         :type crs: Any | CRS
@@ -566,6 +574,10 @@ class FeatureDataset(MutableMapping):
                 self.crs = CRS(crs)
         else:
             self.crs = None
+
+        if contents:
+            for fc_name, fc in contents.items():
+                self.__setitem__(fc_name, fc)
 
     def __delitem__(self, key, /):
         """
@@ -691,7 +703,11 @@ class GeoDatabase(MutableMapping):
 
     """
 
-    def __init__(self, path: None | os.PathLike | str = None):
+    def __init__(
+        self,
+        path: None | os.PathLike | str = None,
+        contents: dict[str : FeatureClass | FeatureDataset] | None = None,
+    ):
         """
         Initialize a new GeoDatabase instance.
 
@@ -701,6 +717,9 @@ class GeoDatabase(MutableMapping):
 
         :param path: The file path to load datasets and layers from
         :type path: None | os.PathLike | str
+
+        :param contents: A dict of dataset names and their objects to initialize the GeoDatabase with
+        :type contents: dict[str : FeatureClass | FeatureDataset] | None
 
         """
         self._fds: dict[str | None : FeatureDataset] = dict()
@@ -718,6 +737,10 @@ class GeoDatabase(MutableMapping):
                     if fc_name in datasets[fds_name]:
                         fds[fc_name] = FeatureClass(fc_to_gdf(path, fc_name))
                 self.__setitem__(fds_name, fds)
+
+        if contents:
+            for name, ds in contents.items():
+                self.__setitem__(name, ds)
 
     # noinspection PyProtectedMember
     def __delitem__(self, key: str, /):

@@ -73,7 +73,7 @@ def ob_gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
     gdb["test_lines1"] = ob.FeatureClass(gdf_lines)
     gdb["test_polygons1"] = ob.FeatureClass(gdf_polygons)
 
-    fds = ob.FeatureDataset(gdf_points.crs)
+    fds = ob.FeatureDataset(crs=gdf_points.crs)
     fds["test_points2"] = ob.FeatureClass(gdf_points)
     fds["test_lines2"] = ob.FeatureClass(gdf_lines)
     fds["test_polygons2"] = ob.FeatureClass(gdf_polygons)
@@ -98,7 +98,7 @@ def esri_gdb(tmp_path):
 def test_gdb_fixtures(ob_gdb, esri_gdb):
     gdb, gdb_path = ob_gdb
 
-    for this_gdb in [gdb, ob.GeoDatabase(esri_gdb)]:
+    for this_gdb in [gdb, ob.GeoDatabase(path=esri_gdb)]:
         assert isinstance(this_gdb, ob.GeoDatabase)
         for fds_name, fds in this_gdb.items():
             assert isinstance(fds_name, str) or fds_name is None
@@ -375,7 +375,8 @@ class TestFeatureDataset:
                 assert isinstance(fc_name, str)
                 assert isinstance(fc, ob.FeatureClass)
 
-        fds = ob.FeatureDataset("EPSG:4326")
+        fds1 = ob.FeatureDataset(crs="EPSG:4326")
+        fds2 = ob.FeatureDataset(contents={"fc": ob.FeatureClass()})
 
     def test_delitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
@@ -466,9 +467,12 @@ class TestGeoDatabase:
         gdb, gdb_path = ob_gdb
         assert isinstance(gdb, ob.GeoDatabase)
 
-        gdb2 = ob.GeoDatabase(gdb_path)
-        assert len(gdb2.feature_datasets()) == 2
-        assert len(gdb2.feature_classes()) == 6
+        gdb2 = ob.GeoDatabase(
+            path=gdb_path,
+            contents={"extra_fc": ob.FeatureClass(), "extra_fds": ob.FeatureDataset()},
+        )
+        assert len(gdb2.feature_datasets()) == 3
+        assert len(gdb2.feature_classes()) == 7
 
     def test_delitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
