@@ -42,7 +42,7 @@ class FeatureClass(MutableSequence):
 
     def __init__(
         self,
-        src: "None | os.PathLike | str | gpd.GeoDataFrame | gpd.GeoSeries | FeatureClass" = None,
+        src: "None | os.PathLike | str | FeatureClass | geopandas.GeoDataFrame | geopandas.GeoSeries | pandas.DataFrame | pandas.Series" = None,
     ):
         """
         Initializes the geospatial data container by parsing the source and extracting
@@ -52,10 +52,11 @@ class FeatureClass(MutableSequence):
 
         :param src:
             Source of the data. It can be:
-              - A GeoDataFrame to initialize directly
-              - A string or os.PathLike path pointing to a file or a geodatabase dataset
               - None, for initializing an empty GeoDataFrame
-        :type src: None | os.PathLike | str | geopandas.GeoDataFrame | geopandas.GeoSeries | FeatureClass
+              - String or os.PathLike path pointing to a file or a geodatabase dataset
+              - GeoDataFrame or similar type to initialize directly, or
+              - Existing FeatureClass object to copy
+        :type src: None | os.PathLike | str | FeatureClass | geopandas.GeoDataFrame | geopandas.GeoSeries | pandas.DataFrame | pandas.Series
 
         :raises TypeError: Raised when the provided source type is unsupported or invalid
 
@@ -67,10 +68,16 @@ class FeatureClass(MutableSequence):
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
             self._data = src
+
         elif isinstance(src, gpd.GeoSeries):
             self._data = gpd.GeoDataFrame(geometry=src)
+
+        elif isinstance(src, pd.DataFrame) | isinstance(src, pd.Series):
+            self._data = gpd.GeoDataFrame(src)
+
         elif isinstance(src, FeatureClass):
             self._data = src.to_geodataframe()
+
         elif isinstance(src, os.PathLike) or isinstance(src, str):  # load data from gdb
             src = os.path.abspath(src)
             split_path = src.split(os.sep)
@@ -82,10 +89,13 @@ class FeatureClass(MutableSequence):
                 # fds_name = None
                 gdb_path = os.sep.join(split_path[:-1])
             self._data: gpd.GeoDataFrame = fc_to_gdf(gdb_path, fc_name)
+
         elif src is None:
             self._data = gpd.GeoDataFrame()
+
         else:
-            raise TypeError(src)
+            raise TypeError((src, type(src)))
+
         self._data.index.name = "ObjectID"
 
         try:
@@ -243,16 +253,6 @@ class FeatureClass(MutableSequence):
             raise TypeError(
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
             )
-
-    def calculate(self, column, expression):  # TODO
-        """
-        Field calculator style operation on a column
-
-        Use column names in quotes to use them in expressions
-
-        If column doesn't exist it will be created
-        """
-        raise NotImplementedError
 
     def clear(self) -> None:
         """
@@ -438,12 +438,32 @@ class FeatureClass(MutableSequence):
             overwrite=overwrite,
         )
 
-    def select_columns(self, columns, geometry=True):  # TODO
-        """Return feature class of selected columns, optionally drop geometry column."""
-        raise NotImplementedError
+    def select_columns(self, columns: str | Sequence[str], geometry: bool = True):
+        """
+        Return a FeatureClass of only the specified columns.
 
-    def select_rows(self, field_name, where_clause):  # TODO
-        """SQL style filtering, return FeatureClass"""
+        """
+        if not isinstance(columns, str):
+            for col in columns:
+                if col not in self._data.columns:
+                    raise KeyError(f"Column '{col}' not found in data.")
+            columns = list(columns)
+        else:
+            columns = [columns]
+
+        if geometry:
+            columns.append("geometry")
+
+        if len(columns) == 1:
+            columns = columns[0]
+
+        return FeatureClass(self._data[columns])
+
+    def select_rows(self, column_name, where_clause):  # TODO
+        """
+        Return a FeatureClass of the rows that match a SQL-style where clause.
+
+        """
         raise NotImplementedError
 
     def sort(

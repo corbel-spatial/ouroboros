@@ -328,6 +328,17 @@ class TestFeatureClass:
         with pytest.raises(FileNotFoundError):
             fc1.save("bad_path", "fc_name")
 
+    def test_select_columns(self, gdf_points):
+        fc1 = ob.FeatureClass(gdf_points)
+        cols1 = fc1.select_columns(["sample1", "sample2"])
+        assert cols1.to_geodataframe().size == 3000
+        cols2 = fc1.select_columns(["sample1"], geometry=False)
+        assert cols2.to_geodataframe().size == 1000
+        cols3 = fc1.select_columns("sample1", geometry=False)
+        assert cols3.to_geodataframe().size == 1000
+        with pytest.raises(KeyError):
+            bad_cols = fc1.select_columns(["bad"])
+
     def test_sort(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         case1 = fc1[0].iat[0, 0]

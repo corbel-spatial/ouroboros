@@ -1,13 +1,10 @@
 # Changelog
 
-## 1.0.0 (planned)
+## 1.0.0
 
-- Release on conda-forge
-- Add data manipulation methods to help with feature class processing
-- Provide more details with get_info()
-
-## 1.0.0-beta8
-
+- Released on conda-forge
+- Added data manipulation methods FeatureClass to help with processing
+- Provideed more details with get_info()
 - Removed Rasterio dependency, instead using GDAL directly
 - Pass FeatureClass and FeatureDataset sequences on instantiation
 - Getter methods return dicts instead of tuples
