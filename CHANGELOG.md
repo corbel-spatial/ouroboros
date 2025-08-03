@@ -4,6 +4,7 @@
 
 - FeatureClass.calculate()
 - Instantiating a FeatureClass from an existing DataFrame uses a deep copy
+- Updated README.md and docs
 
 ## v1.0.0 🎉
 
