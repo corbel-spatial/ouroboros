@@ -16,9 +16,9 @@
 
 ## Introduction
 
-`ouroboros` is a Python module that provides helpful functions and classes for manipulating spatial data stored in a [File GeoDatabase](https://en.wikipedia.org/wiki/Geodatabase_(Esri)). 
+ouroboros is a Python module that provides helpful functions and classes for manipulating spatial data stored in a [File GeoDatabase](https://en.wikipedia.org/wiki/Geodatabase_(Esri)). 
 
-The data (.gdb) are read from disk into memory as `FeatureClass` objects, using [`GeoPandas`](https://geopandas.org/en/stable/getting_started/introduction.html) 
+The data (.gdb) are read from disk into memory as `FeatureClass` objects, using [GeoPandas](https://geopandas.org/en/stable/getting_started/introduction.html) 
 under the hood for efficient analysis and easy conversion to other spatial data formats.
 `FeatureClass` objects can exist on their own, or they can be grouped into `FeatureDataset` and `GeoDatabase` objects 
 which can be accessed like dictionaries. For example:
@@ -56,15 +56,15 @@ which can be accessed like dictionaries. For example:
 
 ## Getting Started
 
-- [Installation](https://ouroboros-gis.readthedocs.io/en/latest/installation.html)
+[Installation](https://ouroboros-gis.readthedocs.io/en/latest/installation.html)
 
-- [User Guide](https://ouroboros-gis.readthedocs.io/en/latest/user_guide.html)
+[User Guide](https://ouroboros-gis.readthedocs.io/en/latest/user_guide.html)
 
 ## About
 
-`ouroboros` is released under a permissive open source license, it builds on mature open source GIS projects like 
-[GDAL](https://gdal.org/), and importantly it does **not** use Esri's `arcpy`.
-Therefore, `ouroboros` does not require any paid licenses and it runs on macOS and Linux as well as Windows.
+ouroboros is released under a permissive open source license, it builds on mature open source GIS projects like 
+[GDAL](https://gdal.org/), and importantly it **does not use Esri's arcpy.**
+Therefore, ouroboros does not require any paid licenses and it runs on macOS and Linux as well as Windows.
 
 The main goal of this project is to allow traditional GIS users working primarily in the Esri/ArcGIS ecosystem to take
 advantage of the features and speed offered by modern data science tools. Second, it will provide a no-cost and
@@ -72,8 +72,8 @@ user-friendly way to convert geodatabases to open data formats. And along the wa
 suite of tools that align with [pythonic](https://peps.python.org/pep-0020/) design principles, and also bring a
 little more joy and beauty to the task of wrangling spatial data.
 
+This project is under active development and beta releases will be provided for the time being. Feedback, suggestions, and questions are welcomed in the [Issues](https://github.com/corbel-spatial/ouroboros/issues) section.
+
 ## Notes
 
-- ⚠️ This project is under active development and things may change without notice. Feedback, suggestions, and questions are welcomed in the [Issues](https://github.com/corbel-spatial/ouroboros/issues) section.
-
-- Tested on Python 3.10, 3.11, 3.12, and 3.13 on the latest Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
+Tested on Python 3.10, 3.11, 3.12, and 3.13 on the latest Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).

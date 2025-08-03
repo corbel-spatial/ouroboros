@@ -2,12 +2,15 @@ Installation
 ============
 
 .. note::
-    :code:`ouroboros` supports vector feature class and raster dataset operations on geodatabases.
-    Raster support depends on `GDAL <https://gdal.org/>`__, which is included when installed in a :code:`conda` environment.
-    Installing with :code:`pip` only supports vector operations by default. See details below.
+    ouroboros supports vector feature class and raster dataset operations on geodatabases.
+    Raster support depends on `GDAL <https://gdal.org/>`__, which is included when installed in an Anaconda (conda) environment.
+    Installing with pip only supports vector operations by default. See details below.
 
 Conda (recommended)
 -------------------
+
+.. important::
+    Coming soon! For now please install via pip.
 
 In an active `conda <https://www.anaconda.com/docs/getting-started/getting-started>`__ environment::
 
@@ -21,7 +24,7 @@ For vector feature class support only::
 
     python -m pip install ouroboros-gis
 
-For vector *and* raster dataset support you must have already installed the `GDAL binary <https://gdal.org/en/stable/download.html#binaries>`__ (version >= 3.8), then::
+For vector *and* raster dataset support you must have already installed `GDAL <https://gdal.org/en/stable/download.html#binaries>`__ binaries (version >= 3.8), then::
 
     python -m pip install ouroboros-gis[raster]
 
@@ -29,7 +32,7 @@ For vector *and* raster dataset support you must have already installed the `GDA
 ArcGIS Pro
 ----------
 
-To install in an ArcGIS Pro :code:`conda` environment:
+To install in an ArcGIS Pro conda environment:
 
 - Clone and activate an editable environment (`instructions here <https://pro.arcgis.com/en/pro-app/3.3/arcpy/get-started/clone-an-environment.htm>`__)
 
