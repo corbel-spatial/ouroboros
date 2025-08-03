@@ -5,7 +5,6 @@ SET conda="C:\Users\%USERNAME%\miniconda3\Scripts\conda.exe"
 
 ECHO %m% Make Docs %m%
 CALL %conda% run -n %env% .\make html
-CALL %conda% run -n %env% .\make html
 ECHO %m% Open Docs %m%
 START .\_build\html\index.html
 

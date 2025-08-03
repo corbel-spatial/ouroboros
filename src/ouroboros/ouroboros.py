@@ -13,8 +13,8 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyogrio
+import pyproj
 from pyogrio.errors import DataSourceError
-from pyproj.crs import CRS
 
 
 # Check for optional install of GDAL>=3.8 for raster support
@@ -31,6 +31,10 @@ if gdal_version:
         raise ImportError(
             "GDAL version must be >= 3.8, please upgrade to a newer version"
         )
+
+
+pd.set_option("display.max_columns", 20)
+pd.set_option("display.max_colwidth", None)
 
 
 class FeatureClass(MutableSequence):
@@ -56,7 +60,7 @@ class FeatureClass(MutableSequence):
               - String or os.PathLike path pointing to a file or a geodatabase dataset
               - GeoDataFrame or similar type to initialize directly, or
               - Existing FeatureClass object to copy
-        :type src: None | os.PathLike | str | FeatureClass | geopandas.GeoDataFrame | geopandas.GeoSeries | pandas.DataFrame | pandas.Series
+        :type src: DataFrame, optional
 
         :raises TypeError: Raised when the provided source type is unsupported or invalid
 
@@ -67,13 +71,14 @@ class FeatureClass(MutableSequence):
 
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
-            self._data = src
+            self._data = src.copy(deep=True)
 
         elif isinstance(src, gpd.GeoSeries):
-            self._data = gpd.GeoDataFrame(geometry=src)
+            self._data = gpd.GeoDataFrame(geometry=src.copy(deep=True))
 
         elif isinstance(src, pd.DataFrame) | isinstance(src, pd.Series):
-            self._data = gpd.GeoDataFrame(src)
+            src: pd.DataFrame | pd.Series
+            self._data = gpd.GeoDataFrame(src.copy(deep=True))
 
         elif isinstance(src, FeatureClass):
             self._data = src.to_geodataframe()
@@ -144,11 +149,10 @@ class FeatureClass(MutableSequence):
         FeatureClass.
 
         :param index: The index, indices, rows, or slices to retrieve from the FeatureClass
-        :type index: int | slice | Sequence[int | slice]
-
             * If an integer is provided, the corresponding row is retrieved
             * If a slice is provided, the corresponding rows are retrieved
             * If a list or tuple of integers or slices is given, multiple specific rows or slices are retrieved
+        :type index: int | slice | Sequence[int | slice]
 
         :return: A GeoDataFrame containing the rows matching the provided index
         :rtype: geopandas.GeoDataFrame
@@ -202,7 +206,7 @@ class FeatureClass(MutableSequence):
     def __setitem__(
         self,
         index: tuple[int, int | str],
-        value: any,
+        value: Any,
     ) -> None:
         """
         Assign a value to the specified cell in the FeatureClass using a tuple index
@@ -217,7 +221,7 @@ class FeatureClass(MutableSequence):
         :type index: tuple[int, int | str]
 
         :param value: The value to assign to the specified cell
-        :type value: any
+        :type value: Any
 
         :raises: TypeError
             If the row index is not an integer, or if the column index is neither an integer nor a string
@@ -253,6 +257,84 @@ class FeatureClass(MutableSequence):
             raise TypeError(
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
             )
+
+    def calculate(
+        self,
+        in_column: str,
+        expression: str | Any,
+        out_column: None | str = None,
+        out_dtype: None | type | np.dtype = None,
+    ) -> None:
+        """
+        Performs calculations on a column in the dataset based on the provided expression.
+
+        The :code:`expression` is stringified Python code that will be evaluated for each row.
+        If :code:`out_column` is specified and does not exist, a new column will be created.
+        Other columns can be referenced using the syntax: :code:`$column_name$`
+
+        Example::
+
+            fc.calculate(in_column="oldcol", expression="int($oldcol$) * 42", out_column="newcol", out_dtype=np.uint8)
+
+        :param in_column: Name of the column to use as input
+        :type in_column: str
+        :param expression: Expression to evaluate for each value in the input column, will be evaluated by the method call and then stringified
+        :type expression: str | Any
+        :param out_column: Name for the output column, if none given will update `in_column` in place
+        :type out_column: str, optional
+        :param out_dtype: Type to convert the results to
+        :type out_dtype: type | np.dtype, optional
+
+        """
+
+        columns = self._data.columns
+        if in_column not in columns:
+            raise KeyError(f"Column '{in_column}' not found in data.")
+
+        if not isinstance(expression, str):
+            expression = str(expression)
+
+        result: pd.Series = self._data[in_column].convert_dtypes()  # copy
+
+        if "$" in expression:
+            col_names = str()
+            col_names_n = 0
+            non_col_names = str()
+            col_name_mode = False
+            for char in expression:
+                if char == "$" and not col_name_mode:  # start escaped sequence
+                    col_name_mode = True
+                    col_names_n += 1
+                elif char == "$" and col_name_mode:  # end escaped sequence
+                    col_name_mode = False
+                    col_names += "$"
+                    non_col_names += f"{{{col_names_n - 1}}}"
+                elif col_name_mode:
+                    col_names += char
+                else:
+                    non_col_names += char
+            col_names = col_names.strip("$").split("$")
+            other_col_series = [self._data[col] for col in col_names]
+
+            try:
+                for row_idx in range(len(result)):
+                    other_values = [f"'{other[row_idx]}'" for other in other_col_series]
+                    result[row_idx] = eval(non_col_names.format(*other_values))
+            except SyntaxError:
+                raise SyntaxError(expression)
+        else:
+            result: pd.Series = result.map(lambda x: expression)
+
+        if out_dtype and result.dtype != out_dtype:
+            result.astype(out_dtype, copy=False)
+
+        if not out_column or in_column == out_column or out_column in columns:
+            # update in place
+            self._data.update(result)
+        else:
+            # append new column
+            loc = len(columns) - 1
+            self._data.insert(loc, out_column, result)
 
     def clear(self) -> None:
         """
@@ -474,9 +556,6 @@ class FeatureClass(MutableSequence):
 
         Wrapper for `pandas.DataFrame.query <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html>`__
 
-        :param expr: The query expression to use for filtering the rows
-        :type expr: str
-
         Example::
 
             fc.query("colA > colB")
@@ -484,6 +563,9 @@ class FeatureClass(MutableSequence):
             ObjectID    colA    colB
             42          10      9
             99          201     0
+
+        :param expr: The query expression to use for filtering the rows
+        :type expr: str
 
         """
         return FeatureClass(gpd.GeoDataFrame(self._data.query(expr, inplace=False)))
@@ -583,7 +665,7 @@ class FeatureDataset(MutableMapping):
     def __init__(
         self,
         contents: None | dict[str, FeatureClass] = None,
-        crs: Any | CRS = None,
+        crs: pyproj.crs.CRS | Any = None,
         enforce_crs: bool = True,
     ):
         """
@@ -592,10 +674,10 @@ class FeatureDataset(MutableMapping):
         The CRS can be specified as any value compatible with the CRS class constructor.
 
         :param contents: A dict of FeatureClass names and their objects to initialize the FeatureDataset with
-        :type contents: None | dict[str, FeatureClass]
+        :type contents: dict[str, FeatureClass], optional
 
         :param crs: The coordinate reference system to initialize the FeatureDataset with
-        :type crs: Any | CRS
+        :type crs: pyproj.crs.CRS | Any  # TODO Sphinx broken here
 
         :param enforce_crs: Whether to enforce the CRS in the FeatureDataset, defaults to True
         :type crs: bool
@@ -610,10 +692,10 @@ class FeatureDataset(MutableMapping):
         self._gdbs = set()
 
         if self.enforce_crs:
-            if isinstance(crs, CRS) or crs is None:
+            if isinstance(crs, pyproj.crs.CRS) or crs is None:
                 self.crs = crs
             else:
-                self.crs = CRS(crs)
+                self.crs = pyproj.crs.CRS(crs)
         else:
             self.crs = None
 
@@ -758,10 +840,10 @@ class GeoDatabase(MutableMapping):
         of FeatureDatasets.
 
         :param path: The file path to load datasets and layers from
-        :type path: None | os.PathLike | str
+        :type path: os.PathLike | str, optional
 
         :param contents: A dict of dataset names and their objects to initialize the GeoDatabase with
-        :type contents: dict[str : FeatureClass | FeatureDataset] | None
+        :type contents: dict[str : FeatureClass | FeatureDataset], optional
 
         """
         self._fds: dict[str | None : FeatureDataset] = dict()
@@ -1132,12 +1214,13 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
 
     raster_info = dict()
     if gdal_installed:
+        gdal.UseExceptions()
         for raster_name in list_rasters(gdb_path):
             raster: gdal.Dataset
             with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
                 raster_info[raster_name] = {
                     "block_size": raster.GetRasterBand(1).GetBlockSize(),
-                    "crs": f"EPSG:{CRS(raster.GetProjectionRef()).to_epsg()}",
+                    "crs": f"EPSG:{pyproj.crs.CRS(raster.GetProjectionRef()).to_epsg()}",
                     "category_names": raster.GetRasterBand(1).GetRasterCategoryNames(),
                     "color_interpretation": raster.GetRasterBand(
                         1
@@ -1275,9 +1358,9 @@ def raster_to_tif(
     :param tif_path: The optional path where the GeoTIFF file should be saved. If not
         provided, the output GeoTIFF file will be saved with the same name as the raster
         in the GDB directory. Defaults to None.
-    :type tif_path: None | os.PathLike | str
+    :type tif_path: os.PathLike | str, optional
     :param options: Additional keyword arguments for writing the GeoTIFF file, see the documentation: https://gdal.org/en/stable/drivers/raster/gtiff.html#creation-options
-    :type options: dict
+    :type options: dict, optional
     """
     if not gdal_installed:
         raise ImportError(
