@@ -3,11 +3,10 @@ User Guide
 
 .. toctree::
 
-   notebooks/intro_example
+   notebooks/introduction
    notebooks/basic_usage
    notebooks/database_structure
    notebooks/fc_conversions
-   notebooks/field_calculations
    notebooks/geoprocessing
    notebooks/pyarrow_demo
    notebooks/rasters
