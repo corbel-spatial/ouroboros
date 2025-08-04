@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+
+- Fixed installation instructions and other docs tweaks
+
 ## v1.0.1
 
 - FeatureClass.calculate()
