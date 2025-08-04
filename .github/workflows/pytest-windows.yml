@@ -1,9 +1,9 @@
-# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# https://github.com/marketplace/actions/setup-miniconda
 name: Pytest - Windows
 on:
   push:
     branches: [ "main" ]
-    paths: [ "src/**" ]
+    paths: [ "src/**", ".github/workflows/pytest-windows.yml" ]
 jobs:
   build:
     strategy:
@@ -13,16 +13,36 @@ jobs:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install pytest
-        python -m pip install -e .
-    - name: Test with pytest
-      run: |
-        pytest ./tests/tests.py
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            pyproject.toml
+            src/ouroboros
+            tests
+          sparse-checkout-cone-mode: false
+      - name: Check paths
+        shell: bash -el {0}
+        run: |
+          pwd
+          ls -la
+          ls -la src/ouroboros
+          ls -la tests
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: false
+          python-version: ${{ matrix.python-version }}
+      - name: Install conda dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          conda install uv "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" -c conda-forge
+      - name: Install with uv pip
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          uv pip install . --group test
+      - name: Test with pytest
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          python -m pytest -n auto ./tests/tests.py
