@@ -1,0 +1,35 @@
+# https://github.com/marketplace/actions/setup-miniconda
+name: Pytest - Linux - 3.14
+on:
+  push:
+    branches: [ "dev" ]
+    paths: [ "src/**" ]
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+         os: [ubuntu-latest]
+         python-version: ["3.14.0-rc.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+      - name: Install conda dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          conda install pytest rasterio "libgdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" -c conda-forge
+      - name: Install pip dependencies
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          pip install .
+      - name: Test with pytest
+        shell: bash -el {0}
+        run: |
+          conda activate test
+          python -m pytest ./tests/tests.py
