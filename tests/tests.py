@@ -2,7 +2,6 @@ import os
 import uuid
 import zipfile
 from random import uniform
-from pprint import pprint
 
 import geojson
 import geopandas as gpd
@@ -87,10 +86,7 @@ def ob_gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
 @pytest.fixture
 def esri_gdb(tmp_path):
     z = os.path.join("tests", "test_data.gdb.zip")
-    if os.path.exists(os.path.join(".", z)):
-        gdb_path = os.path.abspath(os.path.join(".", z))
-    else:
-        gdb_path = os.path.abspath(os.path.join("..", z))
+    gdb_path = os.path.abspath(os.path.join("..", z))
     zf = zipfile.ZipFile(gdb_path, "r")
     zf.extractall(tmp_path)
     return os.path.join(tmp_path, "test_data.gdb")
@@ -124,6 +120,15 @@ class TestFeatureClass:
 
         fc3 = ob.FeatureClass(gpd.GeoSeries([Point(0, 1)]))
         assert isinstance(fc3.to_geodataframe(), gpd.GeoDataFrame)
+
+        fc4 = ob.FeatureClass(fc3)
+        assert isinstance(fc4.to_geodataframe(), gpd.GeoDataFrame)
+
+        with pytest.raises(TypeError):
+            fc5 = ob.FeatureClass("test.gdb")
+
+        with pytest.raises(FileNotFoundError):
+            fc5 = ob.FeatureClass("doesnotexist.gdb/test_fc")
 
     def test_instatiate_gdf(self):
         fc1 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[Point(0, 1)]))
@@ -191,13 +196,23 @@ class TestFeatureClass:
         assert len(fc1) == count + 1
         assert fc1[0].iat[0, 0] == fc1[-1].iat[0, 0]
 
+        fc2 = ob.FeatureClass(fc1)
+        count = len(fc2)
+        new_row = ob.FeatureClass(fc2[0])
+        fc2.append(new_row)
+        assert len(fc2) == count + 1
+        assert fc2[0].iat[0, 0] == fc2[-1].iat[0, 0]
+
+        with pytest.raises(TypeError):
+            fc2.append("bad_input")
+
     def test_calculate(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         fc1.calculate(
             "sample1",
             "test",
         )
-        fc1.select_columns("sample1", geometry=False).head()
+        # fc1.select_columns("sample1", geometry=False).head()
 
         fc2 = ob.FeatureClass(gdf_points)
         fc2.calculate(
@@ -205,11 +220,11 @@ class TestFeatureClass:
             "test",
             "test2",
         )
-        fc2.select_columns("test2", geometry=False).head()
+        # fc2.select_columns("test2", geometry=False).head()
 
         fc3 = ob.FeatureClass(gdf_points)
         fc3.calculate("sample1", 2 * 2, "test3", np.uint8)
-        fc3.select_columns("test3", geometry=False).head()
+        # fc3.select_columns("test3", geometry=False).head()
 
         fc4 = ob.FeatureClass(gdf_points)
         fc4.calculate(
@@ -218,7 +233,13 @@ class TestFeatureClass:
             "test4",
             str,
         )
-        fc4.select_columns("test4", geometry=False).head()
+        # fc4.select_columns("test4", geometry=False).head()
+
+        with pytest.raises(KeyError):
+            fc4.calculate(in_column="badcol", expression="test4")
+
+        with pytest.raises(KeyError):
+            fc4.calculate(in_column="sample1", expression="$badcol$")
 
     def test_clear(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -233,7 +254,6 @@ class TestFeatureClass:
 
     def test_describe(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
-        pprint(fc1.describe())
         assert isinstance(fc1.describe(), dict)
         assert len(fc1.describe()["fields"]) == 5
         fc2 = ob.FeatureClass()
@@ -241,7 +261,8 @@ class TestFeatureClass:
 
     def test_head(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
-        h = fc1.head(5)
+        fc1.head(0, silent=False)
+        h = fc1.head(5, silent=True)
         assert isinstance(h, pd.DataFrame)
         assert len(h) == 5
 
@@ -295,6 +316,16 @@ class TestFeatureClass:
             gpd.GeoDataFrame({"col1": ["b"]}, geometry=[LineString([(0, 1), (1, 1)])]),
         )
         assert fc3.geom_type == "LineString"
+
+        fc3.insert(
+            -1,
+            ob.FeatureClass(
+                gpd.GeoDataFrame(
+                    {"col1": ["c"]},
+                    geometry=[LineString([(0, 1), (1, 1)])],
+                )
+            ),
+        )
 
         fc3.insert(
             -1,
@@ -361,11 +392,20 @@ class TestFeatureClass:
     def test_select_columns(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         cols1 = fc1.select_columns(["sample1", "sample2"])
-        assert cols1.to_geodataframe().size == 3000
+        assert len(cols1) == 1000
+
         cols2 = fc1.select_columns(["sample1"], geometry=False)
-        assert cols2.to_geodataframe().size == 1000
+        assert len(cols2) == 1000
+
         cols3 = fc1.select_columns("sample1", geometry=False)
-        assert cols3.to_geodataframe().size == 1000
+        assert len(cols3) == 1000
+
+        cols4 = fc1.select_columns("geometry", geometry=False)
+        assert len(cols4) == 1000
+
+        cols5 = fc1.select_columns(["sample1", "sample2", "geometry"], geometry=False)
+        assert len(cols5) == 1000
+
         with pytest.raises(KeyError):
             bad_cols = fc1.select_columns(["bad"])
 
@@ -391,6 +431,7 @@ class TestFeatureClass:
         assert isinstance(gdf, gpd.GeoDataFrame)
 
     def test_to_geojson(self, tmp_path, gdf_points):
+        # TODO test_to_geojson: test case of table without geometry; test case of object types not JSON serializable
         fc1 = ob.FeatureClass(gdf_points)
         gjs1 = fc1.to_geojson()
         assert isinstance(gjs1, geojson.FeatureCollection)
@@ -522,6 +563,9 @@ class TestGeoDatabase:
         assert len(gdb2.feature_datasets()) == 3
         assert len(gdb2.feature_classes()) == 7
 
+        with pytest.raises(FileNotFoundError):
+            gdb3 = ob.GeoDatabase("doesnotexist.gdb")
+
     def test_delitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
 
@@ -593,6 +637,7 @@ class TestGeoDatabase:
     def test_feature_datasets(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         for fds_name, fds in gdb.feature_datasets().items():
+            # noinspection PyUnreachableCode
             assert isinstance(fds_name, str) or fds_name is None
             assert isinstance(fds, ob.FeatureDataset)
 
@@ -682,11 +727,9 @@ class TestUtilityFunctions:
         gdb, gdb_path = ob_gdb
         ob_info = ob.get_info(gdb_path)
         assert isinstance(ob_info, dict)
-        pprint(ob_info)
 
         esri_info = ob.get_info(esri_gdb)
         assert isinstance(esri_info, dict)
-        print(esri_info)
 
     def test_list_datasets(self, ob_gdb, esri_gdb):
         gdb, gdb_path = ob_gdb
@@ -695,7 +738,6 @@ class TestUtilityFunctions:
         for k, v in fds1.items():
             assert isinstance(k, str) or k is None
             assert isinstance(v, list)
-        print(fds1)
 
         for fc in ob.list_layers(gdb_path):
             ob.delete_fc(gdb_path, fc)
@@ -707,11 +749,22 @@ class TestUtilityFunctions:
         assert isinstance(fds3, dict)
         assert len(fds3) == 0
 
+        with pytest.raises(FileNotFoundError):
+            ob.list_datasets("bad_path")
+
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.list_datasets("README.md")
+            except FileNotFoundError:  # coverage
+                ob.list_datasets(os.path.join("..", "README.md"))
+
     def test_list_layers(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         lyrs = ob.list_layers(gdb_path)
-        print(lyrs)
         assert len(lyrs) == 6
+
+        with pytest.raises(FileNotFoundError):
+            ob.list_layers("bad_path")
 
     def test_list_rasters(self, ob_gdb, esri_gdb):
         rasters = ob.list_rasters(esri_gdb)

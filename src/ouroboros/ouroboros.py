@@ -45,6 +45,7 @@ class FeatureClass(MutableSequence):
     while maintaining properties like CRS (Coordinate Reference System) and geometry type.
     """
 
+    # noinspection PyTypeHints
     def __init__(
         self,
         src: "None | os.PathLike | str | FeatureClass | geopandas.GeoDataFrame | geopandas.GeoSeries | pandas.DataFrame | pandas.Series" = None,
@@ -78,28 +79,32 @@ class FeatureClass(MutableSequence):
             self._data = gpd.GeoDataFrame(geometry=src.copy(deep=True))
 
         elif isinstance(src, pd.DataFrame) | isinstance(src, pd.Series):
-            src: pd.DataFrame | pd.Series
             self._data = gpd.GeoDataFrame(src.copy(deep=True))
 
         elif isinstance(src, FeatureClass):
             self._data = src.to_geodataframe()
 
-        elif isinstance(src, os.PathLike) or isinstance(src, str):  # load data from gdb
+        elif isinstance(src, os.PathLike) or isinstance(
+            src, str
+        ):  # on load data from gdb
             src = os.path.abspath(src)
-            if src.endswith(".gdb"):
-                raise TypeError(
-                    f"Expected a path to a feature class, not a geodatabase: {src}\n"
-                    f"The geodatabase contains: {list_layers(src)}"
-                )
 
+            if not os.path.splitext(src)[1] == "":  # path cannot have a file extension
+                raise TypeError(f"Expected a path to a feature class: {src}")
+
+            # parse path to handle Feature Dataset pathing (spam.gdb/egg_fds/ham_fc)
             split_path = src.split(os.sep)
             fc_name = split_path[-1]
             if not split_path[-2].endswith(".gdb"):
-                # fds_name = split_path[-2]
                 gdb_path = os.sep.join(split_path[:-2])
             else:
-                # fds_name = None
                 gdb_path = os.sep.join(split_path[:-1])
+
+            # check that gdb exists
+            if not os.path.exists(gdb_path):
+                raise FileNotFoundError(src)
+
+            # convert to GeoDataFrame
             self._data: gpd.GeoDataFrame = fc_to_gdf(gdb_path, fc_name)
 
         elif src is None:
@@ -139,6 +144,7 @@ class FeatureClass(MutableSequence):
             If the provided index is not an integer
 
         """
+        # noinspection PyUnreachableCode
         if not isinstance(index, int):
             raise TypeError("index must be an integer")
         self._data = pd.concat(
@@ -233,9 +239,10 @@ class FeatureClass(MutableSequence):
 
         """
         row, column = index
-
+        # noinspection PyUnreachableCode
         if not isinstance(row, int):
             raise TypeError("Row index must be an integer")
+        # noinspection PyUnreachableCode
         if not isinstance(column, int) and not isinstance(column, str):
             raise TypeError("Column index must be an integer or a column name string")
 
@@ -244,6 +251,7 @@ class FeatureClass(MutableSequence):
         else:
             self._data.at[row, column] = value
 
+    # noinspection PyTypeHints
     def append(self, value: "gpd.GeoDataFrame | FeatureClass") -> None:
         """
         Appends rows to the end of the FeatureClass.
@@ -263,7 +271,7 @@ class FeatureClass(MutableSequence):
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
             )
 
-    def calculate(
+    def calculate(  # TODO remove in_column parameter
         self,
         in_column: str,
         expression: str | Any,
@@ -301,11 +309,14 @@ class FeatureClass(MutableSequence):
 
         result: pd.Series = self._data[in_column].convert_dtypes()  # copy
 
-        if "$" in expression:
+        if "$" not in expression:
+            # don't parse, just evaluate
+            result: pd.Series = result.map(lambda x: expression)
+        else:
             # parse an expression that contains column names
             col_names = str()  # parsed names of DataFrame columns
             col_names_n = 0
-            non_col_names = (
+            parsed_expression = (
                 str()
             )  # all parts of the expression that are not column names
             col_name_mode = False  # whether we're currently parsing a column name
@@ -316,24 +327,23 @@ class FeatureClass(MutableSequence):
                 elif char == "$" and col_name_mode:  # end escaped sequence
                     col_name_mode = False
                     col_names += "$"
-                    non_col_names += f"{{{col_names_n - 1}}}"
+                    parsed_expression += f"{{{col_names_n - 1}}}"
                 elif col_name_mode:
                     col_names += char
                 else:
-                    non_col_names += char
+                    parsed_expression += char
             col_names = col_names.strip("$").split("$")
-            other_col_series = [self._data[col] for col in col_names]
+            try:
+                other_col_series = [self._data[col] for col in col_names]
+            except KeyError as e:
+                raise KeyError(f"Column not found in data: {e}")
 
             # evaluate expression on each row
-            try:
-                for row_idx in range(len(result)):
-                    other_values = [f"'{other[row_idx]}'" for other in other_col_series]
-                    result[row_idx] = eval(non_col_names.format(*other_values))
-            except SyntaxError:
-                raise SyntaxError(expression)
-        else:
-            # don't parse, just evaluate
-            result: pd.Series = result.map(lambda x: expression)
+            for row_idx in range(len(result)):
+                # get row values
+                other_values = [f"'{other[row_idx]}'" for other in other_col_series]
+                # insert values and evaluate
+                result[row_idx] = eval(parsed_expression.format(*other_values))
 
         if out_dtype and result.dtype != out_dtype:
             result.astype(out_dtype, copy=False)
@@ -414,6 +424,7 @@ class FeatureClass(MutableSequence):
             print(h)
         return h
 
+    # noinspection PyTypeHints
     def insert(self, index: int, value: "gpd.GeoDataFrame | FeatureClass") -> None:
         """
         Insert a GeoDataFrame or FeatureClass into the current structure at a specified index.
@@ -431,6 +442,7 @@ class FeatureClass(MutableSequence):
         :raises ValueError: If the schema of `value` does not match the schema of the existing data
 
         """
+        # noinspection PyUnreachableCode
         if not isinstance(index, int):
             raise TypeError("Index must be an integer")
         if not isinstance(value, gpd.GeoDataFrame) and not isinstance(
@@ -544,6 +556,7 @@ class FeatureClass(MutableSequence):
         :type geometry: bool
 
         """
+        # check all columns exist and turn into a list
         if not isinstance(columns, str):
             for col in columns:
                 if col not in self._data.columns:
@@ -551,6 +564,15 @@ class FeatureClass(MutableSequence):
             columns = list(columns)
         else:
             columns = [columns]
+
+        # only geometry was requested
+        if columns == "geometry" or (len(columns) == 1 and columns[0] == "geometry"):
+            return FeatureClass(self._data.geometry)
+
+        # geometry and other columns requested
+        if len(columns) >= 1 and "geometry" in columns:
+            columns.remove("geometry")
+            geometry = True
 
         if geometry:
             columns.append("geometry")
@@ -612,7 +634,8 @@ class FeatureClass(MutableSequence):
     def to_geojson(
         self, filename: os.PathLike | str = None
     ) -> "None | geojson.FeatureCollection":
-        """Convert the FeatureClass to the GeoJSON format.
+        """
+        Convert the FeatureClass to the GeoJSON format.
 
         When a filename is provided, the GeoJSON output will be written to that file. If no filename is
         specified, the GeoJSON format will be returned as a FeatureCollection object. The filename
@@ -688,7 +711,7 @@ class FeatureDataset(MutableMapping):
         :type contents: dict[str, FeatureClass], optional
 
         :param crs: The coordinate reference system to initialize the FeatureDataset with
-        :type crs: pyproj.crs.CRS | Any  # TODO Sphinx broken here
+        :type crs: pyproj.crs.CRS | Any  # TODO Sphinx formatting is broken here
 
         :param enforce_crs: Whether to enforce the CRS in the FeatureDataset, defaults to True
         :type crs: bool
@@ -788,6 +811,7 @@ class FeatureDataset(MutableMapping):
         :raises AttributeError: If the CRS of the FeatureDataset and FeatureClass do not match
 
         """
+        # noinspection PyUnreachableCode
         if not isinstance(value, FeatureClass):
             raise TypeError(f"Expected type ouroboros.FeatureClass: {value}")
 
@@ -841,7 +865,7 @@ class GeoDatabase(MutableMapping):
     def __init__(
         self,
         path: None | os.PathLike | str = None,
-        contents: dict[str : FeatureClass | FeatureDataset] | None = None,
+        contents: dict[str, FeatureClass | FeatureDataset] | None = None,
     ):
         """
         Initialize a new GeoDatabase instance.
@@ -857,10 +881,12 @@ class GeoDatabase(MutableMapping):
         :type contents: dict[str : FeatureClass | FeatureDataset], optional
 
         """
-        self._fds: dict[str | None : FeatureDataset] = dict()
+        self._fds: dict[str | None, FeatureDataset] = dict()
         self._uuid = uuid4()
 
         if path:  # load from disk
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"File not found: {path}")
             datasets = list_datasets(path)
             lyrs = list_layers(path)
             for fds_name in datasets:
@@ -913,6 +939,7 @@ class GeoDatabase(MutableMapping):
         :raises IndexError: If the integer-based index is out of range
 
         """
+        # noinspection PyUnreachableCode
         if not isinstance(key, int) and not isinstance(key, str) and key is not None:
             raise KeyError(f"Expected key to be an integer or string: {key}")
 
@@ -942,7 +969,7 @@ class GeoDatabase(MutableMapping):
         """
         return hash(self._uuid)
 
-    def __iter__(self) -> Iterator[dict[str, FeatureDataset]]:
+    def __iter__(self) -> Iterator[str | None]:
         """
         Return an iterator over the FeatureDataset objects in the GeoDatabase.
 
@@ -981,6 +1008,7 @@ class GeoDatabase(MutableMapping):
         :raises KeyError: If the key being added as a FeatureDataset already exists
 
         """
+        # noinspection PyUnreachableCode
         if isinstance(value, FeatureClass):
             try:
                 crs = value.to_geodataframe().crs
@@ -1071,6 +1099,7 @@ def delete_fc(
     :raises TypeError: If the provided feature class name is not a string
 
     """
+    # noinspection PyUnreachableCode
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
@@ -1102,6 +1131,7 @@ def fc_to_gdf(
     :raises TypeError: If the feature class name (`fc_name`) is not a string
 
     """
+    # noinspection PyUnreachableCode
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
@@ -1113,6 +1143,7 @@ def fc_to_gdf(
     return gdf
 
 
+# noinspection PyTypeHints
 def gdf_to_fc(
     gdf: gpd.GeoDataFrame | gpd.GeoSeries,
     gdb_path: os.PathLike | str,
@@ -1225,6 +1256,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
 
     raster_info = dict()
     if gdal_installed:
+        gdal.UseExceptions()
         for raster_name in list_rasters(gdb_path):
             raster: gdal.Dataset
             with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
@@ -1268,6 +1300,13 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
         * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
 
     """
+    gdb_path = os.path.abspath(gdb_path)
+
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
+
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
 
     fcs = list_layers(gdb_path)
@@ -1305,6 +1344,9 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
     :rtype: list[str]
 
     """
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+
     try:
         lyrs = gpd.list_layers(gdb_path)
         return lyrs["name"].to_list()
