@@ -1,9 +1,6 @@
 # https://github.com/marketplace/actions/setup-miniconda
 name: Pytest - Linux - 3.14
-on:
-  push:
-    branches: [ "dev", "next**" ]
-    paths: [ "src/**" ]
+on: [workflow_dispatch]
 jobs:
   build:
     strategy:
@@ -33,3 +30,4 @@ jobs:
         run: |
           conda activate test
           python -m pytest ./tests/tests.py
+
