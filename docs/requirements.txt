@@ -4,5 +4,4 @@ nbsphinx
 notebook
 sphinx
 sphinx-copybutton
-sphinx-rtd-theme
 pydata-sphinx-theme
