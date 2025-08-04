@@ -1,1 +1,2 @@
-notebooks/* linguist-documentation
+docs/* linguist-documentation
+*.bat linguist-documentation
