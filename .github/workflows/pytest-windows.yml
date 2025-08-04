@@ -1,9 +1,9 @@
-# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# https://github.com/marketplace/actions/setup-miniconda
 name: Pytest - Windows
 on:
   push:
     branches: [ "main" ]
-    paths: [ "src/**" ]
+    paths: [ "src/**", ".github/workflows/pytest-windows.yml" ]
 jobs:
   build:
     strategy:
@@ -23,7 +23,7 @@ jobs:
         run: |
           conda activate test
           conda install pytest fiona "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" geoarrow-pyarrow geojson geopandas -c conda-forge
-      - name: Install pip dependencies
+      - name: Install with pip
         shell: bash -el {0}
         run: |
           conda activate test
