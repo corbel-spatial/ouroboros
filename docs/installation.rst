@@ -29,13 +29,26 @@ For vector *and* raster dataset support you must have already installed the `GDA
 ArcGIS Pro
 ----------
 
+.. warning::
+
+    This is experimental and may not work depending on your installation of ArcGIS!
+
 To install in an ArcGIS Pro :code:`conda` environment:
 
-- Clone and activate an editable environment (`instructions here <https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/clone-an-environment.htm>`__)
+1. Open the `Python Command Prompt <https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt>`__, which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
 
-- Open the `Python Command Prompt <https://developers.arcgis.com/python/latest/guide/install-and-set-up/arcgis-pro/#installation-using-python-command-prompt>`__, which can be launched from the Start Menu > All Programs > ArcGIS > Python Command Prompt.
+2. Create a new environment and install packages with this command::
 
-- Install with this command::
+    conda create python=3.11 arcpy=3.5 ouroboros-gis -c esri -c conda-forge --name new_env
 
-    conda install ourboros-gis -c conda-forge --user`
+3. Activate the new environment::
+
+    proswap new_env
+
+4. Close and reopen the Python Command Prompt. Then test the installation::
+
+    new_env> python
+    >>> import ouroboros as ob
+    >>> ob.gdal_installed
+    True
 
