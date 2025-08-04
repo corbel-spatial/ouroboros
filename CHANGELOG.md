@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.0.0 🎉
+## v1.0.1
+
+- FeatureClass.calculate()
+- Instantiating a FeatureClass from an existing DataFrame uses a deep copy
+- Updated README.md and docs
+
+## v1.0.0 🎉
 
 - Released on conda-forge
 - GDAL raster support by default in conda, optional in pip install

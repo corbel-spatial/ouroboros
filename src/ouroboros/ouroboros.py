@@ -33,6 +33,11 @@ if gdal_version:
         )
 
 
+pd.options.mode.copy_on_write = True  # See https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html#copy-on-write
+pd.set_option("display.max_columns", 20)
+pd.set_option("display.max_colwidth", None)
+
+
 class FeatureClass(MutableSequence):
     """
     The FeatureClass acts as a custom container built on top of GeoPandas' GeoDataFrame,
@@ -80,13 +85,17 @@ class FeatureClass(MutableSequence):
 
         elif isinstance(src, os.PathLike) or isinstance(src, str):  # load data from gdb
             src = os.path.abspath(src)
+            if src.endswith(".gdb"):
+                raise TypeError(
+                    f"Expected a path to a feature class, not a geodatabase: {src}\n"
+                    f"The geodatabase contains: {list_layers(src)}"
+                )
+
             split_path = src.split(os.sep)
             fc_name = split_path[-1]
             if not split_path[-2].endswith(".gdb"):
-                # fds_name = split_path[-2]
                 gdb_path = os.sep.join(split_path[:-2])
             else:
-                # fds_name = None
                 gdb_path = os.sep.join(split_path[:-1])
             self._data: gpd.GeoDataFrame = fc_to_gdf(gdb_path, fc_name)
 
@@ -148,13 +157,15 @@ class FeatureClass(MutableSequence):
 
             * If an integer is provided, the corresponding row is retrieved
             * If a slice is provided, the corresponding rows are retrieved
-            * If a list or tuple of integers or slices is given, multiple specific rows or slices are retrieved
+            * If a sequence of integers or slices is given, multiple specific rows or slices are retrieved
+
+        :type index: int | slice | Sequence[int | slice]
 
         :return: A GeoDataFrame containing the rows matching the provided index
         :rtype: geopandas.GeoDataFrame
 
         :raises KeyError:
-            Raised when the provided index is not of a valid type (i.e., not an integer, slice, or sequence of integers or slices)
+            Raised when the provided index is not of a valid type
 
         """
         if isinstance(index, int):
@@ -191,9 +202,7 @@ class FeatureClass(MutableSequence):
 
     def __len__(self) -> int:
         """
-        Returns the number of rows in the FeatureClass.
-
-        :return: The count of elements or items in the object
+        :return: The number of rows in the FeatureClass
         :rtype int:
 
         """
@@ -237,7 +246,7 @@ class FeatureClass(MutableSequence):
 
     def append(self, value: "gpd.GeoDataFrame | FeatureClass") -> None:
         """
-        Appends rows to the end of the GeoDataFrame.
+        Appends rows to the end of the FeatureClass.
 
         The appended data must be compatible with the GeoDataFrame data structure.
 
@@ -253,6 +262,90 @@ class FeatureClass(MutableSequence):
             raise TypeError(
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
             )
+
+    def calculate(
+        self,
+        in_column: str,
+        expression: str | Any,
+        out_column: None | str = None,
+        out_dtype: None | type | np.dtype = None,
+    ) -> None:
+        """
+        Performs calculations on a column in the dataset based on the provided expression.
+
+        The :code:`expression` is stringified Python code that will be evaluated for each row.
+        If :code:`out_column` is specified and does not exist, a new column will be created.
+        Other columns can be referenced using the syntax: :code:`$column_name$`
+
+        Example::
+
+            fc.calculate(in_column="oldcol", expression="int($oldcol$) * 42", out_column="newcol", out_dtype=np.uint8)
+
+        :param in_column: Name of the column to use as input
+        :type in_column: str
+        :param expression: Expression to evaluate for each value in the input column, will be evaluated by the method call and then stringified
+        :type expression: str | Any
+        :param out_column: Name for the output column, if none given will update `in_column` in place
+        :type out_column: str, optional
+        :param out_dtype: Type to convert the results to
+        :type out_dtype: type | np.dtype, optional
+
+        """
+
+        columns = self._data.columns
+        if in_column not in columns:
+            raise KeyError(f"Column '{in_column}' not found in data.")
+
+        if not isinstance(expression, str):
+            expression = str(expression)
+
+        result: pd.Series = self._data[in_column].convert_dtypes()  # copy
+
+        if "$" in expression:
+            # parse an expression that contains column names
+            col_names = str()  # parsed names of DataFrame columns
+            col_names_n = 0
+            non_col_names = (
+                str()
+            )  # all parts of the expression that are not column names
+            col_name_mode = False  # whether we're currently parsing a column name
+            for char in expression:
+                if char == "$" and not col_name_mode:  # start escaped sequence
+                    col_name_mode = True
+                    col_names_n += 1
+                elif char == "$" and col_name_mode:  # end escaped sequence
+                    col_name_mode = False
+                    col_names += "$"
+                    non_col_names += f"{{{col_names_n - 1}}}"
+                elif col_name_mode:
+                    col_names += char
+                else:
+                    non_col_names += char
+            col_names = col_names.strip("$").split("$")
+            other_col_series = [self._data[col] for col in col_names]
+
+            # evaluate expression on each row
+            try:
+                for row_idx in range(len(result)):
+                    other_values = [f"'{other[row_idx]}'" for other in other_col_series]
+                    result[row_idx] = eval(non_col_names.format(*other_values))
+            except SyntaxError:
+                raise SyntaxError(expression)
+        else:
+            # don't parse, just evaluate
+            result: pd.Series = result.map(lambda x: expression)
+
+        if out_dtype and result.dtype != out_dtype:
+            result.astype(out_dtype, copy=False)
+
+        # save results
+        if not out_column or in_column == out_column or out_column in columns:
+            # update in place
+            self._data.update(result)
+        else:
+            # append new column
+            loc = len(columns) - 1
+            self._data.insert(loc, out_column, result)
 
     def clear(self) -> None:
         """
