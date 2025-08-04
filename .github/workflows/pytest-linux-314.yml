@@ -2,7 +2,7 @@
 name: Pytest - Linux - 3.14
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "next**" ]
     paths: [ "src/**" ]
 jobs:
   build:
