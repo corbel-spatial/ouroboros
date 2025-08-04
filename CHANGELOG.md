@@ -18,28 +18,24 @@
 - Dev environment setup/test/build batch scripts
 - Added TODO.md list for long-term goals
 
-## v1.0.0b7
+## 1.0.0-beta7
 
 - Pass kwargs to the GeoTIFF write operation
 - Added get_info() and list_rasters() utility functions
 - Docs additions and updates
 - CI cross-platform testing fixes
 
-## v1.0.0b6
+## 1.0.0-beta6
 
 - Added a utility function for exporting raster datasets to GeoTIFF
 - Docs updates
 
-## v1.0.0b5
+## 1.0.0-beta5
 
 - Switched sphinx theme to PyData for dark mode
 - Added more example usage notebooks
 
-## v1.0.0b4
- 
-- Re-upload to PyPI
-
-## v1.0.0b3
+## 1.0.0-beta4
 
 - Major refactor:
   - Dropped arcpy as a dependency
@@ -51,12 +47,13 @@
   - Reverse engineered feature datasets for `ouroboros.list_datasets` function
 - README and documentation updates
 - Added GitHub actions for cross-platform testing, black, pylint, and coverage
+- Skipping v1.0.0b3 to re-upload to PyPI
 
-## v1.0.0b2
+## 1.0.0-beta2
 
 - Bump requests from 2.32.3 to 2.32.4 in /docs
 
-## v1.0.0b1
+## 1.0.0-beta1
 
 - Initial release as ouroboros-arcpy in PyPI
 - Proof of concept class `ouroboros.core.FeatureClass`
