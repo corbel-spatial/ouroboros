@@ -14,6 +14,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            src
+            tests
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true

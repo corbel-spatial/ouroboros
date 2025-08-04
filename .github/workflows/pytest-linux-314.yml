@@ -1,9 +1,6 @@
 # https://github.com/marketplace/actions/setup-miniconda
-name: Pytest - Linux - 3.14
-on:
-  push:
-    branches: [ "dev", "next**" ]
-    paths: [ "src/**" ]
+name: Pytest - Linux - 3.14 prerelease
+on: workflow_dispatch
 jobs:
   build:
     strategy:
@@ -14,6 +11,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            src
+            tests
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
