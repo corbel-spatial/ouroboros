@@ -6,6 +6,7 @@ from pprint import pprint
 
 import geojson
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyogrio
@@ -189,6 +190,35 @@ class TestFeatureClass:
         fc1.append(new_row)
         assert len(fc1) == count + 1
         assert fc1[0].iat[0, 0] == fc1[-1].iat[0, 0]
+
+    def test_calculate(self, gdf_points):
+        fc1 = ob.FeatureClass(gdf_points)
+        fc1.calculate(
+            "sample1",
+            "test",
+        )
+        fc1.select_columns("sample1", geometry=False).head()
+
+        fc2 = ob.FeatureClass(gdf_points)
+        fc2.calculate(
+            "sample1",
+            "test",
+            "test2",
+        )
+        fc2.select_columns("test2", geometry=False).head()
+
+        fc3 = ob.FeatureClass(gdf_points)
+        fc3.calculate("sample1", 2 * 2, "test3", np.uint8)
+        fc3.select_columns("test3", geometry=False).head()
+
+        fc4 = ob.FeatureClass(gdf_points)
+        fc4.calculate(
+            "sample1",
+            "$sample2$ + '___' + $sample2$ + '___' + $sample3$",
+            "test4",
+            str,
+        )
+        fc4.select_columns("test4", geometry=False).head()
 
     def test_clear(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)

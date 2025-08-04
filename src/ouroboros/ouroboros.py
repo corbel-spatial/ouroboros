@@ -13,8 +13,8 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyogrio
+import pyproj
 from pyogrio.errors import DataSourceError
-from pyproj.crs import CRS
 
 
 # Check for optional install of GDAL>=3.8 for raster support
@@ -61,7 +61,7 @@ class FeatureClass(MutableSequence):
               - String or os.PathLike path pointing to a file or a geodatabase dataset
               - GeoDataFrame or similar type to initialize directly, or
               - Existing FeatureClass object to copy
-        :type src: None | os.PathLike | str | FeatureClass | geopandas.GeoDataFrame | geopandas.GeoSeries | pandas.DataFrame | pandas.Series
+        :type src: DataFrame, optional
 
         :raises TypeError: Raised when the provided source type is unsupported or invalid
 
@@ -72,13 +72,14 @@ class FeatureClass(MutableSequence):
 
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
-            self._data = src
+            self._data = src.copy(deep=True)
 
         elif isinstance(src, gpd.GeoSeries):
-            self._data = gpd.GeoDataFrame(geometry=src)
+            self._data = gpd.GeoDataFrame(geometry=src.copy(deep=True))
 
         elif isinstance(src, pd.DataFrame) | isinstance(src, pd.Series):
-            self._data = gpd.GeoDataFrame(src)
+            src: pd.DataFrame | pd.Series
+            self._data = gpd.GeoDataFrame(src.copy(deep=True))
 
         elif isinstance(src, FeatureClass):
             self._data = src.to_geodataframe()
@@ -94,8 +95,10 @@ class FeatureClass(MutableSequence):
             split_path = src.split(os.sep)
             fc_name = split_path[-1]
             if not split_path[-2].endswith(".gdb"):
+                # fds_name = split_path[-2]
                 gdb_path = os.sep.join(split_path[:-2])
             else:
+                # fds_name = None
                 gdb_path = os.sep.join(split_path[:-1])
             self._data: gpd.GeoDataFrame = fc_to_gdf(gdb_path, fc_name)
 
@@ -153,19 +156,16 @@ class FeatureClass(MutableSequence):
         FeatureClass.
 
         :param index: The index, indices, rows, or slices to retrieve from the FeatureClass
-        :type index: int | slice | Sequence[int | slice]
-
             * If an integer is provided, the corresponding row is retrieved
             * If a slice is provided, the corresponding rows are retrieved
-            * If a sequence of integers or slices is given, multiple specific rows or slices are retrieved
-
+            * If a list or tuple of integers or slices is given, multiple specific rows or slices are retrieved
         :type index: int | slice | Sequence[int | slice]
 
         :return: A GeoDataFrame containing the rows matching the provided index
         :rtype: geopandas.GeoDataFrame
 
         :raises KeyError:
-            Raised when the provided index is not of a valid type
+            Raised when the provided index is not of a valid type (i.e., not an integer, slice, or sequence of integers or slices)
 
         """
         if isinstance(index, int):
@@ -211,7 +211,7 @@ class FeatureClass(MutableSequence):
     def __setitem__(
         self,
         index: tuple[int, int | str],
-        value: any,
+        value: Any,
     ) -> None:
         """
         Assign a value to the specified cell in the FeatureClass using a tuple index
@@ -226,7 +226,7 @@ class FeatureClass(MutableSequence):
         :type index: tuple[int, int | str]
 
         :param value: The value to assign to the specified cell
-        :type value: any
+        :type value: Any
 
         :raises: TypeError
             If the row index is not an integer, or if the column index is neither an integer nor a string
@@ -676,7 +676,7 @@ class FeatureDataset(MutableMapping):
     def __init__(
         self,
         contents: None | dict[str, FeatureClass] = None,
-        crs: Any | CRS = None,
+        crs: pyproj.crs.CRS | Any = None,
         enforce_crs: bool = True,
     ):
         """
@@ -685,10 +685,10 @@ class FeatureDataset(MutableMapping):
         The CRS can be specified as any value compatible with the CRS class constructor.
 
         :param contents: A dict of FeatureClass names and their objects to initialize the FeatureDataset with
-        :type contents: None | dict[str, FeatureClass]
+        :type contents: dict[str, FeatureClass], optional
 
         :param crs: The coordinate reference system to initialize the FeatureDataset with
-        :type crs: Any | CRS
+        :type crs: pyproj.crs.CRS | Any  # TODO Sphinx broken here
 
         :param enforce_crs: Whether to enforce the CRS in the FeatureDataset, defaults to True
         :type crs: bool
@@ -703,10 +703,10 @@ class FeatureDataset(MutableMapping):
         self._gdbs = set()
 
         if self.enforce_crs:
-            if isinstance(crs, CRS) or crs is None:
+            if isinstance(crs, pyproj.crs.CRS) or crs is None:
                 self.crs = crs
             else:
-                self.crs = CRS(crs)
+                self.crs = pyproj.crs.CRS(crs)
         else:
             self.crs = None
 
@@ -851,10 +851,10 @@ class GeoDatabase(MutableMapping):
         of FeatureDatasets.
 
         :param path: The file path to load datasets and layers from
-        :type path: None | os.PathLike | str
+        :type path: os.PathLike | str, optional
 
         :param contents: A dict of dataset names and their objects to initialize the GeoDatabase with
-        :type contents: dict[str : FeatureClass | FeatureDataset] | None
+        :type contents: dict[str : FeatureClass | FeatureDataset], optional
 
         """
         self._fds: dict[str | None : FeatureDataset] = dict()
@@ -1230,7 +1230,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
             with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
                 raster_info[raster_name] = {
                     "block_size": raster.GetRasterBand(1).GetBlockSize(),
-                    "crs": f"EPSG:{CRS(raster.GetProjectionRef()).to_epsg()}",
+                    "crs": f"EPSG:{pyproj.crs.CRS(raster.GetProjectionRef()).to_epsg()}",
                     "category_names": raster.GetRasterBand(1).GetRasterCategoryNames(),
                     "color_interpretation": raster.GetRasterBand(
                         1
@@ -1368,9 +1368,9 @@ def raster_to_tif(
     :param tif_path: The optional path where the GeoTIFF file should be saved. If not
         provided, the output GeoTIFF file will be saved with the same name as the raster
         in the GDB directory. Defaults to None.
-    :type tif_path: None | os.PathLike | str
+    :type tif_path: os.PathLike | str, optional
     :param options: Additional keyword arguments for writing the GeoTIFF file, see the documentation: https://gdal.org/en/stable/drivers/raster/gtiff.html#creation-options
-    :type options: dict
+    :type options: dict, optional
     """
     if not gdal_installed:
         raise ImportError(
