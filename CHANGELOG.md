@@ -5,7 +5,7 @@
 - Check existence of input files
 - Documentation improvements
 - Miscellaneous bugfixes and tweaks
-- 
+
 ## v1.0.2
 
 - Fixed installation instructions and other docs tweaks
