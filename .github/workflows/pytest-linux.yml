@@ -25,6 +25,7 @@ jobs:
         shell: bash -el {0}
         run: |
           pwd
+          ls -la
           ls -la src/ouroboros
           ls -la tests
       - uses: conda-incubator/setup-miniconda@v3
@@ -40,7 +41,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda activate test
-          uv pip install .[test]
+          uv pip install . --group test
       - name: Test with pytest
         shell: bash -el {0}
         run: |
