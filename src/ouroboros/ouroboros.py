@@ -29,7 +29,7 @@ if gdal_version:
     version_split = gdal_version.split(".")
     if int(version_split[0]) < 3 or int(version_split[1]) < 8:
         raise ImportError(
-            "GDAL version must be >= 3.8, please upgrade to a newer version"
+            "GDAL version must be >=3.8, please upgrade to a newer version"
         )
 
 
