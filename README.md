@@ -1,8 +1,7 @@
 [![Conda - Version](https://img.shields.io/conda/vn/conda-forge/ouroboros-gis.svg)](https://anaconda.org/conda-forge/ouroboros-gis)
-[![Conda - Downloads](https://img.shields.io/conda/dn/conda-forge/ouroboros-gis.svg)](https://anaconda.org/conda-forge/ouroboros-gis)
 [![PyPI - Version](https://img.shields.io/pypi/v/ouroboros-gis?logo=pypi)](https://pypi.org/project/ouroboros-gis/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/ouroboros-gis)](https://pypistats.org/packages/ouroboros-gis)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-gis?logo=python)](https://pypi.org/project/ouroboros-gis/)
+[![PyPI Downloads](https://static.pepy.tech/badge/ouroboros-gis/month)](https://pepy.tech/projects/ouroboros-gis)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=)](https://github.com/corbel-spatial/ouroboros/blob/main/LICENSE)
 
 [![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcorbel-spatial%2Fouroboros%2Frefs%2Fheads%2Fmain%2Fdocs%2Fpytest_coverage.json&query=%24.totals.percent_covered_display&suffix=%25&label=coverage)](https://raw.githubusercontent.com/corbel-spatial/ouroboros/refs/heads/main/docs/pytest_coverage.json)
