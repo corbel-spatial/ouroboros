@@ -780,8 +780,12 @@ class TestUtilityFunctions:
         rasters = ob.list_rasters(gdb_path)
         assert len(rasters) == 0
 
-    def test_raster_to_tif(self, tmp_path, esri_gdb):
-        if ob.gdal_installed:
+    def test_raster_to_tif(self, tmp_path, capsys, esri_gdb):
+        if not ob.gdal_installed:
+            pytest.skip("GDAL is not installed")
+        else:
+            with capsys.disabled():
+                print("\n\t*** GDAL installed:", ob.gdal_installed, "***")
             ob.raster_to_tif(
                 gdb_path=esri_gdb,
                 raster_name="random_raster",
