@@ -86,7 +86,12 @@ def ob_gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
 @pytest.fixture
 def esri_gdb(tmp_path):
     z = os.path.join("tests", "test_data.gdb.zip")
-    gdb_path = os.path.abspath(os.path.join("..", z))
+    try:
+        gdb_path = os.path.abspath(os.path.join("..", z))
+    except FileNotFoundError:
+        gdb_path = os.path.abspath(
+            os.path.join("..", "..", z)
+        )  # hack for testing on CI
     zf = zipfile.ZipFile(gdb_path, "r")
     zf.extractall(tmp_path)
     return os.path.join(tmp_path, "test_data.gdb")
