@@ -16,24 +16,33 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            src
+            pyproject.toml
+            src/ouroboros
             tests
+          sparse-checkout-cone-mode: false
+      - name: Check paths
+        shell: bash -el {0}
+        run: |
+          pwd
+          ls -la
+          ls -la src/ouroboros
+          ls -la tests
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-update-conda: true
+          auto-update-conda: false
           python-version: ${{ matrix.python-version }}
       - name: Install conda dependencies
         shell: bash -el {0}
         run: |
           conda activate test
-          conda install pytest fiona "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" geoarrow-pyarrow geojson geopandas -c conda-forge
-      - name: Install with pip
+          conda install uv "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" -c conda-forge
+      - name: Install with uv pip
         shell: bash -el {0}
         run: |
           conda activate test
-          pip install .
+          uv pip install . --group test
       - name: Test with pytest
         shell: bash -el {0}
         run: |
           conda activate test
-          python -m pytest ./tests/tests.py
+          python -m pytest -n auto ./tests/tests.py
