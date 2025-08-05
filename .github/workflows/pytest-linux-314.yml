@@ -17,6 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip uv
+        uv venv
         uv pip install . --group test
     - name: Test with pytest
       run: |
