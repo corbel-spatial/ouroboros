@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            src
+            src/ouroboros
             tests
           sparse-checkout-cone-mode: false
       - uses: conda-incubator/setup-miniconda@v3
