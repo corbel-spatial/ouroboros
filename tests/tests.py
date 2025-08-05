@@ -758,9 +758,9 @@ class TestUtilityFunctions:
 
         with pytest.raises(TypeError):
             try:  # pytest
-                ob.list_datasets("README.md")
+                ob.list_datasets("pyproject.toml")
             except FileNotFoundError:  # coverage
-                ob.list_datasets(os.path.join("..", "README.md"))
+                ob.list_datasets(os.path.join("..", "pyproject.toml"))
 
     def test_list_layers(self, ob_gdb):
         gdb, gdb_path = ob_gdb
