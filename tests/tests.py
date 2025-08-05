@@ -88,10 +88,8 @@ def esri_gdb(tmp_path):
     z = os.path.join("tests", "test_data.gdb.zip")
     try:
         gdb_path = os.path.abspath(os.path.join("..", z))
-    except FileNotFoundError:
-        gdb_path = os.path.abspath(
-            os.path.join("..", "..", z)
-        )  # hack for testing on CI
+    except FileNotFoundError:  # for CI testing -- do not touch!
+        gdb_path = os.path.abspath(os.path.join(".", z))
     zf = zipfile.ZipFile(gdb_path, "r")
     zf.extractall(tmp_path)
     return os.path.join(tmp_path, "test_data.gdb")
