@@ -1,0 +1,47 @@
+# syntax=docker/dockerfile:1
+FROM ubuntu:noble AS builder
+ENV HOME="/root"
+WORKDIR $HOME
+RUN apt update && apt upgrade -y
+
+# install system dependencies
+FROM builder AS build1
+RUN apt install -y git build-essential libbz2-dev libffi-dev liblzma-dev libncursesw5-dev libreadline-dev  \
+    libsqlite3-dev libssl-dev libstdc++-11-dev libxml2-dev libxmlsec1-dev make tk-dev xz-utils zlib1g-dev
+
+# clone Python source
+FROM build1 AS build2
+ARG TEST_VERSION
+RUN git clone https://github.com/python/cpython.git --branch "v$TEST_VERSION"
+
+# make install Python as python3
+FROM build2 AS build3
+RUN cd cpython && \
+    ./configure && \
+    make && \
+    make test && \
+    make install
+
+# install ouroboros dependencies
+FROM build3 AS build4
+RUN apt install -y gdal-bin libgdal-dev>=3.8 python3-gdal
+
+FROM build4 AS build5
+RUN pip3 install --upgrade pip --root-user-action ignore && \
+    python3 -m pip install fiona geojson geopandas gdal==3.8.4
+
+# clone ouroboros source
+FROM build5 AS build6
+RUN git clone https://github.com/corbel-spatial/ouroboros.git --branch dev
+
+# build ouroboros
+FROM build6 AS build7
+RUN cd ouroboros && \
+    python3 -m pip install . --group test
+
+# run tests on ouroboros
+# to run manually from Docker Hub: docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14.0rc1
+# then enter the RUN command below
+FROM build7 AS build8
+RUN cd ouroboros && \
+    python3 -m pytest -vv tests/tests.py
