@@ -648,14 +648,25 @@ class FeatureClass(MutableSequence):
         :rtype: None | geojson.FeatureCollection
 
         """
-        if filename:
-            if not filename.endswith(".geojson"):
-                filename += ".geojson"
-            self._data.to_file(filename, driver="GeoJSON")
-            return None
-        else:
-            gjs = self._data.to_json(to_wgs84=True)
-            return geojson.loads(gjs)
+        try:
+            if filename:
+                if not filename.endswith(".geojson"):
+                    filename += ".geojson"
+                self._data.to_file(filename, driver="GeoJSON")
+                return None
+            else:
+                gjs = self._data.to_json(to_wgs84=True)
+                return geojson.loads(gjs)
+        except TypeError as e:
+            if "is not JSON serializable" in e:
+                raise TypeError(
+                    (
+                        e,
+                        "Some data cannot be converted to JSON, it must be removed before converting",
+                    )
+                )
+            else:
+                raise TypeError(e)
 
     def to_shapefile(self, filename: os.PathLike | str) -> None:
         """
@@ -1089,7 +1100,7 @@ def delete_fc(
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
-    if fc_name in list_layers(gdb_path):
+    if fc_name in list_layers(gdb_path):  # TODO use pyogrio.vsi_unlink instead?
         fiona.remove(gdb_path, "OpenFileGDB", fc_name)
         return True
     else:

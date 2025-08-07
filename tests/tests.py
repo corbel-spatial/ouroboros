@@ -434,7 +434,7 @@ class TestFeatureClass:
         assert isinstance(gdf, gpd.GeoDataFrame)
 
     def test_to_geojson(self, tmp_path, gdf_points):
-        # TODO test_to_geojson: test case of table without geometry; test case of object types not JSON serializable
+        # TODO test case of object types not JSON serializable
         fc1 = ob.FeatureClass(gdf_points)
         gjs1 = fc1.to_geojson()
         assert isinstance(gjs1, geojson.FeatureCollection)
@@ -443,6 +443,28 @@ class TestFeatureClass:
         with open(os.path.join(tmp_path, "test.geojson"), "r") as f:
             gjs2 = geojson.load(f)
         assert isinstance(gjs2, geojson.FeatureCollection)
+        #
+        # # no geometry
+        # fc2 = ob.FeatureClass(pd.Series({"col1": [0, 1, 2]}))
+        # gjs2 = fc2.to_geojson()
+        # assert isinstance(gjs2, geojson.FeatureCollection)
+        #
+        # # no features
+        # fc3 = ob.FeatureClass(gpd.GeoDataFrame({"col1": []}, crs="WGS 84"))
+        # gjs3 = fc3.to_geojson()
+        # assert isinstance(gjs3, geojson.FeatureCollection)
+
+        # not JSON serializable
+        some_object = object()
+        fc4 = ob.FeatureClass(
+            gpd.GeoDataFrame(
+                {"col1": [some_object]},
+                geometry=[LineString([(0, 1), (1, 1)])],
+                crs="WGS 84",
+            )
+        )
+        with pytest.raises(TypeError):
+            fc4.to_geojson()
 
     def test_to_shapefile(self, tmp_path, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
