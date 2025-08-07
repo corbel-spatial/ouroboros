@@ -446,7 +446,6 @@ class TestFeatureClass:
         # no geometry
         fc2 = ob.FeatureClass(pd.Series({"col1": [0, 1, 2]}))
         gjs2 = fc2.to_geojson()
-        print(gjs2)
         assert isinstance(gjs2, dict)
         fc2.to_geojson(os.path.join(tmp_path, "test2"))
 
@@ -703,6 +702,15 @@ class TestUtilityFunctions:
             # noinspection PyTypeChecker
             ob.delete_fc(gdb_path, 0)
 
+        with pytest.raises(FileNotFoundError):
+            ob.delete_fc("bad_path", "")
+
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.delete_fc("pyproject.toml", "")
+            except FileNotFoundError:  # coverage
+                ob.delete_fc(os.path.join("..", "pyproject.toml"), "")
+
     def test_fc_to_gdf(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         for fc in ob.list_layers(gdb_path):
@@ -753,13 +761,38 @@ class TestUtilityFunctions:
             overwrite=True,
         )
 
-    def test_get_info(self, ob_gdb, esri_gdb):
-        gdb, gdb_path = ob_gdb
-        ob_info = ob.get_info(gdb_path)
-        assert isinstance(ob_info, dict)
+    def test_get_info(self, tmp_path, esri_gdb):
+        gdb = ob.GeoDatabase(
+            contents={
+                "fds": ob.FeatureDataset(
+                    {
+                        "fc": ob.FeatureClass(
+                            gpd.GeoDataFrame(
+                                {"col1": ["c"]},
+                                geometry=[LineString([(0, 1), (1, 1)])],
+                                crs="WGS 84",
+                            ),
+                        )
+                    }
+                )
+            }
+        )
+        gdb_path = tmp_path / "out.gdb"
+        gdb.save(gdb_path, overwrite=True)
+        info = ob.get_info(gdb_path)
+        assert isinstance(info, dict)
 
-        esri_info = ob.get_info(esri_gdb)
-        assert isinstance(esri_info, dict)
+        info = ob.get_info(esri_gdb)
+        assert isinstance(info, dict)
+
+        with pytest.raises(FileNotFoundError):
+            ob.get_info("bad_path")
+
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.get_info("pyproject.toml")
+            except FileNotFoundError:  # coverage
+                ob.get_info(os.path.join("..", "pyproject.toml"))
 
     def test_list_datasets(self, ob_gdb, esri_gdb):
         gdb, gdb_path = ob_gdb
@@ -796,6 +829,12 @@ class TestUtilityFunctions:
         with pytest.raises(FileNotFoundError):
             ob.list_layers("bad_path")
 
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.list_layers("pyproject.toml")
+            except FileNotFoundError:  # coverage
+                ob.list_layers(os.path.join("..", "pyproject.toml"))
+
     def test_list_rasters(self, ob_gdb, esri_gdb):
         rasters = ob.list_rasters(esri_gdb)
         assert len(rasters) == 1
@@ -805,6 +844,15 @@ class TestUtilityFunctions:
         gdb, gdb_path = ob_gdb
         rasters = ob.list_rasters(gdb_path)
         assert len(rasters) == 0
+
+        with pytest.raises(FileNotFoundError):
+            ob.list_rasters("bad_path")
+
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.list_rasters("pyproject.toml")
+            except FileNotFoundError:  # coverage
+                ob.list_rasters(os.path.join("..", "pyproject.toml"))
 
     def test_raster_to_tif(self, tmp_path, capsys, esri_gdb):
         if not ob.gdal_installed:

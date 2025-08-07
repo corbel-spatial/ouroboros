@@ -1110,6 +1110,12 @@ def delete_fc(
     :raises TypeError: If the provided feature class name is not a string
 
     """
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
+
     # noinspection PyUnreachableCode
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
@@ -1250,7 +1256,12 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     :rtype: dict
 
     """
-    # TODO parse geodatabase contents solely on gdbtable XML
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
+
     fc_info = {fc: pyogrio.read_info(gdb_path, fc) for fc in list_layers(gdb_path)}
 
     fds_info = {
@@ -1313,7 +1324,6 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
 
     """
     gdb_path = os.path.abspath(gdb_path)
-
     if not os.path.exists(gdb_path):
         raise FileNotFoundError(gdb_path)
     if not os.path.isdir(gdb_path):
@@ -1356,8 +1366,11 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
     :rtype: list[str]
 
     """
+    gdb_path = os.path.abspath(gdb_path)
     if not os.path.exists(gdb_path):
         raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
 
     try:
         lyrs = gpd.list_layers(gdb_path)
@@ -1381,6 +1394,12 @@ def list_rasters(gdb_path: os.PathLike | str) -> list[str]:
         * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
 
     """
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
+
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
     fcs = list_layers(gdb_path)
     fds = list_datasets(gdb_path)
@@ -1430,6 +1449,12 @@ def raster_to_tif(
         raise ImportError(
             "GDAL not installed, ouroboros cannot support raster operations"
         )
+
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
 
     if tif_path is None:
         tif_path = os.path.join(os.path.dirname(gdb_path), raster_name + ".tif")
