@@ -1120,7 +1120,7 @@ def delete_fc(
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
-    if fc_name in list_layers(gdb_path):  # TODO use pyogrio.vsi_unlink instead?
+    if fc_name in list_layers(gdb_path):
         fiona.remove(gdb_path, "OpenFileGDB", fc_name)
         return True
     else:
