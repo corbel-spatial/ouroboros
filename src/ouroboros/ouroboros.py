@@ -710,7 +710,7 @@ class FeatureDataset(MutableMapping):
     def __init__(
         self,
         contents: None | dict[str, FeatureClass] = None,
-        crs: pyproj.crs.CRS | Any = None,
+        crs: None | pyproj.crs.CRS | Any = None,
         enforce_crs: bool = True,
     ):
         """
@@ -722,10 +722,10 @@ class FeatureDataset(MutableMapping):
         :type contents: dict[str, FeatureClass], optional
 
         :param crs: The coordinate reference system to initialize the FeatureDataset with
-        :type crs: pyproj.crs.CRS | Any  # TODO Sphinx formatting is broken here
+        :type crs: pyproj.crs.CRS | Any, optional
 
         :param enforce_crs: Whether to enforce the CRS in the FeatureDataset, defaults to True
-        :type crs: bool
+        :type enforce_crs: bool
 
         :raises TypeError: If the provided CRS value cannot be converted to a valid CRS object
 
