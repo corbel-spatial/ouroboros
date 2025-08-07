@@ -342,7 +342,7 @@ class FeatureClass(MutableSequence):
                 # get row values
                 other_values = [f"'{other[row_idx]}'" for other in other_col_series]
                 # insert values and evaluate
-                result[row_idx] = eval(parsed_expression.format(*other_values))
+                result.loc[row_idx] = eval(parsed_expression.format(*other_values))
 
         if out_dtype and result.dtype != out_dtype:
             result.astype(out_dtype, copy=False)
