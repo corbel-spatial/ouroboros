@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.4
+
+- Tested with Python 3.14.0-rc1
+- GitHub Action to test source against Python prerelease 
+- Removed FeatureClass.to_arrow() to avoid dependency on Pyarrow
+
 ## v1.0.3
 
 - Check existence of input files

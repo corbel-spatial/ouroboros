@@ -7,7 +7,6 @@ import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import pyarrow as pa
 import pyogrio
 import pytest
 from shapely.geometry import LineString, MultiLineString, Point
@@ -445,11 +444,6 @@ class TestFeatureClass:
             gjs2 = geojson.load(f)
         assert isinstance(gjs2, geojson.FeatureCollection)
 
-    def test_to_pyarrow(self, gdf_points):
-        fc1 = ob.FeatureClass(gdf_points)
-        arr = fc1.to_pyarrow()
-        assert isinstance(arr, pa.Table)
-
     def test_to_shapefile(self, tmp_path, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         fc1.to_shapefile(os.path.join(tmp_path, "test"))
@@ -780,8 +774,12 @@ class TestUtilityFunctions:
         rasters = ob.list_rasters(gdb_path)
         assert len(rasters) == 0
 
-    def test_raster_to_tif(self, tmp_path, esri_gdb):
-        if ob.gdal_installed:
+    def test_raster_to_tif(self, tmp_path, capsys, esri_gdb):
+        if not ob.gdal_installed:
+            pytest.skip("GDAL is not installed")
+        else:
+            with capsys.disabled():
+                print("\n\t*** GDAL installed:", ob.gdal_installed, "***")
             ob.raster_to_tif(
                 gdb_path=esri_gdb,
                 raster_name="random_raster",
