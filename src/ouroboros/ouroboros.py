@@ -11,7 +11,6 @@ import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import pyarrow as pa
 import pyogrio
 import pyproj
 from pyogrio.errors import DataSourceError
@@ -657,19 +656,6 @@ class FeatureClass(MutableSequence):
         else:
             gjs = self._data.to_json(to_wgs84=True)
             return geojson.loads(gjs)
-
-    def to_pyarrow(self) -> pa.Table:
-        """
-        Convert the FeatureClass to a PyArrow Table.
-
-        Wraps the geopandas.GeoDataFrame.to_arrow() method.
-
-        :return: A PyArrow Table object
-        :rtype: pyarrow.Table
-
-        """
-        arrow_table = self._data.to_arrow()
-        return pa.table(arrow_table)
 
     def to_shapefile(self, filename: os.PathLike | str) -> None:
         """
