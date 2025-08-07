@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import shutil
@@ -634,39 +635,52 @@ class FeatureClass(MutableSequence):
         self, filename: os.PathLike | str = None
     ) -> "None | geojson.FeatureCollection":
         """
-        Convert the FeatureClass to the GeoJSON format.
+        Convert the FeatureClass to the GeoJSON format, or JSON if the data does not have geometry.
 
         When a filename is provided, the GeoJSON output will be written to that file. If no filename is
         specified, the GeoJSON format will be returned as a FeatureCollection object. The filename
-        is automatically suffixed with '.geojson' if not specified in the provided name.
+        is automatically suffixed with '.geojson' if not specified in the provided name. If the data
+        has no geometry column the file will be saved as JSON.
 
         :param filename: The name of the file where the GeoJSON output should be written
         :type filename: os.PathLike | str, optional
 
         :return: None when a filename is provided and the GeoJSON data is written to disk;
-                 otherwise, returns a geojson.FeatureCollection object
-        :rtype: None | geojson.FeatureCollection
+                 otherwise returns a geojson.FeatureCollection object, or a JSON dict if no geometry.
+        :rtype: None | dict | geojson.FeatureCollection
 
         """
+        if len(self._data) == 0:
+            raise ValueError("Dataset is empty")
+
         try:
+            gdf = self.to_geodataframe()
+
             if filename:
-                if not filename.endswith(".geojson"):
-                    filename += ".geojson"
-                self._data.to_file(filename, driver="GeoJSON")
+                if not self.geom_type:  # to JSON
+                    if not filename.endswith(".json"):
+                        filename += ".json"
+                    df = pd.DataFrame(gdf)
+                    with open(filename, "w") as f:
+                        json.dump(df.to_json(), f)
+                else:  # to GeoJSON
+                    if not filename.endswith(".geojson"):
+                        filename += ".geojson"
+                    gdf.to_file(filename, driver="GeoJSON")
                 return None
-            else:
-                gjs = self._data.to_json(to_wgs84=True)
-                return geojson.loads(gjs)
+            else:  # return GeoJSON object
+                if self.geom_type:
+                    gjs = gdf.to_json(to_wgs84=True)
+                    return geojson.loads(gjs)
+                else:
+                    df = pd.DataFrame(gdf)
+                    return json.loads(df.to_json())
+
         except TypeError as e:
-            if "is not JSON serializable" in e:
-                raise TypeError(
-                    (
-                        e,
-                        "Some data cannot be converted to JSON, it must be removed before converting",
-                    )
-                )
-            else:
-                raise TypeError(e)
+            raise TypeError(
+                f"{e}\n"
+                f"Some data cannot be converted to JSON, it must be removed before converting",
+            )
 
     def to_shapefile(self, filename: os.PathLike | str) -> None:
         """
@@ -1236,6 +1250,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     :rtype: dict
 
     """
+    # TODO parse geodatabase contents solely on gdbtable XML
     fc_info = {fc: pyogrio.read_info(gdb_path, fc) for fc in list_layers(gdb_path)}
 
     fds_info = {
