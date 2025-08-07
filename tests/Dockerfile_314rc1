@@ -1,86 +1,47 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:noble AS builder
+ENV HOME="/root"
+WORKDIR $HOME
+RUN apt update && apt upgrade -y
 
 # install system dependencies
 FROM builder AS build1
-RUN apt update && apt upgrade -y && \
-    apt install -y build-essential cmake curl cython3 gdal-bin git  \
-    libboost-dev libbz2-dev libgdal-dev libffi-dev libncurses-dev  \
-    libreadline-dev libsqlite3-dev libssl-dev liblzma-dev ninja-build  \
-    python-is-python3 python3 python3-cffi python3-dev python3-gdal  \
-    python3-geopandas python3-pip python3-tk python3-venv && \
-    apt autoclean -y && apt autoremove -y
+RUN apt install -y git build-essential libbz2-dev libffi-dev liblzma-dev libncursesw5-dev libreadline-dev  \
+    libsqlite3-dev libssl-dev libstdc++-11-dev libxml2-dev libxmlsec1-dev make tk-dev xz-utils zlib1g-dev
 
-# install pyenv
+# clone Python source
 FROM build1 AS build2
-RUN curl -fsSL https://pyenv.run -o pyenv.sh && \
-    chmod +x pyenv.sh  && \
-    ./pyenv.sh
+ARG TEST_VERSION
+RUN git clone https://github.com/python/cpython.git --branch "v$TEST_VERSION"
 
-# install Python 3.14.0rc1
+# make install Python as python3
 FROM build2 AS build3
-RUN export PATH="$HOME/.pyenv/bin:$PATH" && \
-    pyenv install 3.14.0rc1 && \
-    pyenv global 3.14.0rc1
+RUN cd cpython && \
+    ./configure && \
+    make && \
+    make test && \
+    make install
 
-# clone Arrow repo
+# install ouroboros dependencies
 FROM build3 AS build4
-RUN git clone https://github.com/apache/arrow.git
+RUN apt install -y gdal-bin libgdal-dev>=3.8 python3-gdal
 
-# setup build Arrow from source https://arrow.apache.org/docs/developers/python.html
 FROM build4 AS build5
-RUN pwd && \
-    cd /arrow && \
-    git submodule update --init && \
-    export PARQUET_TEST_DATA="/arrow/cpp/submodules/parquet-testing/data" && \
-    export ARROW_TEST_DATA="/arrow/testing/data" && \
-    cd / && \
-    python -m venv /pyarrow-dev && \
-    . ./pyarrow-dev/bin/activate && \
-    python -m pip install -r /arrow/python/requirements-build.txt && \
-    mkdir /dist
+RUN pip3 install --upgrade pip --root-user-action ignore && \
+    python3 -m pip install fiona geojson geopandas gdal==3.8.4
 
-# build Arrow
+# clone ouroboros source
 FROM build5 AS build6
-RUN . ./pyarrow-dev/bin/activate && \
-    rm -rf /arrow/cpp/build && \
-    export ARROW_HOME="/dist" && \
-    export LD_LIBRARY_PATH="/dist/lib":$LD_LIBRARY_PATH && \
-    export CMAKE_PREFIX_PATH=$ARROW_HOME:$CMAKE_PREFIX_PATH && \
-    cmake -S /arrow/cpp -B /arrow/cpp/build -DCMAKE_INSTALL_PREFIX=$ARROW_HOME --preset ninja-release-python && \
-    cmake --build /arrow/cpp/build --target install
+RUN git clone https://github.com/corbel-spatial/ouroboros.git --branch dev
 
-# install Arrow
+# build ouroboros
 FROM build6 AS build7
-RUN . ./pyarrow-dev/bin/activate && \
-    export ARROW_HOME="/dist" && \
-    export LD_LIBRARY_PATH="/dist/lib":$LD_LIBRARY_PATH && \
-    export CMAKE_PREFIX_PATH="/dist":$CMAKE_PREFIX_PATH && \
-    export PYARROW_PARALLEL=4 && \
-    cd /arrow/python && \
-    python setup.py build_ext --inplace && \
-    python -m pip install . && \
-    python -c "import pyarrow" && \
-    cd /
-
-# clone ouroboros repo
-FROM build7 AS build8
-RUN git clone https://github.com/corbel-spatial/ouroboros.git
-
-# install pip dependencies
-FROM build8 AS build9
-RUN . ./pyarrow-dev/bin/activate && \
-    export LD_LIBRARY_PATH="/dist/lib":$LD_LIBRARY_PATH && \
-    python -m pip install gdal==3.8.4 pytest && \
-    cd ouroboros && \
-    python -m pip install . && \
-    cd /
+RUN cd ouroboros && \
+    python3 -m pip install . --group test
 
 # run tests on ouroboros
 # to run manually from Docker Hub: docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14.0rc1
 # then enter the RUN command below
-FROM build9 AS build10
-RUN . ./pyarrow-dev/bin/activate && \
-    export LD_LIBRARY_PATH="/dist/lib":$LD_LIBRARY_PATH && \
-    cd ouroboros && \
-    python -m pytest -vv ./tests/tests.py
+FROM build7 AS build8
+RUN cd ouroboros && \
+    python3 -m pytest -vv tests/tests.py
