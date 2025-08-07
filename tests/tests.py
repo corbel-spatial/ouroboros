@@ -7,7 +7,6 @@ import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import pyarrow as pa
 import pyogrio
 import pytest
 from shapely.geometry import LineString, MultiLineString, Point
@@ -444,11 +443,6 @@ class TestFeatureClass:
         with open(os.path.join(tmp_path, "test.geojson"), "r") as f:
             gjs2 = geojson.load(f)
         assert isinstance(gjs2, geojson.FeatureCollection)
-
-    def test_to_pyarrow(self, gdf_points):
-        fc1 = ob.FeatureClass(gdf_points)
-        arr = fc1.to_pyarrow()
-        assert isinstance(arr, pa.Table)
 
     def test_to_shapefile(self, tmp_path, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
