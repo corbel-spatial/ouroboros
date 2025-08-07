@@ -36,7 +36,7 @@ intersphinx_mapping = {
         "https://pandas.pydata.org/pandas-docs/version/2.3/",
         None,
     ),
-    "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
+    # "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable/", None),
     "rasterio": ("https://rasterio.readthedocs.io/en/stable/", None),
 }
