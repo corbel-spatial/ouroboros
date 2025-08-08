@@ -1,6 +1,4 @@
 # TODO
 
-- Create a utility function for writing a raster to a geodatabase
-  - [GDAL OpenFileGDB](https://gdal.org/en/stable/drivers/raster/openfilegdb.html) does not support writing rasters
-- Naive parsing of geodatabase contents solely on gdbtable XML
-- Speed up CI workflows with [pixi](https://pixi.sh/)?
+- Write a utility function for saving a raster to a geodatabase ([GDAL OpenFileGDB](https://gdal.org/en/stable/drivers/raster/openfilegdb.html) does not support writing rasters)
+- Getter functions should parse geodatabase contents solely on gdbtable XML

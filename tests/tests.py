@@ -219,30 +219,25 @@ class TestFeatureClass:
 
         fc2 = ob.FeatureClass(gdf_points)
         fc2.calculate(
-            "sample1",
-            "test",
             "test2",
+            "test",
         )
         # fc2.select_columns("test2", geometry=False).head()
 
         fc3 = ob.FeatureClass(gdf_points)
-        fc3.calculate("sample1", 2 * 2, "test3", np.uint8)
+        fc3.calculate("test3", 2 * 2, np.uint8)
         # fc3.select_columns("test3", geometry=False).head()
 
         fc4 = ob.FeatureClass(gdf_points)
         fc4.calculate(
-            "sample1",
-            "$sample2$ + '___' + $sample2$ + '___' + $sample3$",
             "test4",
+            "$sample2$ + '___' + $sample2$ + '___' + $sample3$",
             str,
         )
         # fc4.select_columns("test4", geometry=False).head()
 
         with pytest.raises(KeyError):
-            fc4.calculate(in_column="badcol", expression="test4")
-
-        with pytest.raises(KeyError):
-            fc4.calculate(in_column="sample1", expression="$badcol$")
+            fc4.calculate("sample1", "$badcol$")
 
     def test_clear(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -434,15 +429,46 @@ class TestFeatureClass:
         assert isinstance(gdf, gpd.GeoDataFrame)
 
     def test_to_geojson(self, tmp_path, gdf_points):
-        # TODO test_to_geojson: test case of table without geometry; test case of object types not JSON serializable
         fc1 = ob.FeatureClass(gdf_points)
         gjs1 = fc1.to_geojson()
         assert isinstance(gjs1, geojson.FeatureCollection)
 
-        fc1.to_geojson(os.path.join(tmp_path, "test"))
-        with open(os.path.join(tmp_path, "test.geojson"), "r") as f:
+        fc1.to_geojson(os.path.join(tmp_path, "test1"))
+        with open(os.path.join(tmp_path, "test1.geojson"), "r") as f:
             gjs2 = geojson.load(f)
         assert isinstance(gjs2, geojson.FeatureCollection)
+
+        # no geometry
+        fc2 = ob.FeatureClass(pd.Series({"col1": [0, 1, 2]}))
+        gjs2 = fc2.to_geojson()
+        assert isinstance(gjs2, dict)
+        fc2.to_geojson(os.path.join(tmp_path, "test2"))
+
+        # no features
+        fc3 = ob.FeatureClass(
+            gpd.GeoDataFrame({"col1": [], "geometry": []}, crs="WGS 84")
+        )
+        with pytest.raises(ValueError):
+            gjs3 = fc3.to_geojson()
+        with pytest.raises(ValueError):
+            fc3.to_geojson(os.path.join(tmp_path, "test3"))
+
+        # not JSON serializable
+        some_object = object()
+        fc4 = ob.FeatureClass(
+            gpd.GeoDataFrame(
+                {"col1": [some_object]},
+                geometry=[LineString([(0, 1), (1, 1)])],
+                crs="WGS 84",
+            )
+        )
+        # GeoDataFrame.to_file() can handle objects but .to_json() cannot
+        with pytest.raises(TypeError):
+            fc4.to_geojson()
+        fc4.to_geojson(os.path.join(tmp_path, "test4"))
+        with open(os.path.join(tmp_path, "test4.geojson"), "r") as f:
+            gjs4 = geojson.load(f)
+        assert isinstance(gjs4, geojson.FeatureCollection)
 
     def test_to_shapefile(self, tmp_path, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -657,20 +683,6 @@ class TestGeoDatabase:
 
 
 class TestUtilityFunctions:
-    def test_delete_fc(self, ob_gdb):
-        gdb, gdb_path = ob_gdb
-        fcs = ob.list_layers(gdb_path)
-        count = len(fcs)
-        for fc_name in fcs:
-            ob.delete_fc(gdb_path, fc_name)
-            assert len(ob.list_layers(gdb_path)) < count
-            count -= 1
-            assert ob.delete_fc(gdb_path, "bad_fc_name") is False
-        assert len(ob.list_layers(gdb_path)) == count
-        with pytest.raises(TypeError):
-            # noinspection PyTypeChecker
-            ob.delete_fc(gdb_path, 0)
-
     def test_fc_to_gdf(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         for fc in ob.list_layers(gdb_path):
@@ -721,13 +733,38 @@ class TestUtilityFunctions:
             overwrite=True,
         )
 
-    def test_get_info(self, ob_gdb, esri_gdb):
-        gdb, gdb_path = ob_gdb
-        ob_info = ob.get_info(gdb_path)
-        assert isinstance(ob_info, dict)
+    def test_get_info(self, tmp_path, esri_gdb):
+        gdb = ob.GeoDatabase(
+            contents={
+                "fds": ob.FeatureDataset(
+                    {
+                        "fc": ob.FeatureClass(
+                            gpd.GeoDataFrame(
+                                {"col1": ["c"]},
+                                geometry=[LineString([(0, 1), (1, 1)])],
+                                crs="WGS 84",
+                            ),
+                        )
+                    }
+                )
+            }
+        )
+        gdb_path = tmp_path / "out.gdb"
+        gdb.save(gdb_path, overwrite=True)
+        info = ob.get_info(gdb_path)
+        assert isinstance(info, dict)
 
-        esri_info = ob.get_info(esri_gdb)
-        assert isinstance(esri_info, dict)
+        info = ob.get_info(esri_gdb)
+        assert isinstance(info, dict)
+
+        with pytest.raises(FileNotFoundError):
+            ob.get_info("bad_path")
+
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.get_info("pyproject.toml")
+            except FileNotFoundError:  # coverage
+                ob.get_info(os.path.join("..", "pyproject.toml"))
 
     def test_list_datasets(self, ob_gdb, esri_gdb):
         gdb, gdb_path = ob_gdb
@@ -736,12 +773,6 @@ class TestUtilityFunctions:
         for k, v in fds1.items():
             assert isinstance(k, str) or k is None
             assert isinstance(v, list)
-
-        for fc in ob.list_layers(gdb_path):
-            ob.delete_fc(gdb_path, fc)
-        fds2 = ob.list_datasets(gdb_path)
-        assert isinstance(fds2, dict)
-        assert len(fds2) == 0
 
         fds3 = ob.list_datasets(esri_gdb)
         assert isinstance(fds3, dict)
@@ -764,6 +795,12 @@ class TestUtilityFunctions:
         with pytest.raises(FileNotFoundError):
             ob.list_layers("bad_path")
 
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.list_layers("pyproject.toml")
+            except FileNotFoundError:  # coverage
+                ob.list_layers(os.path.join("..", "pyproject.toml"))
+
     def test_list_rasters(self, ob_gdb, esri_gdb):
         rasters = ob.list_rasters(esri_gdb)
         assert len(rasters) == 1
@@ -773,6 +810,15 @@ class TestUtilityFunctions:
         gdb, gdb_path = ob_gdb
         rasters = ob.list_rasters(gdb_path)
         assert len(rasters) == 0
+
+        with pytest.raises(FileNotFoundError):
+            ob.list_rasters("bad_path")
+
+        with pytest.raises(TypeError):
+            try:  # pytest
+                ob.list_rasters("pyproject.toml")
+            except FileNotFoundError:  # coverage
+                ob.list_rasters(os.path.join("..", "pyproject.toml"))
 
     def test_raster_to_tif(self, tmp_path, capsys, esri_gdb):
         if not ob.gdal_installed:

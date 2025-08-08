@@ -1,0 +1,14 @@
+name: Test Python Prerelease
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths: [ "src/**", ".github/workflows/py-prerelease.yml" ]
+jobs:
+  pull-and-test:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: mosteo-actions/docker-run@v1
+      with:
+        image: "corbelspatial/ouroboros:py3.14.0rc1"
+        command: python3 -c "import ouroboros"
