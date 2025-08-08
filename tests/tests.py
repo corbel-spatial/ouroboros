@@ -688,29 +688,6 @@ class TestGeoDatabase:
 
 
 class TestUtilityFunctions:
-    def test_delete_fc(self, ob_gdb):
-        gdb, gdb_path = ob_gdb
-        fcs = ob.list_layers(gdb_path)
-        count = len(fcs)
-        for fc_name in fcs:
-            ob.delete_fc(gdb_path, fc_name)
-            assert len(ob.list_layers(gdb_path)) < count
-            count -= 1
-            assert ob.delete_fc(gdb_path, "bad_fc_name") is False
-        assert len(ob.list_layers(gdb_path)) == count
-        with pytest.raises(TypeError):
-            # noinspection PyTypeChecker
-            ob.delete_fc(gdb_path, 0)
-
-        with pytest.raises(FileNotFoundError):
-            ob.delete_fc("bad_path", "")
-
-        with pytest.raises(TypeError):
-            try:  # pytest
-                ob.delete_fc("pyproject.toml", "")
-            except FileNotFoundError:  # coverage
-                ob.delete_fc(os.path.join("..", "pyproject.toml"), "")
-
     def test_fc_to_gdf(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         for fc in ob.list_layers(gdb_path):
@@ -801,12 +778,6 @@ class TestUtilityFunctions:
         for k, v in fds1.items():
             assert isinstance(k, str) or k is None
             assert isinstance(v, list)
-
-        for fc in ob.list_layers(gdb_path):
-            ob.delete_fc(gdb_path, fc)
-        fds2 = ob.list_datasets(gdb_path)
-        assert isinstance(fds2, dict)
-        assert len(fds2) == 0
 
         fds3 = ob.list_datasets(esri_gdb)
         assert isinstance(fds3, dict)

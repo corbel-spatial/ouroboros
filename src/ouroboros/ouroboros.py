@@ -7,7 +7,6 @@ from collections.abc import MutableMapping, MutableSequence
 from typing import Any, Iterator, Sequence
 from uuid import uuid4
 
-import fiona
 import geojson
 import geopandas as gpd
 import numpy as np
@@ -1088,45 +1087,6 @@ class GeoDatabase(MutableMapping):
                 )
 
 
-def delete_fc(
-    gdb_path: os.PathLike | str,
-    fc_name: str,
-) -> bool:
-    """
-    Delete a feature class from the specified file geodatabase if it exists.
-
-    This function verifies the existence of the feature class within the
-    geodatabase and removes it if found. It will not perform any operation
-    if the feature class does not exist.
-
-    :param gdb_path: The path to the geodatabase that contains the feature class
-    :type gdb_path: os.PathLike | str
-    :param fc_name: The name of the feature class to be deleted
-    :type fc_name: str
-
-    :returns: True if the feature class was successfully deleted, False otherwise
-    :rtype: bool
-
-    :raises TypeError: If the provided feature class name is not a string
-
-    """
-    gdb_path = os.path.abspath(gdb_path)
-    if not os.path.exists(gdb_path):
-        raise FileNotFoundError(gdb_path)
-    if not os.path.isdir(gdb_path):
-        raise TypeError(f"{gdb_path} is not a directory")
-
-    # noinspection PyUnreachableCode
-    if not isinstance(fc_name, str):
-        raise TypeError("Feature class name must be a string")
-
-    if fc_name in list_layers(gdb_path):
-        fiona.remove(gdb_path, "OpenFileGDB", fc_name)
-        return True
-    else:
-        return False
-
-
 def fc_to_gdf(
     gdb_path: os.PathLike | str,
     fc_name: str,
@@ -1215,13 +1175,10 @@ def gdf_to_fc(
     }
 
     if os.path.exists(gdb_path):
-        if fc_name in list_layers(gdb_path):
-            if overwrite:
-                delete_fc(gdb_path, fc_name)
-            else:
-                raise FileExistsError(
-                    f"{fc_name} already exists. To overwrite it use: gdf_to_fc(gdf, gdb_path, fc_name, overwrite=True"
-                )
+        if fc_name in list_layers(gdb_path) and not overwrite:
+            raise FileExistsError(
+                f"{fc_name} already exists. To overwrite it use: gdf_to_fc(gdf, gdb_path, fc_name, overwrite=True"
+            )
 
     # convert dataframe index back to ObjectID
     if "ObjectID" not in gdf.columns:

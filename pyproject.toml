@@ -5,7 +5,6 @@ authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.10"
 dependencies = [
-    "fiona",
     "geojson",
     "geopandas"
 ]
