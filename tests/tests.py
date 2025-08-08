@@ -219,30 +219,25 @@ class TestFeatureClass:
 
         fc2 = ob.FeatureClass(gdf_points)
         fc2.calculate(
-            "sample1",
-            "test",
             "test2",
+            "test",
         )
         # fc2.select_columns("test2", geometry=False).head()
 
         fc3 = ob.FeatureClass(gdf_points)
-        fc3.calculate("sample1", 2 * 2, "test3", np.uint8)
+        fc3.calculate("test3", 2 * 2, np.uint8)
         # fc3.select_columns("test3", geometry=False).head()
 
         fc4 = ob.FeatureClass(gdf_points)
         fc4.calculate(
-            "sample1",
-            "$sample2$ + '___' + $sample2$ + '___' + $sample3$",
             "test4",
+            "$sample2$ + '___' + $sample2$ + '___' + $sample3$",
             str,
         )
         # fc4.select_columns("test4", geometry=False).head()
 
         with pytest.raises(KeyError):
-            fc4.calculate(in_column="badcol", expression="test4")
-
-        with pytest.raises(KeyError):
-            fc4.calculate(in_column="sample1", expression="$badcol$")
+            fc4.calculate("sample1", "$badcol$")
 
     def test_clear(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)

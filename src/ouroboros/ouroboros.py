@@ -270,43 +270,41 @@ class FeatureClass(MutableSequence):
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
             )
 
-    def calculate(  # TODO remove in_column parameter
+    def calculate(
         self,
-        in_column: str,
+        column: str,
         expression: str | Any,
-        out_column: None | str = None,
-        out_dtype: None | type | np.dtype = None,
+        dt: None | np.dtype | Any = None,
     ) -> None:
         """
         Performs calculations on a column in the dataset based on the provided expression.
 
         The :code:`expression` is stringified Python code that will be evaluated for each row.
-        If :code:`out_column` is specified and does not exist, a new column will be created.
+        If :code:`column` does not exist, a new column will be created.
         Other columns can be referenced using the syntax: :code:`$column_name$`
 
         Example::
 
-            fc.calculate(in_column="oldcol", expression="int($oldcol$) * 42", out_column="newcol", out_dtype=np.uint8)
+            fc.calculate(out_column="new_col", expression="int($existing_col$) * 42", dtype=np.uint8)
 
-        :param in_column: Name of the column to use as input
-        :type in_column: str
+        :param column: Name of the column to calculate, will be created if it does not exist
+        :type column: str
         :param expression: Expression to evaluate for each value in the input column, will be evaluated by the method call and then stringified
         :type expression: str | Any
-        :param out_column: Name for the output column, if none given will update `in_column` in place
-        :type out_column: str, optional
-        :param out_dtype: Type to convert the results to
-        :type out_dtype: type | np.dtype, optional
+        :param dt: Type to convert the results to
+        :type dt: type | np.dtype, optional
 
         """
-
         columns = self._data.columns
-        if in_column not in columns:
-            raise KeyError(f"Column '{in_column}' not found in data.")
-
         if not isinstance(expression, str):
             expression = str(expression)
 
-        result: pd.Series = self._data[in_column].convert_dtypes()  # copy
+        if column in columns:
+            result: pd.Series = self._data[
+                column
+            ].convert_dtypes()  # .convert_dtypes() copies
+        else:
+            result = pd.Series(index=np.arange(len(self._data)))
 
         if "$" not in expression:
             # don't parse, just evaluate
@@ -344,17 +342,17 @@ class FeatureClass(MutableSequence):
                 # insert values and evaluate
                 result.loc[row_idx] = eval(parsed_expression.format(*other_values))
 
-        if out_dtype and result.dtype != out_dtype:
-            result.astype(out_dtype, copy=False)
+        if dt and result.dtype != dt:
+            result.astype(dt, copy=False)
 
         # save results
-        if not out_column or in_column == out_column or out_column in columns:
+        if column in columns:
             # update in place
             self._data.update(result)
         else:
             # append new column
             loc = len(columns) - 1
-            self._data.insert(loc, out_column, result)
+            self._data.insert(loc, column, result)
 
     def clear(self) -> None:
         """
