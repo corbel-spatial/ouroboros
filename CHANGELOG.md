@@ -2,9 +2,12 @@
 
 ## v1.0.4
 
-- Tested with Python 3.14.0-rc1
-- GitHub Action to test source against Python prerelease 
+- Dockerfile and GitHub action to test source with Python 3.14.0-rc1
 - Removed FeatureClass.to_arrow() to avoid dependency on Pyarrow
+- Removed function delete_fc() to avoid dependency on Fiona
+- Simplified FeatureClass.calculate()
+- Added checks to validate inputs
+- Restructured API documentation
 
 ## v1.0.3
 
