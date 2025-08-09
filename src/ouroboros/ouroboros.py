@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import shutil
@@ -6,7 +7,6 @@ from collections.abc import MutableMapping, MutableSequence
 from typing import Any, Iterator, Sequence
 from uuid import uuid4
 
-import fiona
 import geojson
 import geopandas as gpd
 import numpy as np
@@ -270,43 +270,41 @@ class FeatureClass(MutableSequence):
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
             )
 
-    def calculate(  # TODO remove in_column parameter
+    def calculate(
         self,
-        in_column: str,
+        column: str,
         expression: str | Any,
-        out_column: None | str = None,
-        out_dtype: None | type | np.dtype = None,
+        dt: None | np.dtype | Any = None,
     ) -> None:
         """
         Performs calculations on a column in the dataset based on the provided expression.
 
         The :code:`expression` is stringified Python code that will be evaluated for each row.
-        If :code:`out_column` is specified and does not exist, a new column will be created.
+        If :code:`column` does not exist, a new column will be created.
         Other columns can be referenced using the syntax: :code:`$column_name$`
 
         Example::
 
-            fc.calculate(in_column="oldcol", expression="int($oldcol$) * 42", out_column="newcol", out_dtype=np.uint8)
+            fc.calculate(out_column="new_col", expression="int($existing_col$) * 42", dtype=np.uint8)
 
-        :param in_column: Name of the column to use as input
-        :type in_column: str
+        :param column: Name of the column to calculate, will be created if it does not exist
+        :type column: str
         :param expression: Expression to evaluate for each value in the input column, will be evaluated by the method call and then stringified
         :type expression: str | Any
-        :param out_column: Name for the output column, if none given will update `in_column` in place
-        :type out_column: str, optional
-        :param out_dtype: Type to convert the results to
-        :type out_dtype: type | np.dtype, optional
+        :param dt: Type to convert the results to
+        :type dt: type | np.dtype, optional
 
         """
-
         columns = self._data.columns
-        if in_column not in columns:
-            raise KeyError(f"Column '{in_column}' not found in data.")
-
         if not isinstance(expression, str):
             expression = str(expression)
 
-        result: pd.Series = self._data[in_column].convert_dtypes()  # copy
+        if column in columns:
+            result: pd.Series = self._data[
+                column
+            ].convert_dtypes()  # .convert_dtypes() copies
+        else:
+            result = pd.Series(index=np.arange(len(self._data)))
 
         if "$" not in expression:
             # don't parse, just evaluate
@@ -342,19 +340,19 @@ class FeatureClass(MutableSequence):
                 # get row values
                 other_values = [f"'{other[row_idx]}'" for other in other_col_series]
                 # insert values and evaluate
-                result[row_idx] = eval(parsed_expression.format(*other_values))
+                result.loc[row_idx] = eval(parsed_expression.format(*other_values))
 
-        if out_dtype and result.dtype != out_dtype:
-            result.astype(out_dtype, copy=False)
+        if dt and result.dtype != dt:
+            result.astype(dt, copy=False)
 
         # save results
-        if not out_column or in_column == out_column or out_column in columns:
+        if column in columns:
             # update in place
             self._data.update(result)
         else:
             # append new column
             loc = len(columns) - 1
-            self._data.insert(loc, out_column, result)
+            self._data.insert(loc, column, result)
 
     def clear(self) -> None:
         """
@@ -634,28 +632,52 @@ class FeatureClass(MutableSequence):
         self, filename: os.PathLike | str = None
     ) -> "None | geojson.FeatureCollection":
         """
-        Convert the FeatureClass to the GeoJSON format.
+        Convert the FeatureClass to the GeoJSON format, or JSON if the data does not have geometry.
 
         When a filename is provided, the GeoJSON output will be written to that file. If no filename is
         specified, the GeoJSON format will be returned as a FeatureCollection object. The filename
-        is automatically suffixed with '.geojson' if not specified in the provided name.
+        is automatically suffixed with '.geojson' if not specified in the provided name. If the data
+        has no geometry column the file will be saved as JSON.
 
         :param filename: The name of the file where the GeoJSON output should be written
         :type filename: os.PathLike | str, optional
 
         :return: None when a filename is provided and the GeoJSON data is written to disk;
-                 otherwise, returns a geojson.FeatureCollection object
-        :rtype: None | geojson.FeatureCollection
+                 otherwise returns a geojson.FeatureCollection object, or a JSON dict if no geometry.
+        :rtype: None | dict | geojson.FeatureCollection
 
         """
-        if filename:
-            if not filename.endswith(".geojson"):
-                filename += ".geojson"
-            self._data.to_file(filename, driver="GeoJSON")
-            return None
-        else:
-            gjs = self._data.to_json(to_wgs84=True)
-            return geojson.loads(gjs)
+        if len(self._data) == 0:
+            raise ValueError("Dataset is empty")
+
+        try:
+            gdf = self.to_geodataframe()
+
+            if filename:
+                if not self.geom_type:  # to JSON
+                    if not filename.endswith(".json"):
+                        filename += ".json"
+                    df = pd.DataFrame(gdf)
+                    with open(filename, "w") as f:
+                        json.dump(df.to_json(), f)
+                else:  # to GeoJSON
+                    if not filename.endswith(".geojson"):
+                        filename += ".geojson"
+                    gdf.to_file(filename, driver="GeoJSON")
+                return None
+            else:  # return GeoJSON object
+                if self.geom_type:
+                    gjs = gdf.to_json(to_wgs84=True)
+                    return geojson.loads(gjs)
+                else:
+                    df = pd.DataFrame(gdf)
+                    return json.loads(df.to_json())
+
+        except TypeError as e:
+            raise TypeError(
+                f"{e}\n"
+                f"Some data cannot be converted to JSON, it must be removed before converting",
+            )
 
     def to_shapefile(self, filename: os.PathLike | str) -> None:
         """
@@ -685,7 +707,7 @@ class FeatureDataset(MutableMapping):
     def __init__(
         self,
         contents: None | dict[str, FeatureClass] = None,
-        crs: pyproj.crs.CRS | Any = None,
+        crs: None | pyproj.crs.CRS | Any = None,
         enforce_crs: bool = True,
     ):
         """
@@ -697,10 +719,10 @@ class FeatureDataset(MutableMapping):
         :type contents: dict[str, FeatureClass], optional
 
         :param crs: The coordinate reference system to initialize the FeatureDataset with
-        :type crs: pyproj.crs.CRS | Any  # TODO Sphinx formatting is broken here
+        :type crs: pyproj.crs.CRS | Any, optional
 
         :param enforce_crs: Whether to enforce the CRS in the FeatureDataset, defaults to True
-        :type crs: bool
+        :type enforce_crs: bool
 
         :raises TypeError: If the provided CRS value cannot be converted to a valid CRS object
 
@@ -1063,39 +1085,6 @@ class GeoDatabase(MutableMapping):
                 )
 
 
-def delete_fc(
-    gdb_path: os.PathLike | str,
-    fc_name: str,
-) -> bool:
-    """
-    Delete a feature class from the specified file geodatabase if it exists.
-
-    This function verifies the existence of the feature class within the
-    geodatabase and removes it if found. It will not perform any operation
-    if the feature class does not exist.
-
-    :param gdb_path: The path to the geodatabase that contains the feature class
-    :type gdb_path: os.PathLike | str
-    :param fc_name: The name of the feature class to be deleted
-    :type fc_name: str
-
-    :returns: True if the feature class was successfully deleted, False otherwise
-    :rtype: bool
-
-    :raises TypeError: If the provided feature class name is not a string
-
-    """
-    # noinspection PyUnreachableCode
-    if not isinstance(fc_name, str):
-        raise TypeError("Feature class name must be a string")
-
-    if fc_name in list_layers(gdb_path):
-        fiona.remove(gdb_path, "OpenFileGDB", fc_name)
-        return True
-    else:
-        return False
-
-
 def fc_to_gdf(
     gdb_path: os.PathLike | str,
     fc_name: str,
@@ -1184,13 +1173,10 @@ def gdf_to_fc(
     }
 
     if os.path.exists(gdb_path):
-        if fc_name in list_layers(gdb_path):
-            if overwrite:
-                delete_fc(gdb_path, fc_name)
-            else:
-                raise FileExistsError(
-                    f"{fc_name} already exists. To overwrite it use: gdf_to_fc(gdf, gdb_path, fc_name, overwrite=True"
-                )
+        if fc_name in list_layers(gdb_path) and not overwrite:
+            raise FileExistsError(
+                f"{fc_name} already exists. To overwrite it use: gdf_to_fc(gdf, gdb_path, fc_name, overwrite=True"
+            )
 
     # convert dataframe index back to ObjectID
     if "ObjectID" not in gdf.columns:
@@ -1225,6 +1211,12 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     :rtype: dict
 
     """
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
+
     fc_info = {fc: pyogrio.read_info(gdb_path, fc) for fc in list_layers(gdb_path)}
 
     fds_info = {
@@ -1287,7 +1279,6 @@ def list_datasets(gdb_path: os.PathLike | str) -> dict[str | None, list[str]]:
 
     """
     gdb_path = os.path.abspath(gdb_path)
-
     if not os.path.exists(gdb_path):
         raise FileNotFoundError(gdb_path)
     if not os.path.isdir(gdb_path):
@@ -1330,8 +1321,11 @@ def list_layers(gdb_path: os.PathLike | str) -> list[str]:
     :rtype: list[str]
 
     """
+    gdb_path = os.path.abspath(gdb_path)
     if not os.path.exists(gdb_path):
         raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
 
     try:
         lyrs = gpd.list_layers(gdb_path)
@@ -1355,6 +1349,12 @@ def list_rasters(gdb_path: os.PathLike | str) -> list[str]:
         * https://github.com/rouault/dump_gdbtable/wiki/FGDB-Spec
 
     """
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
+
     gdbtable = os.path.join(gdb_path, "a00000004.gdbtable")
     fcs = list_layers(gdb_path)
     fds = list_datasets(gdb_path)
@@ -1404,6 +1404,12 @@ def raster_to_tif(
         raise ImportError(
             "GDAL not installed, ouroboros cannot support raster operations"
         )
+
+    gdb_path = os.path.abspath(gdb_path)
+    if not os.path.exists(gdb_path):
+        raise FileNotFoundError(gdb_path)
+    if not os.path.isdir(gdb_path):
+        raise TypeError(f"{gdb_path} is not a directory")
 
     if tif_path is None:
         tif_path = os.path.join(os.path.dirname(gdb_path), raster_name + ".tif")

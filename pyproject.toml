@@ -1,11 +1,10 @@
 [project]
 version = "1.0.4"
 name = "ouroboros-gis"
-authors = [{name = "Corbel", email = "dev@corbelspatial.com"}]
+authors = [{name = "Peter Von der Porten", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.10"
 dependencies = [
-    "fiona",
     "geojson",
     "geopandas"
 ]
