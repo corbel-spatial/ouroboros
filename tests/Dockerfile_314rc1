@@ -28,7 +28,7 @@ RUN apt install -y gdal-bin libgdal-dev>=3.8 python3-gdal
 
 FROM build4 AS build5
 RUN pip3 install --upgrade pip --root-user-action ignore && \
-    python3 -m pip install fiona geojson geopandas gdal==3.8.4
+    python3 -m pip install geojson geopandas gdal==3.8.4
 
 # clone ouroboros source
 FROM build5 AS build6
