@@ -16,17 +16,19 @@ import pyproj
 from pyogrio.errors import DataSourceError
 
 
+version = "1.0.5"  # TODO autoupdate versioneer
+
 # Check for optional install of GDAL>=3.8 for raster support
 try:
     from osgeo import gdal  # noqa # fmt: skip
-    gdal_installed = True
-    gdal_version = gdal.__version__
+    _gdal_installed = True
+    _gdal_version = gdal.__version__
 except ModuleNotFoundError:
-    gdal_installed = False
-    gdal_version = None
-if gdal_version:
-    version_split = gdal_version.split(".")
-    if int(version_split[0]) < 3 or int(version_split[1]) < 8:
+    _gdal_installed = False
+    _gdal_version = None
+if _gdal_version:
+    _version_split = _gdal_version.split(".")
+    if int(_version_split[0]) < 3 or int(_version_split[1]) < 8:
         raise ImportError(
             "GDAL version must be >=3.8, please upgrade to a newer version"
         )
@@ -1233,7 +1235,7 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     result = {"FeatureClass": fc_info, "FeatureDataset": fds_info}
 
     raster_info = dict()
-    if gdal_installed:
+    if _gdal_installed:
         gdal.UseExceptions()
         for raster_name in list_rasters(gdb_path):
             raster: gdal.Dataset
@@ -1400,7 +1402,7 @@ def raster_to_tif(
     :param options: Additional keyword arguments for writing the GeoTIFF file, see the documentation: https://gdal.org/en/stable/drivers/raster/gtiff.html#creation-options
     :type options: dict, optional
     """
-    if not gdal_installed:
+    if not _gdal_installed:
         raise ImportError(
             "GDAL not installed, ouroboros cannot support raster operations"
         )
