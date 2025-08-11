@@ -16,8 +16,6 @@ import pyproj
 from pyogrio.errors import DataSourceError
 
 
-version = "1.0.5"  # TODO autoupdate versioneer
-
 # Check for optional install of GDAL>=3.8 for raster support
 try:
     from osgeo import gdal  # noqa # fmt: skip

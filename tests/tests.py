@@ -95,6 +95,12 @@ def esri_gdb(tmp_path):
     return os.path.join(tmp_path, "test_data.gdb")
 
 
+def test_version():
+    version = ob.__version__
+    assert isinstance(version, str)
+    assert "." in version
+
+
 def test_gdb_fixtures(ob_gdb, esri_gdb):
     gdb, gdb_path = ob_gdb
 
@@ -821,11 +827,11 @@ class TestUtilityFunctions:
                 ob.list_rasters(os.path.join("..", "pyproject.toml"))
 
     def test_raster_to_tif(self, tmp_path, capsys, esri_gdb):
-        if not ob.gdal_installed:
+        if not ob.ouroboros._gdal_installed:
             pytest.skip("GDAL is not installed")
         else:
             with capsys.disabled():
-                print("\n\t*** GDAL installed:", ob.gdal_installed, "***")
+                print("\n\t*** GDAL installed:", ob.ouroboros._gdal_installed, "***")
             ob.raster_to_tif(
                 gdb_path=esri_gdb,
                 raster_name="random_raster",

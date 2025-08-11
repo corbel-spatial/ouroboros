@@ -1,3 +1,6 @@
+import importlib.metadata
+
 from .ouroboros import *
 
-__version__ = version
+
+__version__ = importlib.metadata.version("ouroboros-gis")
