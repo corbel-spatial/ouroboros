@@ -40,11 +40,13 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
+build = ["build", "setuptools"]
 docs = ["coverage", "jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
         "pydata-sphinx-theme", "sphinx", "sphinx-copybutton"]  # docs also require pandoc: https://pandoc.org/installing.html
 lint = ["black", "pandas-stubs", "pylint"]
 test = ["pytest", "pytest-xdist"]
 dev = [
+    { include-group = "build" },
     { include-group = "docs" },
     { include-group = "lint" },
     { include-group = "test" }
