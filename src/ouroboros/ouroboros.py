@@ -2,6 +2,7 @@ import json
 import os
 import re
 import shutil
+import uuid
 import warnings
 from collections.abc import MutableMapping, MutableSequence
 from typing import Any, Iterator, Sequence
@@ -13,6 +14,7 @@ import numpy as np
 import pandas as pd
 import pyogrio
 import pyproj
+import shapely
 from pyogrio.errors import DataSourceError
 
 
@@ -39,7 +41,7 @@ pd.set_option("display.max_colwidth", None)
 
 class FeatureClass(MutableSequence):
     """
-    The FeatureClass acts as a custom container built on top of GeoPandas' GeoDataFrame,
+    The FeatureClass acts as a custom container built on top of the :class:`geopandas.GeoDataFrame`,
     allowing operations like accessing, modifying, appending, and deleting geospatial data
     while maintaining properties like CRS (Coordinate Reference System) and geometry type.
     """
@@ -66,9 +68,12 @@ class FeatureClass(MutableSequence):
         :raises TypeError: Raised when the provided source type is unsupported or invalid
 
         """
-        self._data = None
-        self.crs = None
-        self.geom_type = None
+        #: The attribute that references the data object of the FeatureClass
+        self._data: geopandas.GeoDataFrame | None = None  # noqa
+        #: The Coordinate Reference System of the FeatureClass, defaults to :code:`None`
+        self.crs: pyproj.crs.CRS | None = None
+        #: The geometry type of the FeatureClass, e.g., :class:`shapely.Point`, :class:`shapely.LineString`, :class:`shapely.Polygon`; defaults to :code:`None`
+        self.geom_type: shapely.Geometry | None = None
 
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
@@ -123,7 +128,7 @@ class FeatureClass(MutableSequence):
         try:
             geom_types = self._data.geom_type.unique()
             if len(geom_types) == 1 and geom_types[0] is None:
-                self.geom_type = "Unknown"
+                self.geom_type = None
             elif len(geom_types) == 1 and geom_types[0] is not None:
                 self.geom_type = geom_types[0]
 
@@ -285,7 +290,7 @@ class FeatureClass(MutableSequence):
 
         Example::
 
-            fc.calculate(out_column="new_col", expression="int($existing_col$) * 42", dtype=np.uint8)
+            fc.calculate(column="new_col", expression="int($existing_col$) * 42", dtype=numpy.uint8)
 
         :param column: Name of the column to calculate, will be created if it does not exist
         :type column: str
@@ -472,10 +477,10 @@ class FeatureClass(MutableSequence):
         # validate geometry
         if self.geom_type is not None and self.geom_type == new_geom:
             pass
-        elif self.geom_type in (None, "Unknown") and new_geom is not None:
+        elif self.geom_type is None and new_geom is not None:
             self.geom_type = new_geom
-        elif self.geom_type in (None, "Unknown") and new_geom is None:
-            self.geom_type = "Unknown"
+        elif self.geom_type is None and new_geom is None:
+            self.geom_type = None
         else:  # promote to Multi- type geometry (MultiPoint etc)
             self.geom_type: str
             simple_type = self.geom_type.strip("Multi")
@@ -727,11 +732,14 @@ class FeatureDataset(MutableMapping):
         :raises TypeError: If the provided CRS value cannot be converted to a valid CRS object
 
         """
-        self.enforce_crs = enforce_crs
-
-        self.crs = None
-        self._fcs = dict()
-        self._gdbs = set()
+        #: :class:`FeatureClass` referenced by the FeatureDataset, as key/value pairs of names and objects
+        self._fcs: dict[str:FeatureClass] = dict()  # noqa
+        #: A set of :class:`GeoDatabase` objects that reference the FeatureDataset
+        self._gdbs: set[GeoDatabase] = set()  # noqa
+        #: The Coordinate Reference System (CRS) of the FeatureDataset, defaults to :code:`None`
+        self.crs: pyproj.crs.CRS | None = None
+        #: Whether to enforce the CRS in the FeatureDataset, defaults to :code:`True`
+        self.enforce_crs: bool = enforce_crs
 
         if self.enforce_crs:
             if isinstance(crs, pyproj.crs.CRS) or crs is None:
@@ -775,7 +783,7 @@ class FeatureDataset(MutableMapping):
 
         """
         if isinstance(key, int):
-            for idx, fc_obj in enumerate(self.feature_classes().values()):
+            for idx, fc_obj in enumerate(self.fc_dict().values()):
                 if idx == key:
                     return fc_obj
             raise IndexError(f"Index out of range: {key}")
@@ -838,6 +846,8 @@ class FeatureDataset(MutableMapping):
                     if key == fc_name:
                         raise KeyError(f"FeatureClass name already in use: {key}")
 
+        key: str
+        value: FeatureClass
         self._fcs[key] = value
 
         if self.enforce_crs:
@@ -851,18 +861,39 @@ class FeatureDataset(MutableMapping):
                         f"Feature dataset CRS ({self.crs} does not match FeatureClass CRS ({value.crs})"
                     )
 
-    def feature_classes(self) -> dict[str, FeatureClass]:
+    def fc_dict(self) -> dict[str, FeatureClass]:
         """
-        :return: Return a dict of the FeatureClass names and their objects contained by the FeatureDataset
+        :return: Return a :code:`dict` of the :class:`FeatureClass` names and their objects contained by the FeatureDataset
         :rtype: dict[str, FeatureClass]
 
         """
+        # noinspection PyTypeChecker
         return self._fcs
+
+    def fc_names(self) -> list[str]:
+        """
+        :return: Return a :code:`list` of the :class:`FeatureClass` names contained by the FeatureDataset
+        :rtype: list[str]
+
+        Equivalent to :code:`FeatureDataset.fc_dict().keys()`
+
+        """
+        return list(self._fcs.keys())
+
+    def fcs(self) -> list[FeatureClass]:
+        """
+        :return: Return a :code:`list` of the :class:`FeatureClass` objects and contained by the FeatureDataset
+        :rtype: list[FeatureClass]
+
+        Equivalent to :code:`FeatureDataset.fc_dict().values()`
+
+        """
+        return list(self._fcs.items())
 
 
 class GeoDatabase(MutableMapping):
     """
-    A `dict`-like collection of FeatureDataset and FeatureClass objects.
+    A :code:`dict`-like collection of :class:`FeatureDataset` and :class:`FeatureClass` objects.
 
     The GeoDatabase class is a mutable mapping that allows storing and managing spatial datasets
     organized into FeatureClass and FeatureDataset objects. It provides methods to interact with the stored
@@ -880,7 +911,7 @@ class GeoDatabase(MutableMapping):
 
         If a valid path is provided, attempts to load datasets and layers from the specified
         location on disk. If no path is provided, the instance starts with an empty collection
-        of FeatureDatasets.
+        of :class:`FeatureDataset` objects.
 
         :param path: The file path to load datasets and layers from
         :type path: os.PathLike | str, optional
@@ -889,8 +920,10 @@ class GeoDatabase(MutableMapping):
         :type contents: dict[str : FeatureClass | FeatureDataset], optional
 
         """
+        #: Collection of :class:`FeatureDataset` objects stored in the GeoDatabase
         self._fds: dict[str | None, FeatureDataset] = dict()
-        self._uuid = uuid4()
+
+        self._uuid: uuid.UUID = uuid4()  # for self.__hash__()
 
         if path:  # load from disk
             if not os.path.exists(path):
@@ -954,12 +987,12 @@ class GeoDatabase(MutableMapping):
         if key in self._fds:
             return self._fds[key]
         elif isinstance(key, int):
-            for idx, fc_obj in enumerate(self.feature_classes().values()):
+            for idx, fc_obj in enumerate(self.fc_dict().values()):
                 if idx == key:
                     return fc_obj
             raise IndexError(f"Index out of range: {key}")
         else:
-            for fc_name, fc in self.feature_classes().items():
+            for fc_name, fc in self.fc_dict().items():
                 if fc_name == key:
                     return fc
         raise KeyError(f"'{key}' does not exist in the GeoDatabase")
@@ -1035,9 +1068,9 @@ class GeoDatabase(MutableMapping):
         else:
             raise TypeError(f"Expected FeatureClass or FeatureDataset: {value}")
 
-    def feature_classes(self) -> dict[str, FeatureClass]:
+    def fc_dict(self) -> dict[str, FeatureClass]:
         """
-        :return: A dict of the FeatureClass names and their objects contained by the GeoDatabase
+        :return: A :code:`dict` of the :class:`FeatureClass` names and their objects contained by the GeoDatabase
         :rtype: dict[str, FeatureClass]
 
         """
@@ -1047,13 +1080,60 @@ class GeoDatabase(MutableMapping):
                 fcs[fc_name] = fc
         return fcs
 
-    def feature_datasets(self) -> dict[str, FeatureDataset]:
+    def fc_names(self) -> list[str]:
         """
-        :return: A dict of the FeatureDataset names and their objects contained by the GeoDatabase
+        :return: A :code:`list` of the :class:`FeatureClass` names contained by the GeoDatabase
+        :rtype: list[str]
+
+        Equivalent to :code:`GeoDatabase.fc_dict().keys()`
+
+        """
+        fc_names = list()
+        for fds in self._fds.values():
+            for fc_name in fds.keys():
+                fc_names.append(fc_name)
+        return fc_names
+
+    def fcs(self) -> list[FeatureClass]:
+        """
+        :return: A :code:`list` of the :class:`FeatureClass` objects contained by the GeoDatabase
+        :rtype: list[str]
+
+        Equivalent to :code:`GeoDatabase.fc_dict().values()`
+        """
+        fcs = list()
+        for fds in self._fds.values():
+            for fc in fds.items():
+                fcs.append(fc)
+        return fcs
+
+    def fds_dict(self) -> dict[str, FeatureDataset]:
+        """
+        :return: A :code:`dict` of the :class:`FeatureDataset` names and their objects contained by the GeoDatabase
         :rtype: dict[str, FeatureDataset]
 
         """
         return self._fds
+
+    def fds_names(self) -> list[str]:
+        """
+        :return: A :code:`list` of the :class:`FeatureDataset` names contained by the GeoDatabase
+        :rtype: list[str]
+
+        Equivalent to :code:`GeoDatabase.fds_dict().keys()`
+
+        """
+        return list(self._fds.keys())
+
+    def fds(self) -> list[FeatureDataset]:
+        """
+        :return: A :code:`list` of the :class:`FeatureDataset` objects contained by the GeoDatabase
+        :rtype: list[FeatureDataset]
+
+        Equivalent to :code:`GeoDatabase.fds_dict().values()`
+
+        """
+        return list(self._fds.values())
 
     def save(self, path: os.PathLike | str, overwrite: bool = False):
         """Save the current contents of the GeoDatabase to a specified geodatabase (.gdb) file.
