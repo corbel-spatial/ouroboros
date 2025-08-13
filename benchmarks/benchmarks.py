@@ -79,7 +79,7 @@ if __name__ == "__main__":
     print(f"\nBENCHMARK DEPENDENCIES")
     print(f"----------------------")
     print(f"arcpy      : {arcpy.__version__}")  # noqa
-    print(f"ouroboros  : {ob.version}")
+    print(f"ouroboros  : {ob.__version__}")
     print(f"pooch      : {pooch.__version__.strip('v')}")
     print(f"tqdm       : {tqdm_version}")
 
