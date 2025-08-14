@@ -888,7 +888,7 @@ class FeatureDataset(MutableMapping):
         Equivalent to :code:`FeatureDataset.fc_dict().values()`
 
         """
-        return list(self._fcs.items())
+        return list(self._fcs.values())
 
 
 class GeoDatabase(MutableMapping):
@@ -1103,7 +1103,7 @@ class GeoDatabase(MutableMapping):
         """
         fcs = list()
         for fds in self._fds.values():
-            for fc in fds.items():
+            for fc in fds.values():
                 fcs.append(fc)
         return fcs
 
