@@ -5,5 +5,4 @@
 - Fix upstream issues from `pandas` in 3.14
   - FutureWarning: Setting an item of incompatible dtype is deprecated
   - ChainedAssignmentError in Copy-on-Write mode
-- Rewrite PyArrow demo notebook
 - Add benchmarks
