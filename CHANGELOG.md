@@ -2,6 +2,7 @@
 
 ## v1.0.6
 
+- Bumped test docker to Python 3.14.0-rc2
 - Added ouroboros.__version__
 - Added getter methods for FeatureClass and FeatureDataset
 - Docs updates
