@@ -71,7 +71,7 @@ class FeatureClass(MutableSequence):
 
         """
         #: The attribute that references the data object of the FeatureClass
-        self._data: geopandas.GeoDataFrame | None = None  # noqa
+        self._data: gpd.GeoDataFrame | None = None  # noqa
         #: The Coordinate Reference System of the FeatureClass, defaults to :code:`None`
         self.crs: pyproj.crs.CRS | None = None
         #: The geometry type of the FeatureClass, e.g., :class:`shapely.Point`, :class:`shapely.LineString`, :class:`shapely.Polygon`; defaults to :code:`None`
@@ -311,7 +311,7 @@ class FeatureClass(MutableSequence):
                 column
             ].convert_dtypes()  # .convert_dtypes() copies
         else:
-            result = pd.Series(index=np.arange(len(self._data)))
+            result = pd.Series(index=np.arange(len(self._data)), dtype=dt)
 
         if "$" not in expression:
             # don't parse, just evaluate
