@@ -49,6 +49,6 @@ To install in an ArcGIS Pro :code:`conda` environment:
 
     new_env> python
     >>> import ouroboros as ob
-    >>> ob.gdal_installed
+    >>> ob.ouroboros._gdal_installed
     True
 
