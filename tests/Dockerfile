@@ -40,7 +40,7 @@ RUN cd ouroboros && \
     python3 -m pip install . --group test
 
 # run tests on ouroboros
-# to run manually from Docker Hub: docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14.0rc1
+# to run manually from Docker Hub: docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14
 # then enter the RUN command below
 FROM build7 AS build8
 RUN cd ouroboros && \
