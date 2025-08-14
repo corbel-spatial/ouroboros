@@ -505,6 +505,8 @@ class TestFeatureDataset:
                 del fds[fc_name]
             assert len(fds) == 0
 
+    # TODO test fc methods
+
     def test_getitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         for fds in gdb.values():
@@ -610,6 +612,8 @@ class TestGeoDatabase:
         assert len(gdb.fds_dict()) == 0
 
         assert len(gdb) == 0
+
+    # TODO test fc and fds methods
 
     def test_getitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
