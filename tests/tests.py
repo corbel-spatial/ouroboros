@@ -13,7 +13,6 @@ from shapely.geometry import LineString, MultiLineString, Point
 
 import ouroboros as ob
 
-
 SAMPLES = 1000
 
 
@@ -505,7 +504,24 @@ class TestFeatureDataset:
                 del fds[fc_name]
             assert len(fds) == 0
 
-    # TODO test fc methods
+    def test_fc_dict(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fds in gdb.values():
+            for fc_name, fc in fds.fc_dict().items():
+                assert isinstance(fc_name, str)
+                assert isinstance(fc, ob.FeatureClass)
+
+    def test_fc_names(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fds in gdb.values():
+            for fc_name in fds.fc_names():
+                assert isinstance(fc_name, str)
+
+    def test_fcs(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fds in gdb.values():
+            for fc in fds.fcs():
+                assert isinstance(fc, ob.FeatureClass)
 
     def test_getitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
@@ -613,7 +629,37 @@ class TestGeoDatabase:
 
         assert len(gdb) == 0
 
-    # TODO test fc and fds methods
+    def test_fc_dict(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fc_name, fc in gdb.fc_dict().items():
+            assert isinstance(fc_name, str)
+            assert isinstance(fc, ob.FeatureClass)
+
+    def test_fc_names(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fc_name in gdb.fc_names():
+            assert isinstance(fc_name, str)
+
+    def test_fcs(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fc in gdb.fcs():
+            assert isinstance(fc, ob.FeatureClass)
+
+    def test_fds_dict(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fds_name, fds in gdb.fds_dict().items():
+            assert isinstance(fds_name, str) or fds_name is None  # noqa
+            assert isinstance(fds, ob.FeatureDataset)
+
+    def test_fds_names(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fds_name in gdb.fds_names():
+            assert isinstance(fds_name, str) or fds_name is None  # noqa
+
+    def test_fds(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fds in gdb.fds():
+            assert isinstance(fds, ob.FeatureDataset)
 
     def test_getitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
