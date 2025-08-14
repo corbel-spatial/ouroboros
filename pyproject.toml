@@ -1,5 +1,5 @@
 [project]
-version = "1.0.5"
+version = "1.0.6"
 name = "ouroboros-gis"
 authors = [{name = "Peter Von der Porten", email = "dev@corbelspatial.com"}]
 dynamic = []
@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Intended Audience :: Information Technology",
     "Topic :: Scientific/Engineering :: GIS"
 
@@ -39,11 +40,13 @@ issues = "https://github.com/corbel-spatial/ouroboros/issues"
 changelog = "https://github.com/corbel-spatial/ouroboros/blob/main/CHANGELOG.md"
 
 [dependency-groups]
+build = ["build", "setuptools"]
 docs = ["coverage", "jupyter", "matplotlib", "myst-parser", "nbsphinx", "notebook",
         "pydata-sphinx-theme", "sphinx", "sphinx-copybutton"]  # docs also require pandoc: https://pandoc.org/installing.html
 lint = ["black", "pandas-stubs", "pylint"]
 test = ["pytest", "pytest-xdist"]
 dev = [
+    { include-group = "build" },
     { include-group = "docs" },
     { include-group = "lint" },
     { include-group = "test" }

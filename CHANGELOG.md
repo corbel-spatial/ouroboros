@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.0.4
+## v1.0.6
+
+- Added ouroboros.__version__
+- Added getter methods for FeatureClass and FeatureDataset
+- Docs updates
+
+## v1.0.5
 
 - Dockerfile and GitHub action to test source with Python 3.14.0-rc1
 - Removed FeatureClass.to_arrow() to avoid dependency on Pyarrow
@@ -8,6 +14,12 @@
 - Simplified FeatureClass.calculate()
 - Added checks to validate inputs
 - Restructured API documentation
+
+## v1.0.4
+
+- Tested with Python 3.14.0-rc1
+- GitHub Action to test source against Python prerelease
+- Removed FeatureClass.to_arrow() to avoid dependency on Pyarrow
 
 ## v1.0.3
 

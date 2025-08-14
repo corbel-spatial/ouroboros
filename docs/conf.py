@@ -27,19 +27,21 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    "rtd": ("https://docs.readthedocs.io/en/stable/", None),
-    "python": ("https://docs.python.org/3/", None),
-    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
-    "geopandas": ("https://geopandas.org/en/stable/", None),
     # "geojson": ("https://geojson.readthedocs.io/en/latest/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
     "pandas": (
         "https://pandas.pydata.org/pandas-docs/version/2.3/",
         None,
     ),
     # "pyarrow": ("https://pyarrow.readthedocs.io/en/latest/", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable/", None),
+    "python": ("https://docs.python.org/3/", None),
     "rasterio": ("https://rasterio.readthedocs.io/en/stable/", None),
+    "rtd": ("https://docs.readthedocs.io/en/stable/", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+    "shapely": ("https://shapely.readthedocs.io/en/stable/", None),
 }
+
 intersphinx_disabled_domains = ["std"]
 
 templates_path = ["_templates"]
