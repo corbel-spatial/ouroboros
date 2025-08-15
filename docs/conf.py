@@ -73,3 +73,18 @@ html_theme = "pydata_sphinx_theme"
 # html_theme = "sphinx_rtd_theme"
 
 html_static_path = ["_static"]
+
+nbsphinx_prolog = """
+.. raw:: html
+
+    <style>
+        div.rendered_html thead th {
+            text-align: left;
+        }
+        
+        div.rendered_html td {
+            white-space: nowrap;      
+            text-align: left;  
+        }
+    </style>
+"""

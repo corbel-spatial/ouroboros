@@ -18,8 +18,6 @@ import shapely
 from pyogrio.errors import DataSourceError
 
 
-version = "1.0.5"  # TODO autoupdate versioneer
-
 # Check for optional install of GDAL>=3.8 for raster support
 try:
     from osgeo import gdal  # noqa # fmt: skip
@@ -596,13 +594,20 @@ class FeatureClass(MutableSequence):
         :param expr: The query expression to use for filtering the rows
         :type expr: str
 
-        Example::
+        Examples::
 
-            fc.query("colA > colB")
+            fc.select_rows("colA > colB")
 
             ObjectID    colA    colB
             42          10      9
             99          201     0
+
+
+            fc.select_rows("colA == 'spam'")
+
+            ObjectID    colA
+            1           spam
+            2           spam
 
         """
         return FeatureClass(gpd.GeoDataFrame(self._data.query(expr, inplace=False)))
@@ -1499,7 +1504,6 @@ def raster_to_tif(
     if not tif_path.endswith(".tif"):
         tif_path += ".tif"
 
-    # with _open_gdb(gdb_path) as gdb:
     gdal.UseExceptions()
     with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
         tif_drv: gdal.Driver = gdal.GetDriverByName("GTiff")
