@@ -12,9 +12,9 @@ import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import pyogrio
 import pyproj
 import shapely
+import xmltodict
 from pyogrio.errors import DataSourceError
 
 
@@ -1304,43 +1304,42 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
     if not os.path.isdir(gdb_path):
         raise TypeError(f"{gdb_path} is not a directory")
 
-    fc_info = {fc: pyogrio.read_info(gdb_path, fc) for fc in list_layers(gdb_path)}
+    result = dict()
 
-    fds_info = {
-        ds: {"contents": list(fcs)} for ds, fcs in list_datasets(gdb_path).items()
-    }
-    # remove placeholder None dataset
-    if None in fds_info:
-        del fds_info[None]
-    # get crs of the first feature class
-    for ds_name, ds_info in fds_info.items():
-        if len(ds_info["contents"]) >= 1:
-            ds_info["crs"] = fc_info[ds_info["contents"][0]]["crs"]
+    with open(os.path.join(os.path.abspath(gdb_path), "a00000004.gdbtable"), "rb") as f:
+        gdbtable = f.read()
 
-    result = {"FeatureClass": fc_info, "FeatureDataset": fds_info}
+        for root_name in [
+            "DEFeatureClassInfo",
+            "DEFeatureDataset",
+            "DERasterDataset",
+            "DEWorkspace",
+            "ESRI_ItemInformation",
+            "metadata",
+            "typens:DEFeatureDataset",
+            "typens:DETableInfo",
+        ]:
+            start_pos = 0
+            while True:
+                start_pos = gdbtable.find(bytes(f"<{root_name} ", "utf-8"), start_pos)
+                end_pos = gdbtable.find(bytes(f"</{root_name}>", "utf-8"), start_pos)
+                if start_pos == -1 or end_pos == -1:  # stop loop at the end of the file
+                    break
+                end_pos = end_pos + len(f"</{root_name}>")
+                match = gdbtable[start_pos:end_pos].decode("utf-8")
+                start_pos = end_pos
 
-    raster_info = dict()
-    if _gdal_installed:
-        gdal.UseExceptions()
-        for raster_name in list_rasters(gdb_path):
-            raster: gdal.Dataset
-            with gdal.Open(f"OpenFileGDB:{gdb_path}:{raster_name}") as raster:
-                raster_info[raster_name] = {
-                    "block_size": raster.GetRasterBand(1).GetBlockSize(),
-                    "crs": f"EPSG:{pyproj.crs.CRS(raster.GetProjectionRef()).to_epsg()}",
-                    "category_names": raster.GetRasterBand(1).GetRasterCategoryNames(),
-                    "color_interpretation": raster.GetRasterBand(
-                        1
-                    ).GetRasterColorInterpretation(),
-                    "dataset_metadata": raster.GetMetadata_Dict(),
-                    "nodata_value": raster.GetRasterBand(1).GetNoDataValue(),
-                    "raster_count": raster.RasterCount,
-                    "unit": raster.GetRasterBand(1).GetUnitType(),
-                    "x_size": raster.RasterXSize,
-                    "y_size": raster.RasterYSize,
-                }
+                xml_dict = xmltodict.parse(match)[root_name]
 
-    result["RasterDataset"] = raster_info
+                root_name = (
+                    root_name.replace("typens:", "")
+                    .replace("DE", "")
+                    .replace("Table", "")
+                    .replace("Info", "")
+                )
+                if root_name not in result:
+                    result[root_name] = list()
+                result[root_name].append(xml_dict)
 
     return result
 
