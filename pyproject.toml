@@ -1,12 +1,13 @@
 [project]
-version = "1.0.6"
+version = "1.0.7"
 name = "ouroboros-gis"
 authors = [{name = "Peter Von der Porten", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.10"
 dependencies = [
     "geojson",
-    "geopandas"
+    "geopandas",
+    "xmltodict"
 ]
 description = "Towards more pythonic use of GeoDatabases"
 readme = "README.md"
