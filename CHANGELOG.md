@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.7
+
+- get_info() uses xmltodict rather than GDAL
+- fix notebook tables in docs
+
 ## v1.0.6
 
 - Bumped test docker to Python 3.14.0-rc2
