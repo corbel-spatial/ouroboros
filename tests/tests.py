@@ -415,9 +415,20 @@ class TestFeatureClass:
     def test_select_rows(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         rows1 = fc1.select_rows("ObjectID < 10")
+
         assert len(rows1) == 10
-        rows1 = fc1.select_rows("sample1 > sample2")
-        assert len(rows1) < SAMPLES
+        rows2 = fc1.select_rows("sample1 > sample2")
+        assert len(rows2) < SAMPLES
+
+        rows3 = fc1.select_rows("ObjectID == 1")
+        assert len(rows3) == 1
+
+        test_id = fc1[0].iat[0, 0]
+        assert isinstance(test_id, str)
+        rows4 = fc1.select_rows(f"sample1 == '{test_id}'")
+        assert len(rows4) == 1
+        rows5 = fc1.select_rows(f'sample1 == "{test_id}"')
+        assert len(rows5) == 1
 
     def test_sort(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
