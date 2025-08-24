@@ -1313,11 +1313,17 @@ def get_info(gdb_path: os.PathLike | str) -> dict:
             "DEFeatureClassInfo",
             "DEFeatureDataset",
             "DERasterDataset",
+            "DETableInfo",
             "DEWorkspace",
             "ESRI_ItemInformation",
             "metadata",
+            "typens:DEFeatureClassInfo",
             "typens:DEFeatureDataset",
+            "typens:DERasterDataset",
             "typens:DETableInfo",
+            "typens:DEWorkspace",
+            "typens:ESRI_ItemInformation",
+            "typens:metadata",
         ]:
             start_pos = 0
             while True:
