@@ -5,5 +5,5 @@ API
    :maxdepth: 2
 
    api/classes
-   api/functions
    api/tools
+   api/functions
