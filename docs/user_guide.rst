@@ -2,9 +2,11 @@ User Guide
 ==========
 
 .. toctree::
+   :maxdepth: 1
 
    notebooks/intro_example
    notebooks/basic_usage
+   notebooks/arcpy_comparison
    notebooks/database_structure
    notebooks/fc_conversions
    notebooks/field_calculations
