@@ -15,6 +15,7 @@ import pandas as pd
 import pyproj
 import shapely
 import xmltodict
+from matplotlib import pyplot as plt
 from pyogrio.errors import DataSourceError
 
 
@@ -41,7 +42,7 @@ pd.set_option("display.max_colwidth", None)
 
 class FeatureClass(MutableSequence):
     """
-    The FeatureClass acts as a custom container built on top of the :class:`geopandas.GeoDataFrame`,
+    The FeatureClass acts as a custom container built on top of geopandas.GeoDataFrame,
     allowing operations like accessing, modifying, appending, and deleting geospatial data
     while maintaining properties like CRS (Coordinate Reference System) and geometry type.
     """
@@ -540,6 +541,15 @@ class FeatureClass(MutableSequence):
             feature_dataset=feature_dataset,
             overwrite=overwrite,
         )
+
+    def show(self):
+        """
+        Display the geometry in a simple Matplotlib plot
+
+        """
+        fig, ax = plt.subplots()
+        self._data.geometry.plot(ax=ax)
+        plt.show()
 
     def select_columns(
         self, columns: str | Sequence[str], geometry: bool = True
@@ -1508,10 +1518,3 @@ def raster_to_tif(
             tif_drv.CreateCopy(tif_path, raster, strict=0, options=options)
         else:
             tif_drv.CreateCopy(tif_path, raster, strict=0)
-
-
-def buffer(fc: FeatureClass, distance: float, **kwargs) -> FeatureClass:
-    gdf = fc.to_geodataframe()
-    new_geom = gdf.buffer(distance, **kwargs)
-    gdf.set_geometry(new_geom, inplace=True)
-    return FeatureClass(gdf)

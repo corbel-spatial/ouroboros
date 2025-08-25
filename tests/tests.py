@@ -392,6 +392,10 @@ class TestFeatureClass:
         with pytest.raises(FileNotFoundError):
             fc1.save("bad_path", "fc_name")
 
+    def test_show(self, gdf_points):
+        fc1 = ob.FeatureClass(gdf_points)
+        fc1.show()
+
     def test_select_columns(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         cols1 = fc1.select_columns(["sample1", "sample2"])
@@ -748,6 +752,16 @@ class TestGeoDatabase:
         assert len(ob.list_layers(str(out_path2) + ".gdb")) > 0
 
 
+class TestGeoprocessing:
+    def test_buffer(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fc in gdb.fcs():
+            with pytest.warns(UserWarning):
+                fc_buffered = ob.buffer(fc, 5.0)
+                assert isinstance(fc_buffered, ob.FeatureClass)
+        # fc_buffered.show()
+
+
 class TestUtilityFunctions:
     def test_fc_to_gdf(self, ob_gdb):
         gdb, gdb_path = ob_gdb
@@ -993,11 +1007,3 @@ class TestUsage:
         for fc_name, fc in this_fds.fc_dict().items():
             assert isinstance(fc_name, str)
             assert isinstance(fc, ob.FeatureClass)
-
-
-class TestGeoprocessing:
-    def test_buffer(self, ob_gdb):
-        gdb, gdb_path = ob_gdb
-        for fc in gdb.fcs():
-            fc_buffered = ob.buffer(fc, 1.0)
-            assert isinstance(fc_buffered, ob.FeatureClass)
