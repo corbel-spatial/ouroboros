@@ -761,6 +761,22 @@ class TestGeoprocessing:
                 assert isinstance(fc_buffered, ob.FeatureClass)
         # fc_buffered.show()
 
+    def test_clip(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        fc1 = gdb["test_polygons1"]
+        fc2 = gdb["test_polygons2"]
+        fc_clipped = ob.clip(fc1, fc2)
+        assert isinstance(fc_clipped, ob.FeatureClass)
+        # fc_clipped.show()
+
+    def test_overlay(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        fc1 = gdb["test_polygons1"]
+        fc2 = gdb["test_polygons2"]
+        fc_overlaid = ob.overlay(fc1, fc2, "union")
+        assert isinstance(fc_overlaid, ob.FeatureClass)
+        # fc_overlaid.show()
+
 
 class TestUtilityFunctions:
     def test_fc_to_gdf(self, ob_gdb):
