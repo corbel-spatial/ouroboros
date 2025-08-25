@@ -543,7 +543,10 @@ class FeatureClass(MutableSequence):
         )
 
     def show(self):
-        # TODO docstring
+        """
+        Display the geometry in a simple Matplotlib plot
+
+        """
         fig, ax = plt.subplots()
         self._data.geometry.plot(ax=ax)
         plt.show()
