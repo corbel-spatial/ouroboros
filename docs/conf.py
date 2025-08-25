@@ -86,5 +86,10 @@ nbsphinx_prolog = """
             white-space: nowrap;      
             text-align: left;  
         }
+        
+        .table {
+            width: 80%;
+            margin-top: 50px;
+        }
     </style>
 """

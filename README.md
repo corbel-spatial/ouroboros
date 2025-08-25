@@ -60,6 +60,8 @@ which can be accessed like dictionaries. For example:
 - [Installation](https://ouroboros-gis.readthedocs.io/en/latest/installation.html)
 
 - [User Guide](https://ouroboros-gis.readthedocs.io/en/latest/user_guide.html)
+- 
+- [Comparison with ArcPy](https://ouroboros-gis.readthedocs.io/en/latest/arcpy_comparison.html)
 
 ## About
 
