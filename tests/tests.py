@@ -728,7 +728,6 @@ class TestGeoDatabase:
     def test_feature_datasets(self, ob_gdb):
         gdb, gdb_path = ob_gdb
         for fds_name, fds in gdb.fds_dict().items():
-            # noinspection PyUnreachableCode
             assert isinstance(fds_name, str) or fds_name is None
             assert isinstance(fds, ob.FeatureDataset)
 
@@ -994,3 +993,11 @@ class TestUsage:
         for fc_name, fc in this_fds.fc_dict().items():
             assert isinstance(fc_name, str)
             assert isinstance(fc, ob.FeatureClass)
+
+
+class TestGeoprocessing:
+    def test_buffer(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fc in gdb.fcs():
+            fc_buffered = ob.buffer(fc, 1.0)
+            assert isinstance(fc_buffered, ob.FeatureClass)

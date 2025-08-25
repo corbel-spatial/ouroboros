@@ -148,7 +148,6 @@ class FeatureClass(MutableSequence):
             If the provided index is not an integer
 
         """
-        # noinspection PyUnreachableCode
         if not isinstance(index, int):
             raise TypeError("index must be an integer")
         self._data = pd.concat(
@@ -243,10 +242,8 @@ class FeatureClass(MutableSequence):
 
         """
         row, column = index
-        # noinspection PyUnreachableCode
         if not isinstance(row, int):
             raise TypeError("Row index must be an integer")
-        # noinspection PyUnreachableCode
         if not isinstance(column, int) and not isinstance(column, str):
             raise TypeError("Column index must be an integer or a column name string")
 
@@ -444,7 +441,6 @@ class FeatureClass(MutableSequence):
         :raises ValueError: If the schema of `value` does not match the schema of the existing data
 
         """
-        # noinspection PyUnreachableCode
         if not isinstance(index, int):
             raise TypeError("Index must be an integer")
         if not isinstance(value, gpd.GeoDataFrame) and not isinstance(
@@ -834,7 +830,6 @@ class FeatureDataset(MutableMapping):
         :raises AttributeError: If the CRS of the FeatureDataset and FeatureClass do not match
 
         """
-        # noinspection PyUnreachableCode
         if not isinstance(value, FeatureClass):
             raise TypeError(f"Expected type ouroboros.FeatureClass: {value}")
 
@@ -987,7 +982,6 @@ class GeoDatabase(MutableMapping):
         :raises IndexError: If the integer-based index is out of range
 
         """
-        # noinspection PyUnreachableCode
         if not isinstance(key, int) and not isinstance(key, str) and key is not None:
             raise KeyError(f"Expected key to be an integer or string: {key}")
 
@@ -1056,7 +1050,6 @@ class GeoDatabase(MutableMapping):
         :raises KeyError: If the key being added as a FeatureDataset already exists
 
         """
-        # noinspection PyUnreachableCode
         if isinstance(value, FeatureClass):
             try:
                 crs = value.to_geodataframe().crs
@@ -1190,10 +1183,9 @@ def fc_to_gdf(
     :return: A GeoDataFrame representation of the feature class, with "ObjectID" set as the index
     :rtype: geopandas.GeoDataFrame
 
-    :raises TypeError: If the feature class name (`fc_name`) is not a string
+    :raises TypeError: If `fc_name` is not a string
 
     """
-    # noinspection PyUnreachableCode
     if not isinstance(fc_name, str):
         raise TypeError("Feature class name must be a string")
 
@@ -1516,3 +1508,10 @@ def raster_to_tif(
             tif_drv.CreateCopy(tif_path, raster, strict=0, options=options)
         else:
             tif_drv.CreateCopy(tif_path, raster, strict=0)
+
+
+def buffer(fc: FeatureClass, distance: float, **kwargs) -> FeatureClass:
+    gdf = fc.to_geodataframe()
+    new_geom = gdf.buffer(distance, **kwargs)
+    gdf.set_geometry(new_geom, inplace=True)
+    return FeatureClass(gdf)
