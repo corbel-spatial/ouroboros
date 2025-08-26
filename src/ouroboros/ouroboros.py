@@ -6,6 +6,7 @@ import uuid
 import warnings
 from collections.abc import MutableMapping, MutableSequence
 from importlib import metadata
+from time import sleep
 from typing import Any, Iterator, Sequence, Literal
 from uuid import uuid4
 
@@ -517,14 +518,17 @@ class FeatureClass(MutableSequence):
             overwrite=overwrite,
         )
 
-    def show(self):
+    def show(self, block: bool = True):
         """
         Display the geometry in a simple Matplotlib plot
 
+        :param block: If True, waits for user to close the plot, defaults to True
+        :type block: bool, optional
         """
         fig, ax = plt.subplots()
         self._data.geometry.plot(ax=ax)
-        plt.show()
+        plt.show(block=block)
+        plt.close()
 
     def select_columns(
         self, columns: str | Sequence[str], geometry: bool = True

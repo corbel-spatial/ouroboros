@@ -1,6 +1,7 @@
 # https://github.com/marketplace/actions/setup-miniconda
 name: Pytest - Windows
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths: [ "src/**", ".github/workflows/pytest-windows.yml" ]

@@ -442,7 +442,7 @@ class TestFeatureClass:
 
     def test_show(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
-        fc1.show()
+        fc1.show(block=False)
 
     def test_select_columns(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)

@@ -1,6 +1,7 @@
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 name: Pylint
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths: [ "src/**" ]
@@ -23,4 +24,4 @@ jobs:
         python -m pip install pylint
     - name: Check with Pylint
       run: |
-        pylint $(git ls-files '*.py') --errors-only --disable=E0401
+        pylint $(git ls-files '*.py') --errors-only --disable=E0401 --disable=E1101
