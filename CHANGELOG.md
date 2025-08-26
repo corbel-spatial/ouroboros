@@ -2,7 +2,6 @@
 
 ## v1.0.7
 
-- Refactored utility functions to ouroboros.utils
 - sanitize_gdf_geometry() enforces compatibility with feature class geometries
 - FeatureClass.show() displays a simple plot of the geometry
 - get_info() uses xmltodict rather than GDAL
