@@ -101,7 +101,7 @@ def esri_gdb(tmp_path):
 
 
 def test_version():
-    version = ob.__version__
+    version = ob.ouroboros.__version__
     assert isinstance(version, str)
     assert "." in version
 

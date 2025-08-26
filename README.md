@@ -30,7 +30,7 @@ which can be accessed like dictionaries. For example:
 # Explore an existing dataset
 
 >>> gdb_file = "spam_and_eggs.gdb"
->>> ob.list_datasets(gdb_file)
+>>> ob.utils.list_datasets(gdb_file)
 {'egg_dataset': ['eggs_fc', 'bad_eggs_fc'],
 {'spam_dataset': ['spam_fc'],
  None: ['ham_fc']}
@@ -51,7 +51,7 @@ which can be accessed like dictionaries. For example:
 # Save geodatabase to disk
 
 >>> gdb.save("good_eggs.gdb")
->>> ob.list_datasets("good_eggs.gdb")
+>>> ob.utils.list_datasets("good_eggs.gdb")
 {'good_egg_dataset': ['eggs_fc'], None: []}
 ```
 
