@@ -8,8 +8,9 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pyogrio
+import pyproj
 import pytest
-from shapely.geometry import LineString, MultiLineString, Point
+import shapely
 
 import ouroboros as ob
 
@@ -24,7 +25,9 @@ def gdb_path(tmp_path_factory):
 
 @pytest.fixture
 def gdf_points():
-    test_points = [Point(uniform(-170, 170), uniform(-70, 70)) for i in range(SAMPLES)]
+    test_points = [
+        shapely.Point(uniform(-170, 170), uniform(-70, 70)) for i in range(SAMPLES)
+    ]
     test_fields = {
         "sample1": [str(uuid.uuid4()) for i in range(SAMPLES)],
         "sample2": [str(uuid.uuid4()) for i in range(SAMPLES)],
@@ -68,8 +71,11 @@ def gdf_lines(gdf_polygons):
 def ob_gdb(gdb_path, gdf_points, gdf_lines, gdf_polygons):
     gdb = ob.GeoDatabase()
     gdb["test_points1"] = ob.FeatureClass(gdf_points)
+    assert gdb["test_points1"].geom_type == "Point"
     gdb["test_lines1"] = ob.FeatureClass(gdf_lines)
+    assert gdb["test_lines1"].geom_type == "LineString"
     gdb["test_polygons1"] = ob.FeatureClass(gdf_polygons)
+    assert gdb["test_polygons1"].geom_type == "Polygon"
 
     fds = ob.FeatureDataset(crs=gdf_points.crs)
     fds["test_points2"] = ob.FeatureClass(gdf_points)
@@ -126,7 +132,7 @@ class TestFeatureClass:
         fc2 = ob.FeatureClass(fds_fc_points)
         assert isinstance(fc2.to_geodataframe(), gpd.GeoDataFrame)
 
-        fc3 = ob.FeatureClass(gpd.GeoSeries([Point(0, 1)]))
+        fc3 = ob.FeatureClass(gpd.GeoSeries([shapely.Point(0, 1)]))
         assert isinstance(fc3.to_geodataframe(), gpd.GeoDataFrame)
 
         fc4 = ob.FeatureClass(fc3)
@@ -139,7 +145,7 @@ class TestFeatureClass:
             fc5 = ob.FeatureClass("doesnotexist.gdb/test_fc")
 
     def test_instatiate_gdf(self):
-        fc1 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[Point(0, 1)]))
+        fc1 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[shapely.Point(0, 1)]))
         assert isinstance(fc1.to_geodataframe(), gpd.GeoDataFrame)
 
         fc2 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[]))
@@ -179,7 +185,7 @@ class TestFeatureClass:
             assert isinstance(row[1], str)
             assert isinstance(row[2], str)
             assert isinstance(row[3], str)
-            assert isinstance(row[4], Point)
+            assert isinstance(row[4], shapely.Point)
 
     def test_len(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -195,6 +201,41 @@ class TestFeatureClass:
         with pytest.raises(TypeError):
             # noinspection PyTypeChecker
             fc1[(0, dict())] = None
+
+    def test_crs(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+
+        for fc in gdb.fcs():
+            assert isinstance(fc.crs, pyproj.crs.CRS)
+
+        fc1 = ob.FeatureClass()
+        assert fc1.crs is None
+
+    def test_geom_type(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+
+        for fc in gdb.fcs():
+            assert fc.geom_type in (
+                "Point",
+                "MultiPoint",
+                "LineString",
+                "MultiLineString",
+                "Polygon",
+                "MultiPolygon",
+                None,
+            )
+
+        fc1 = ob.FeatureClass()
+        assert fc1.geom_type is None
+
+    def test_geometry(self, gdf_polygons):
+        fc1 = ob.FeatureClass(gdf_polygons)
+        assert isinstance(fc1.geometry.centroid, gpd.GeoSeries)
+        with pytest.raises(AttributeError):
+            fc1.geometry = False  # noqa
+
+        fc2 = ob.FeatureClass()
+        assert fc2.geometry is None
 
     def test_append(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -255,13 +296,6 @@ class TestFeatureClass:
         assert len(fc1) == len(fc2)
         assert fc1 != fc2
 
-    def test_describe(self, gdf_points):
-        fc1 = ob.FeatureClass(gdf_points)
-        assert isinstance(fc1.describe(), dict)
-        assert len(fc1.describe()["fields"]) == 5
-        fc2 = ob.FeatureClass()
-        assert fc2.describe()["row_count"] == 0
-
     def test_head(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
         fc1.head(0, silent=False)
@@ -290,13 +324,13 @@ class TestFeatureClass:
             fc1.insert(500, gpd.GeoDataFrame(columns=["test"]))
 
         with pytest.raises(TypeError):
-            fc2 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[Point(0, 1)]))
+            fc2 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[shapely.Point(0, 1)]))
             fc2.insert(
                 -1,
                 gpd.GeoDataFrame(
                     geometry=[
-                        LineString([(0, 1), (1, 1)]),
-                        Point(0, 1),
+                        shapely.LineString([(0, 1), (1, 1)]),
+                        shapely.Point(0, 1),
                     ]
                 ),
             )
@@ -316,7 +350,9 @@ class TestFeatureClass:
 
         fc3.insert(
             -1,
-            gpd.GeoDataFrame({"col1": ["b"]}, geometry=[LineString([(0, 1), (1, 1)])]),
+            gpd.GeoDataFrame(
+                {"col1": ["b"]}, geometry=[shapely.LineString([(0, 1), (1, 1)])]
+            ),
         )
         assert fc3.geom_type == "LineString"
 
@@ -325,7 +361,7 @@ class TestFeatureClass:
             ob.FeatureClass(
                 gpd.GeoDataFrame(
                     {"col1": ["c"]},
-                    geometry=[LineString([(0, 1), (1, 1)])],
+                    geometry=[shapely.LineString([(0, 1), (1, 1)])],
                 )
             ),
         )
@@ -334,21 +370,21 @@ class TestFeatureClass:
             -1,
             gpd.GeoDataFrame(
                 {"col1": ["c"]},
-                geometry=[LineString([(0, 1), (1, 1)])],
+                geometry=[shapely.LineString([(0, 1), (1, 1)])],
             ),
         )
 
-        fc3.insert(
-            -1,
-            gpd.GeoDataFrame(
-                {"col1": ["d", "e"]},
-                geometry=[
-                    LineString([(0, 1), (1, 1)]),
-                    MultiLineString([[(0, 1), (1, 1)], [(0, 1), (1, 1)]]),
-                ],
-            ),
-        )
-        assert fc3.geom_type == "MultiLineString"
+        with pytest.raises(TypeError):
+            fc3.insert(
+                -1,
+                gpd.GeoDataFrame(
+                    {"col1": ["d", "e"]},
+                    geometry=[
+                        shapely.LineString([(0, 1), (1, 1)]),
+                        shapely.MultiLineString([[(0, 1), (1, 1)], [(0, 1), (1, 1)]]),
+                    ],
+                ),
+            )
 
         with pytest.raises(TypeError):
             fc3.insert(
@@ -356,15 +392,27 @@ class TestFeatureClass:
                 gpd.GeoDataFrame(
                     {"col1": ["x", "y", "z"]},
                     geometry=[
-                        LineString([(0, 1), (1, 1)]),
-                        MultiLineString([[(0, 1), (1, 1)], [(0, 1), (1, 1)]]),
-                        Point(0, 0),
+                        shapely.LineString([(0, 1), (1, 1)]),
+                        shapely.MultiLineString([[(0, 1), (1, 1)], [(0, 1), (1, 1)]]),
+                        shapely.Point(0, 0),
                     ],
                 ),
             )
 
         with pytest.raises(TypeError):
-            fc3.insert(-1, gpd.GeoDataFrame({"col1": ["test"]}, geometry=[Point(0, 0)]))
+            fc3.insert(
+                -1, gpd.GeoDataFrame({"col1": ["test"]}, geometry=[shapely.Point(0, 0)])
+            )
+
+    def test_list_fields(self, gdf_points):
+        fc1 = ob.FeatureClass(gdf_points)
+        assert fc1.list_fields() == [
+            "ObjectID",
+            "sample1",
+            "sample2",
+            "sample3",
+            "geometry",
+        ]
 
     def test_save(self, gdf_points, gdb_path):
         fc1 = ob.FeatureClass(gdf_points)
@@ -450,6 +498,7 @@ class TestFeatureClass:
 
     def test_to_geojson(self, tmp_path, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
+        print(fc1.geom_type)
         gjs1 = fc1.to_geojson()
         assert isinstance(gjs1, geojson.FeatureCollection)
 
@@ -478,7 +527,7 @@ class TestFeatureClass:
         fc4 = ob.FeatureClass(
             gpd.GeoDataFrame(
                 {"col1": [some_object]},
-                geometry=[LineString([(0, 1), (1, 1)])],
+                geometry=[shapely.LineString([(0, 1), (1, 1)])],
                 crs="WGS 84",
             )
         )
@@ -561,7 +610,8 @@ class TestFeatureDataset:
 
     def test_setitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
-        with pytest.raises(KeyError):
+
+        with pytest.raises(TypeError):
             fds: ob.FeatureDataset
             for fds in gdb.values():
                 fds.__setitem__(
@@ -569,8 +619,8 @@ class TestFeatureDataset:
                     ob.FeatureClass(
                         gpd.GeoDataFrame(
                             geometry=[
-                                LineString([(0, 1), (1, 1)]),
-                                Point(0, 1),
+                                shapely.LineString([(0, 1), (1, 1)]),
+                                shapely.Point(0, 1),
                             ],
                             crs="EPSG:4326",
                         )
@@ -823,7 +873,7 @@ class TestUtilityFunctions:
             ob.gdf_to_fc(gpd.GeoDataFrame, "test", "test", overwrite="yes")
 
         ob.gdf_to_fc(
-            gpd.GeoSeries([LineString([(0, 1), (1, 1)])]),
+            gpd.GeoSeries([shapely.LineString([(0, 1), (1, 1)])]),
             gdb_path,
             "geoseries",
             overwrite=True,
@@ -837,7 +887,7 @@ class TestUtilityFunctions:
                         "fc": ob.FeatureClass(
                             gpd.GeoDataFrame(
                                 {"col1": ["c"]},
-                                geometry=[LineString([(0, 1), (1, 1)])],
+                                geometry=[shapely.LineString([(0, 1), (1, 1)])],
                                 crs="WGS 84",
                             ),
                         )
@@ -1023,3 +1073,105 @@ class TestUsage:
         for fc_name, fc in this_fds.fc_dict().items():
             assert isinstance(fc_name, str)
             assert isinstance(fc, ob.FeatureClass)
+
+    def test_sanitize_gdf_geometry(self, gdf_points, gdf_lines, gdf_polygons):
+        with pytest.raises(TypeError):
+            ob.sanitize_gdf_geometry(pd.DataFrame())  # noqa
+
+        with pytest.raises(TypeError):
+            ob.sanitize_gdf_geometry(
+                gpd.GeoDataFrame(
+                    geometry=[
+                        shapely.GeometryCollection(),
+                        shapely.Point(),
+                    ]
+                )
+            )
+
+        gdf1 = gpd.GeoDataFrame(
+            geometry=[
+                shapely.Point(),
+                shapely.Point([0, 1]),
+                shapely.MultiPoint([[0, 1], [0, 2]]),
+                None,
+            ]
+        )
+        gdf1_geom_type, gdf1 = ob.sanitize_gdf_geometry(gdf1)
+        assert gdf1_geom_type == "MultiPoint"
+
+        gdf2 = gpd.GeoDataFrame(
+            geometry=[
+                shapely.LineString(),
+                shapely.LineString([[0, 1], [0, 2]]),
+                shapely.MultiLineString([[[0, 1], [0, 2]], [[0, 4], [0, 5]]]),
+                None,
+            ]
+        )
+        gdf2_geom_type, gdf2 = ob.sanitize_gdf_geometry(gdf2)
+        assert gdf2_geom_type == "MultiLineString"
+
+        gdf3 = gpd.GeoDataFrame(
+            geometry=[
+                shapely.LinearRing(),
+                shapely.LinearRing([[0, 1], [1, 1], [1, 0], [0, 0]]),
+                shapely.MultiLineString([[[0, 1], [0, 2]], [[0, 4], [0, 5]]]),
+                None,
+            ]
+        )
+        gdf3_geom_type, gdf3 = ob.sanitize_gdf_geometry(gdf3)
+        assert gdf3_geom_type == "MultiLineString"
+
+        gdf4 = gpd.GeoDataFrame(
+            geometry=[
+                shapely.LineString(),
+                shapely.LineString([[0, 1], [0, 2]]),
+                shapely.LinearRing(),
+                shapely.LinearRing([[0, 1], [1, 1], [1, 0], [0, 0]]),
+                shapely.MultiLineString([[[0, 0], [1, 2]], [[4, 4], [5, 6]]]),
+                None,
+            ]
+        )
+        gdf4_geom_type, gdf4 = ob.sanitize_gdf_geometry(gdf4)
+        assert gdf4_geom_type == "MultiLineString"
+
+        gdf5 = gpd.GeoDataFrame(
+            geometry=[
+                shapely.LineString(),
+                shapely.LineString([[0, 1], [0, 2]]),
+                shapely.LinearRing(),
+                shapely.LinearRing([[0, 1], [1, 1], [1, 0], [0, 0]]),
+                None,
+            ]
+        )
+        gdf5_geom_type, gdf5 = ob.sanitize_gdf_geometry(gdf5)
+        assert gdf5_geom_type == "LineString"
+
+        gdf6 = gpd.GeoDataFrame(
+            geometry=[
+                shapely.Polygon(),
+                shapely.Polygon([[0, 1], [1, 1], [1, 0], [0, 0]]),
+                shapely.MultiPolygon(
+                    [
+                        (
+                            ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
+                            [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))],
+                        )
+                    ]
+                ),
+                None,
+            ]
+        )
+        gdf6_geom_type, gdf6 = ob.sanitize_gdf_geometry(gdf6)
+        assert gdf6_geom_type == "MultiPolygon"
+
+        with pytest.raises(TypeError):
+            gdf7 = gpd.GeoDataFrame(
+                geometry=[
+                    shapely.LineString(),
+                    shapely.LinearRing(),
+                    shapely.MultiLineString(),
+                    None,
+                    shapely.Point(),
+                ]
+            )
+            ob.sanitize_gdf_geometry(gdf7)

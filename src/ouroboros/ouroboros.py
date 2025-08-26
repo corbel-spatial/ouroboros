@@ -5,7 +5,7 @@ import shutil
 import uuid
 import warnings
 from collections.abc import MutableMapping, MutableSequence
-from typing import Any, Iterator, Sequence
+from typing import Any, Iterator, Sequence, Literal
 from uuid import uuid4
 
 import geojson
@@ -18,10 +18,10 @@ import xmltodict
 from matplotlib import pyplot as plt
 from pyogrio.errors import DataSourceError
 
-
 # Check for optional install of GDAL>=3.8 for raster support
 try:
     from osgeo import gdal  # noqa # fmt: skip
+
     _gdal_installed = True
     _gdal_version = gdal.__version__
 except ModuleNotFoundError:
@@ -33,7 +33,6 @@ if _gdal_version:
         raise ImportError(
             "GDAL version must be >=3.8, please upgrade to a newer version"
         )
-
 
 pd.options.mode.copy_on_write = True  # See https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html#copy-on-write
 pd.set_option("display.max_columns", 20)
@@ -69,12 +68,8 @@ class FeatureClass(MutableSequence):
         :raises TypeError: Raised when the provided source type is unsupported or invalid
 
         """
-        #: The attribute that references the data object of the FeatureClass
-        self._data: gpd.GeoDataFrame | None = None  # noqa
-        #: The Coordinate Reference System of the FeatureClass, defaults to :code:`None`
-        self.crs: pyproj.crs.CRS | None = None
-        #: The geometry type of the FeatureClass, e.g., :class:`shapely.Point`, :class:`shapely.LineString`, :class:`shapely.Polygon`; defaults to :code:`None`
-        self.geom_type: shapely.Geometry | None = None
+        self._data: gpd.GeoDataFrame | None = None
+        self._geom_type: type[shapely.Geometry] | None = None
 
         # parse src
         if isinstance(src, gpd.GeoDataFrame):
@@ -83,7 +78,7 @@ class FeatureClass(MutableSequence):
         elif isinstance(src, gpd.GeoSeries):
             self._data = gpd.GeoDataFrame(geometry=src.copy(deep=True))
 
-        elif isinstance(src, pd.DataFrame) | isinstance(src, pd.Series):
+        elif isinstance(src, pd.DataFrame) or isinstance(src, pd.Series):
             self._data = gpd.GeoDataFrame(src.copy(deep=True))
 
         elif isinstance(src, FeatureClass):
@@ -118,23 +113,7 @@ class FeatureClass(MutableSequence):
         else:
             raise TypeError((src, type(src)))
 
-        self._data.index.name = "ObjectID"
-
-        try:
-            self.crs = self._data.crs
-        except AttributeError:
-            self.crs = None
-
-        # parse geometry type
-        try:
-            geom_types = self._data.geom_type.unique()
-            if len(geom_types) == 1 and geom_types[0] is None:
-                self.geom_type = None
-            elif len(geom_types) == 1 and geom_types[0] is not None:
-                self.geom_type = geom_types[0]
-
-        except AttributeError:
-            self.geom_type = None
+        self._geom_type, self._data = sanitize_gdf_geometry(self._data)
 
     def __delitem__(self, index) -> None:
         """
@@ -252,6 +231,39 @@ class FeatureClass(MutableSequence):
             self._data.iat[row, column] = value
         else:
             self._data.at[row, column] = value
+
+    @property
+    def crs(self) -> pyproj.crs.CRS | None:
+        """
+        :return: The Coordinate Reference System (CRS) of the FeatureClass, defaults to :code:`None`
+
+        """
+        try:
+            return self._data.crs
+        except AttributeError:
+            return None
+
+    @property
+    def geom_type(self) -> None | shapely.Geometry:
+        """
+        The geometry type of the FeatureClass, e.g., :class:`shapely.Point`, :class:`shapely.LineString`, :class:`shapely.Polygon`; defaults to :code:`None`
+
+        :return:
+        """
+        return self._geom_type
+
+    @property
+    def geometry(self) -> None | gpd.GeoSeries:
+        """
+        Accessor for the geometry of the FeatureClass
+
+        :rtype: None | geopandas.GeoSeries
+
+        """
+        if self._data.active_geometry_name:
+            return self._data.geometry
+        else:
+            return None
 
     # noinspection PyTypeHints
     def append(self, value: "gpd.GeoDataFrame | FeatureClass") -> None:
@@ -376,36 +388,6 @@ class FeatureClass(MutableSequence):
         """
         return FeatureClass(self._data.copy(deep=True))
 
-    def describe(self) -> dict:
-        """
-        Provides a detailed description of the dataset, including its spatial reference
-        system, fields, geometry type, index name, and row count.
-
-        The returned dictionary contains the following keys:
-
-            * `crs`: The name of the Coordinate Reference System (CRS) if defined; otherwise, None
-            * `fields`: A list of field names in the dataset
-            * `geom_type`: The geometry type of the dataset
-            * `index_name`: The name of the index column of the dataset
-            * `row_count`: The number of rows in the dataset
-
-        :return: A dictionary containing dataset information
-        :rtype: dict
-
-        """
-        if self.crs is None:
-            crs = None
-        else:
-            crs = self.crs.name
-
-        return {
-            "crs": crs,
-            "fields": self.list_fields(),
-            "geom_type": self.geom_type,
-            "index_name": self._data.index.name,
-            "row_count": len(self._data),
-        }
-
     def head(self, n: int = 10, silent: bool = False) -> gpd.GeoDataFrame:
         """
         Returns the first `n` rows of the FeatureClass and prints them if `silent` is False.
@@ -452,6 +434,7 @@ class FeatureClass(MutableSequence):
             )
         if isinstance(value, FeatureClass):
             value = value.to_geodataframe()
+        value: gpd.GeoDataFrame
 
         if len(self._data.columns) >= 1:
             try:
@@ -459,32 +442,16 @@ class FeatureClass(MutableSequence):
             except ValueError:
                 raise ValueError("Schemas must match")
 
-        # parse geometry types of new features
-        new_geoms = value.geom_type.unique()
-        if len(new_geoms) == 1:
-            new_geom = new_geoms[0]
-        elif len(new_geoms) == 2:
-            if new_geoms[0].strip("Multi") == new_geoms[1].strip("Multi"):
-                new_geom = f"Multi{new_geoms[0].strip('Multi')}"
-            else:
-                raise TypeError(f"Cannot mix geometry types: {new_geoms}")
-        else:  # len(new_geoms) > 2:
-            raise TypeError(f"Cannot mix geometry types: {new_geoms}")
-
-        # validate geometry
-        if self.geom_type is not None and self.geom_type == new_geom:
-            pass
-        elif self.geom_type is None and new_geom is not None:
-            self.geom_type = new_geom
-        elif self.geom_type is None and new_geom is None:
-            self.geom_type = None
-        else:  # promote to Multi- type geometry (MultiPoint etc)
-            self.geom_type: str
-            simple_type = self.geom_type.strip("Multi")
-            if new_geom.strip("Multi") != simple_type:
-                raise TypeError(f"Geometry must be {simple_type} or Multi{simple_type}")
-            else:
-                self.geom_type = f"Multi{simple_type}"
+        # validate incoming geometry
+        new_geom_type, value = sanitize_gdf_geometry(value)
+        if self._geom_type is None:
+            self._geom_type = new_geom_type
+        elif self._geom_type != new_geom_type:
+            raise TypeError(
+                f"Geometry type must be {self._geom_type}, not {new_geom_type}"
+            )
+        else:
+            assert self._geom_type == new_geom_type
 
         # insert features into dataframe
         if index == 0:
@@ -493,7 +460,9 @@ class FeatureClass(MutableSequence):
             c = [self._data, value]
         else:
             c = [self._data.iloc[:index], value, self._data.iloc[index:]]
-        self._data = pd.concat(c, ignore_index=True)  # will reindex after concat
+        self._data = pd.concat(
+            c, ignore_index=True
+        )  # pandas will automatically reindex after concatenating
 
     def list_fields(self) -> list[str]:
         """
@@ -1518,3 +1487,154 @@ def raster_to_tif(
             tif_drv.CreateCopy(tif_path, raster, strict=0, options=options)
         else:
             tif_drv.CreateCopy(tif_path, raster, strict=0)
+
+
+def sanitize_gdf_geometry(
+    gdf: gpd.GeoDataFrame,
+) -> tuple[
+    Literal[
+        "Point",
+        "MultiPoint",
+        "LineString",
+        "MultiLineString",
+        "Polygon",
+        "MultiPolygon",
+        None,
+    ],
+    gpd.GeoDataFrame,
+]:
+    """
+    Sanitizes the geometry column of a GeoDataFrame for compatibility with feature class geometries.
+
+    This function accepts a GeoDataFrame and attempts to standardize the geometry types
+    within the active geometry column. If the geometry column has only one consistent geometry
+    type, it returns that type. Alternately, the function resolves simple two-type geometries
+    (e.g., `Polygon` and `MultiPolygon`) to a multi-type geometry.
+
+    :param gdf: The GeoDataFrame whose geometries need to be sanitized
+    :type gdf: geopandas.GeoDataFrame
+
+    :return: A tuple containing the resolved geometry type (e.g., `Point`, `MultiLineString`,
+      etc.) or `None` and the modified GeoDataFrame with sanitized geometries
+    :rtype: tuple[Literal["Point", "MultiPoint", "LineString", "MultiLineString", "Polygon",
+      "MultiPolygon", None], geopandas.GeoDataFrame]
+
+    :raises TypeError: If the input is not a GeoDataFrame or if the GeoDataFrame contains unsupported or too many geometry types
+    """
+    if not isinstance(gdf, gpd.GeoDataFrame):
+        raise TypeError("Input must be a GeoDataFrame")
+
+    gdf.index.name = "ObjectID"
+
+    if len(gdf) == 0 or gdf.active_geometry_name is None:
+        return None, gdf
+
+    geoms: list = gdf.geom_type.unique().tolist()
+    if None in geoms:
+        geoms.remove(None)
+
+    if "GeometryCollection" in geoms:
+        raise TypeError(
+            "Cannot sanitize a GeoDataFrame with GeometryCollection geometries"
+        )
+
+    if len(geoms) == 0:
+        return None, gdf
+
+    elif len(geoms) == 1:
+        return geoms[0], gdf
+
+    elif len(geoms) == 2:
+        if "Point" in geoms and "MultiPoint" in geoms:
+            new_geom = list()
+            for feature in gdf[gdf.active_geometry_name]:
+                if feature is None:
+                    new_geom.append(shapely.MultiPoint())
+                elif isinstance(feature, shapely.Point):
+                    try:
+                        new_geom.append(shapely.MultiPoint([feature]))
+                    except shapely.errors.EmptyPartError:
+                        new_geom.append(shapely.MultiPoint())
+                else:
+                    new_geom.append(feature)
+            gdf[gdf.active_geometry_name] = new_geom
+            return "MultiPoint", gdf
+
+        elif "LineString" in geoms and "LinearRing" in geoms:
+            new_geom = list()
+            for feature in gdf[gdf.active_geometry_name]:
+                if feature is None:
+                    new_geom.append(shapely.LineString())
+                elif isinstance(feature, shapely.LinearRing):
+                    new_geom.append(shapely.LineString(feature))
+                else:
+                    new_geom.append(feature)
+            gdf[gdf.active_geometry_name] = new_geom
+            return "LineString", gdf
+
+        elif "MultiLineString" in geoms and (
+            "LineString" in geoms or "LinearRing" in geoms
+        ):
+            new_geom = list()
+            for feature in gdf[gdf.active_geometry_name]:
+                if feature is None:
+                    new_geom.append(shapely.MultiLineString())
+                elif isinstance(feature, shapely.LineString) or isinstance(
+                    feature, shapely.LinearRing
+                ):
+                    try:
+                        new_geom.append(shapely.MultiLineString({feature}))
+                    except shapely.errors.EmptyPartError:
+                        new_geom.append(shapely.MultiLineString())
+                else:
+                    new_geom.append(feature)
+            gdf[gdf.active_geometry_name] = new_geom
+            return "MultiLineString", gdf
+
+        elif "Polygon" in geoms and "MultiPolygon" in geoms:
+            new_geom = list()
+            for feature in gdf[gdf.active_geometry_name]:
+                if feature is None:
+                    new_geom.append(shapely.MultiPolygon())
+                elif isinstance(feature, shapely.Polygon):
+                    try:
+                        new_geom.append(shapely.MultiPolygon([{feature}]))
+                    except (shapely.errors.EmptyPartError, TypeError):
+                        new_geom.append(shapely.MultiPolygon())
+                else:
+                    new_geom.append(feature)
+            gdf[gdf.active_geometry_name] = new_geom
+            return "MultiPolygon", gdf
+
+        else:
+            raise TypeError(
+                f"Cannot sanitize a GeoDataFrame with mixed geometry types: {geoms}"
+            )
+    elif len(geoms) == 3:
+        if (
+            "LineString" in geoms
+            and "MultiLineString" in geoms
+            and "LinearRing" in geoms
+        ):
+            new_geom = list()
+            for feature in gdf[gdf.active_geometry_name]:
+                if feature is None:
+                    new_geom.append(shapely.MultiLineString())
+                elif isinstance(feature, shapely.LineString) or isinstance(
+                    feature, shapely.LinearRing
+                ):
+                    try:
+                        new_geom.append(shapely.MultiLineString([feature]))
+                    except shapely.errors.EmptyPartError:
+                        new_geom.append(shapely.MultiLineString())
+                else:
+                    new_geom.append(feature)
+            gdf[gdf.active_geometry_name] = new_geom
+            return "MultiLineString", gdf
+        else:
+            raise TypeError(
+                f"Cannot sanitize a GeoDataFrame with incompatible geometries: {geoms}"
+            )
+
+    else:  # len(geoms) >= 4:
+        raise TypeError(f"Too many geometry types to sanitize: {geoms}")
