@@ -1,6 +1,14 @@
 # Changelog
 
-## v1.0.7
+## v2.0.0 (planned)
+
+- Prebuilt GDAL binaries for OpenFileGDB drivers included with package
+
+## v1.1.0 (planned)
+
+- First stable release
+
+## v1.0.7 (latest)
 
 - sanitize_gdf_geometry() enforces compatibility with feature class geometries
 - FeatureClass.show() displays a simple plot of the geometry
