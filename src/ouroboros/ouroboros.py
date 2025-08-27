@@ -6,7 +6,6 @@ import uuid
 import warnings
 from collections.abc import MutableMapping, MutableSequence
 from importlib import metadata
-from time import sleep
 from typing import Any, Iterator, Sequence, Literal
 from uuid import uuid4
 
