@@ -3,7 +3,6 @@ import uuid
 import zipfile
 from random import uniform
 
-import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -127,16 +126,16 @@ class TestFeatureClass:
             fc = ob.FeatureClass(0)
 
         fc1 = ob.FeatureClass(fc_points)
-        assert isinstance(fc1.to_geodataframe(), gpd.GeoDataFrame)
+        assert isinstance(fc1.gdf, gpd.GeoDataFrame)
 
         fc2 = ob.FeatureClass(fds_fc_points)
-        assert isinstance(fc2.to_geodataframe(), gpd.GeoDataFrame)
+        assert isinstance(fc2.gdf, gpd.GeoDataFrame)
 
         fc3 = ob.FeatureClass(gpd.GeoSeries([shapely.Point(0, 1)]))
-        assert isinstance(fc3.to_geodataframe(), gpd.GeoDataFrame)
+        assert isinstance(fc3.gdf, gpd.GeoDataFrame)
 
         fc4 = ob.FeatureClass(fc3)
-        assert isinstance(fc4.to_geodataframe(), gpd.GeoDataFrame)
+        assert isinstance(fc4.gdf, gpd.GeoDataFrame)
 
         with pytest.raises(TypeError):
             fc5 = ob.FeatureClass("test.gdb")
@@ -146,15 +145,15 @@ class TestFeatureClass:
 
     def test_instatiate_gdf(self):
         fc1 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[shapely.Point(0, 1)]))
-        assert isinstance(fc1.to_geodataframe(), gpd.GeoDataFrame)
+        assert isinstance(fc1.gdf, gpd.GeoDataFrame)
 
         fc2 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[]))
-        assert isinstance(fc2.to_geodataframe(), gpd.GeoDataFrame)
+        assert isinstance(fc2.gdf, gpd.GeoDataFrame)
 
     def test_instatiate_none(self):
         fc1 = ob.FeatureClass()
-        assert isinstance(fc1.to_geodataframe(), gpd.GeoDataFrame)
-        assert len(fc1.to_geodataframe()) == 0
+        assert isinstance(fc1.gdf, gpd.GeoDataFrame)
+        assert len(fc1.gdf) == 0
 
     def test_delitem(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -211,9 +210,13 @@ class TestFeatureClass:
         fc1 = ob.FeatureClass()
         assert fc1.crs is None
 
+    def test_gdf(self, ob_gdb):
+        gdb, gdb_path = ob_gdb
+        for fc in gdb.fcs:
+            assert isinstance(fc.gdf, gpd.GeoDataFrame)
+
     def test_geom_type(self, ob_gdb):
         gdb, gdb_path = ob_gdb
-
         for fc in gdb.fcs:
             assert fc.geom_type in (
                 "Point",
@@ -490,60 +493,6 @@ class TestFeatureClass:
         fc1.sort("sample1", ascending=False)
         case3 = fc1[0].iat[0, 0]
         assert case1 != case2 != case3
-
-    def test_to_geodataframe(self, gdf_points):
-        fc1 = ob.FeatureClass(gdf_points)
-        gdf = fc1.to_geodataframe()
-        assert isinstance(gdf, gpd.GeoDataFrame)
-
-    def test_to_geojson(self, tmp_path, gdf_points):
-        fc1 = ob.FeatureClass(gdf_points)
-        print(fc1.geom_type)
-        gjs1 = fc1.to_geojson()
-        assert isinstance(gjs1, geojson.FeatureCollection)
-
-        fc1.to_geojson(os.path.join(tmp_path, "test1"))
-        with open(os.path.join(tmp_path, "test1.geojson"), "r") as f:
-            gjs2 = geojson.load(f)
-        assert isinstance(gjs2, geojson.FeatureCollection)
-
-        # no geometry
-        fc2 = ob.FeatureClass(pd.Series({"col1": [0, 1, 2]}))
-        gjs2 = fc2.to_geojson()
-        assert isinstance(gjs2, dict)
-        fc2.to_geojson(os.path.join(tmp_path, "test2"))
-
-        # no features
-        fc3 = ob.FeatureClass(
-            gpd.GeoDataFrame({"col1": [], "geometry": []}, crs="WGS 84")
-        )
-        with pytest.raises(ValueError):
-            gjs3 = fc3.to_geojson()
-        with pytest.raises(ValueError):
-            fc3.to_geojson(os.path.join(tmp_path, "test3"))
-
-        # not JSON serializable
-        some_object = object()
-        fc4 = ob.FeatureClass(
-            gpd.GeoDataFrame(
-                {"col1": [some_object]},
-                geometry=[shapely.LineString([(0, 1), (1, 1)])],
-                crs="WGS 84",
-            )
-        )
-        # GeoDataFrame.to_file() can handle objects but .to_json() cannot
-        with pytest.raises(TypeError):
-            fc4.to_geojson()
-        fc4.to_geojson(os.path.join(tmp_path, "test4"))
-        with open(os.path.join(tmp_path, "test4.geojson"), "r") as f:
-            gjs4 = geojson.load(f)
-        assert isinstance(gjs4, geojson.FeatureCollection)
-
-    def test_to_shapefile(self, tmp_path, gdf_points):
-        fc1 = ob.FeatureClass(gdf_points)
-        fc1.to_shapefile(os.path.join(tmp_path, "test"))
-        shp = gpd.read_file(os.path.join(tmp_path, "test.shp"))
-        assert isinstance(shp, gpd.GeoDataFrame)
 
 
 class TestFeatureDataset:
@@ -848,7 +797,7 @@ class TestUtilityFunctions:
         count = 0
         for fds in gdb.values():
             for fc_name, fc in fds.items():
-                gdf = fc.to_geodataframe()
+                gdf = fc.gdf
                 ob.gdf_to_fc(gdf, gdb_path, fc_name + "_copy")
                 ob.gdf_to_fc(gdf, gdb_path, fc_name, overwrite=True)
                 count += 2
@@ -861,7 +810,7 @@ class TestUtilityFunctions:
         with pytest.raises(pyogrio.errors.GeometryError):
             for fc_name, fc in gdb.fc_dict.items():
                 ob.gdf_to_fc(
-                    gdf=fc.to_geodataframe(),
+                    gdf=fc.gdf,
                     gdb_path=gdb_path,
                     fc_name=fc_name,
                     feature_dataset=None,

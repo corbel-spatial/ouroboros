@@ -1,4 +1,3 @@
-import json
 import os
 import re
 import shutil
@@ -9,7 +8,6 @@ from importlib import metadata
 from typing import Any, Iterator, Sequence, Literal
 from uuid import uuid4
 
-import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -88,7 +86,7 @@ class FeatureClass(MutableSequence):
             self._data = gpd.GeoDataFrame(src.copy(deep=True))
 
         elif isinstance(src, FeatureClass):
-            self._data = src.to_geodataframe()
+            self._data = src.gdf
 
         elif isinstance(src, os.PathLike) or isinstance(
             src, str
@@ -250,6 +248,10 @@ class FeatureClass(MutableSequence):
             return None
 
     @property
+    def gdf(self) -> gpd.GeoDataFrame:
+        return self._data
+
+    @property
     def geom_type(self) -> None | shapely.Geometry:
         """
         The geometry type of the FeatureClass, e.g., :class:`shapely.Point`, :class:`shapely.LineString`, :class:`shapely.Polygon`; defaults to :code:`None`
@@ -285,7 +287,7 @@ class FeatureClass(MutableSequence):
         if isinstance(value, gpd.GeoDataFrame):
             self.insert(-1, value)
         elif isinstance(value, FeatureClass):
-            self.insert(-1, value.to_geodataframe())
+            self.insert(-1, value.gdf)
         else:
             raise TypeError(
                 f"Invalid type: {type(value)}, expected geopandas.GeoDataFrame or FeatureClass"
@@ -439,7 +441,7 @@ class FeatureClass(MutableSequence):
                 "Value must be an instance of geopandas.GeoDataFrame or FeatureClass"
             )
         if isinstance(value, FeatureClass):
-            value = value.to_geodataframe()
+            value = value.gdf
         value: gpd.GeoDataFrame
 
         if len(self._data.columns) >= 1:
@@ -613,82 +615,6 @@ class FeatureClass(MutableSequence):
 
         """
         self._data.sort_values(by=field_name, ascending=ascending, inplace=True)
-
-    def to_geodataframe(self) -> gpd.GeoDataFrame:
-        """
-        Returns a deep copy of the internal GeoDataFrame.
-
-        :return: A deep copy of the internal GeoDataFrame
-        :rtype: geopandas.GeoDataFrame
-
-        """
-        return self._data.copy(deep=True)
-
-    def to_geojson(
-        self, filename: os.PathLike | str = None
-    ) -> "None | geojson.FeatureCollection":
-        """
-        Convert the FeatureClass to the GeoJSON format, or JSON if the data does not have geometry.
-
-        When a filename is provided, the GeoJSON output will be written to that file. If no filename is
-        specified, the GeoJSON format will be returned as a FeatureCollection object. The filename
-        is automatically suffixed with '.geojson' if not specified in the provided name. If the data
-        has no geometry column the file will be saved as JSON.
-
-        :param filename: The name of the file where the GeoJSON output should be written
-        :type filename: os.PathLike | str, optional
-
-        :return: None when a filename is provided and the GeoJSON data is written to disk;
-                 otherwise returns a geojson.FeatureCollection object, or a JSON dict if no geometry.
-        :rtype: None | dict | geojson.FeatureCollection
-
-        """
-        if len(self._data) == 0:
-            raise ValueError("Dataset is empty")
-
-        try:
-            gdf = self.to_geodataframe()
-
-            if filename:
-                if not self.geom_type:  # to JSON
-                    if not filename.endswith(".json"):
-                        filename += ".json"
-                    df = pd.DataFrame(gdf)
-                    with open(filename, "w") as f:
-                        json.dump(df.to_json(), f)
-                else:  # to GeoJSON
-                    if not filename.endswith(".geojson"):
-                        filename += ".geojson"
-                    gdf.to_file(filename, driver="GeoJSON")
-                return None
-            else:  # return GeoJSON object
-                if self.geom_type:
-                    gjs = gdf.to_json(to_wgs84=True)
-                    return geojson.loads(gjs)
-                else:
-                    df = pd.DataFrame(gdf)
-                    return json.loads(df.to_json())
-
-        except TypeError as e:
-            raise TypeError(
-                f"{e}\n"
-                f"Some data cannot be converted to JSON, it must be removed before converting",
-            )
-
-    def to_shapefile(self, filename: os.PathLike | str) -> None:
-        """
-        Convert the FeatureClass to a shapefile.
-
-        Adds a '.shp' suffix to the filename if not in the filename provided.
-
-        :param filename: The name of the file where the shapefile will be saved
-        :type filename: os.PathLike | str
-        """
-        if not filename.endswith(".shp"):
-            filename += ".shp"
-        with warnings.catch_warnings():  # hide pyogrio driver warnings
-            warnings.simplefilter("ignore")
-            self._data.to_file(filename=filename, driver="ESRI Shapefile")
 
 
 class FeatureDataset(MutableMapping):
@@ -1056,7 +982,7 @@ class GeoDatabase(MutableMapping):
         """
         if isinstance(value, FeatureClass):
             try:
-                crs = value.to_geodataframe().crs
+                crs = value.gdf.crs
             except AttributeError:
                 crs = None
             if None not in self._data:
@@ -1167,7 +1093,7 @@ class GeoDatabase(MutableMapping):
         for fds_name, fds in self._data.items():
             for fc_name, fc in fds.items():
                 gdf_to_fc(
-                    fc.to_geodataframe(),
+                    fc.gdf,
                     gdb_path=path,
                     fc_name=fc_name,
                     feature_dataset=fds_name,
@@ -1192,7 +1118,7 @@ def buffer(fc: FeatureClass, distance: float, **kwargs: dict) -> FeatureClass:
     :rtype: FeatureClass
 
     """
-    gdf = fc.to_geodataframe()
+    gdf = fc.gdf
     new_geom = gdf.buffer(distance=distance, **kwargs)
     gdf.set_geometry(new_geom, inplace=True)
     return FeatureClass(gdf)

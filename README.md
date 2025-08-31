@@ -35,11 +35,10 @@ which can be accessed like dictionaries. For example:
 {'spam_dataset': ['spam_fc'],
  None: ['ham_fc']}
 
-# Load a feature class and convert to GeoPandas
+# Load a feature class, the underlying data object is a GeoPandas GeoDataFrame
 
 >>> fc = ob.FeatureClass("spam_and_eggs.gdb/egg_dataset/eggs_fc")
->>> gdf = fc.to_geodataframe()
->>> type(gdf)
+>>> type(fc.gdf)
 <class 'geopandas.geodataframe.GeoDataFrame'>
 
 # Assemble a new geodatabase in memory
