@@ -2,7 +2,7 @@
     "meta": {
         "format": 3,
         "version": "7.10.6",
-        "timestamp": "2025-08-31T13:25:51.262456",
+        "timestamp": "2025-08-31T14:18:10.405305",
         "branch_coverage": false,
         "show_contexts": false
     },
@@ -74,20 +74,33 @@
                 15,
                 16,
                 17,
-                20,
+                20
+            ],
+            "summary": {
+                "covered_lines": 17,
+                "num_statements": 601,
+                "percent_covered": 2.8286189683860234,
+                "percent_covered_display": "3",
+                "missing_lines": 584,
+                "excluded_lines": 0
+            },
+            "missing_lines": [
                 22,
                 25,
                 26,
                 28,
                 29,
+                30,
+                31,
+                32,
                 33,
                 34,
                 35,
+                36,
                 41,
                 42,
                 43,
                 46,
-                47,
                 54,
                 75,
                 76,
@@ -276,7 +289,6 @@
                 601,
                 617,
                 620,
-                621,
                 629,
                 652,
                 656,
@@ -339,7 +351,6 @@
                 817,
                 825,
                 828,
-                829,
                 838,
                 857,
                 858,
@@ -560,9 +571,12 @@
                 1468,
                 1472,
                 1495,
+                1496,
                 1500,
                 1501,
+                1502,
                 1503,
+                1504,
                 1506,
                 1507,
                 1509,
@@ -656,27 +670,19 @@
                 1664,
                 1669
             ],
-            "summary": {
-                "covered_lines": 594,
-                "num_statements": 601,
-                "percent_covered": 98.83527454242929,
-                "percent_covered_display": "99",
-                "missing_lines": 7,
-                "excluded_lines": 0
-            },
-            "missing_lines": [
-                30,
-                31,
-                32,
-                36,
-                1496,
-                1502,
-                1504
-            ],
             "excluded_lines": [],
             "functions": {
                 "FeatureClass.__init__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 26,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 26,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         75,
                         76,
                         79,
@@ -704,36 +710,36 @@
                         118,
                         120
                     ],
-                    "summary": {
-                        "covered_lines": 26,
-                        "num_statements": 26,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.__delitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         135,
                         136,
                         137
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.__getitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 16,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 16,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         164,
                         165,
                         166,
@@ -751,49 +757,49 @@
                         180,
                         182
                     ],
-                    "summary": {
-                        "covered_lines": 16,
-                        "num_statements": 16,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.__iter__": {
-                    "executed_lines": [
-                        194
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        194
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.__len__": {
-                    "executed_lines": [
-                        202
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        202
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.__setitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 8,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 8,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         228,
                         229,
                         230,
@@ -803,103 +809,103 @@
                         235,
                         237
                     ],
-                    "summary": {
-                        "covered_lines": 8,
-                        "num_statements": 8,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.crs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         245,
                         246,
                         247,
                         248
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.gdf": {
-                    "executed_lines": [
-                        252
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        252
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.geom_type": {
-                    "executed_lines": [
-                        261
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        261
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.geometry": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         271,
                         272,
                         274
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.append": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         287,
                         288,
                         289,
                         290,
                         292
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.calculate": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 37,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 37,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         321,
                         322,
                         323,
@@ -938,67 +944,67 @@
                         377,
                         378
                     ],
-                    "summary": {
-                        "covered_lines": 37,
-                        "num_statements": 37,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.clear": {
-                    "executed_lines": [
-                        389
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        389
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.copy": {
-                    "executed_lines": [
-                        397
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        397
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.head": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         412,
                         413,
                         414,
                         415
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.insert": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 23,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 23,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         435,
                         436,
                         437,
@@ -1023,69 +1029,69 @@
                         470,
                         471
                     ],
-                    "summary": {
-                        "covered_lines": 23,
-                        "num_statements": 23,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.list_fields": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         486,
                         487,
                         488
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.save": {
-                    "executed_lines": [
-                        514
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        514
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.show": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         529,
                         530,
                         531,
                         532
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.select_columns": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 16,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 16,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         548,
                         549,
                         550,
@@ -1103,49 +1109,49 @@
                         569,
                         571
                     ],
-                    "summary": {
-                        "covered_lines": 16,
-                        "num_statements": 16,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureClass.select_rows": {
-                    "executed_lines": [
-                        599
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        599
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureClass.sort": {
-                    "executed_lines": [
-                        617
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        617
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.__init__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 11,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 11,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         652,
                         656,
                         657,
@@ -1158,34 +1164,34 @@
                         668,
                         669
                     ],
-                    "summary": {
-                        "covered_lines": 11,
-                        "num_statements": 11,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureDataset.__delitem__": {
-                    "executed_lines": [
-                        684
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        684
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.__getitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 6,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 6,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         700,
                         701,
                         702,
@@ -1193,49 +1199,49 @@
                         704,
                         706
                     ],
-                    "summary": {
-                        "covered_lines": 6,
-                        "num_statements": 6,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureDataset.__iter__": {
-                    "executed_lines": [
-                        716
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        716
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.__len__": {
-                    "executed_lines": [
-                        724
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        724
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.__setitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 20,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 20,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         745,
                         746,
                         748,
@@ -1257,94 +1263,94 @@
                         773,
                         774
                     ],
-                    "summary": {
-                        "covered_lines": 20,
-                        "num_statements": 20,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureDataset.crs": {
-                    "executed_lines": [
-                        785
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        785
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.enforce_crs": {
-                    "executed_lines": [
-                        794
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        794
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.fc_dict": {
-                    "executed_lines": [
-                        803
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        803
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.fc_names": {
-                    "executed_lines": [
-                        814
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        814
+                    ],
                     "excluded_lines": []
                 },
                 "FeatureDataset.fcs": {
-                    "executed_lines": [
-                        825
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        825
+                    ],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__init__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 18,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 18,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         857,
                         858,
                         860,
@@ -1364,36 +1370,36 @@
                         876,
                         877
                     ],
-                    "summary": {
-                        "covered_lines": 18,
-                        "num_statements": 18,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__delitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         894,
                         895,
                         896
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__getitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 13,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 13,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         915,
                         916,
                         918,
@@ -1408,67 +1414,67 @@
                         928,
                         929
                     ],
-                    "summary": {
-                        "covered_lines": 13,
-                        "num_statements": 13,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__hash__": {
-                    "executed_lines": [
-                        942
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        942
+                    ],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__iter__": {
-                    "executed_lines": [
-                        952
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        952
+                    ],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__len__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         960,
                         961,
                         962,
                         963
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.__setitem__": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 15,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 15,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         983,
                         984,
                         985,
@@ -1485,121 +1491,121 @@
                         997,
                         999
                     ],
-                    "summary": {
-                        "covered_lines": 15,
-                        "num_statements": 15,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.fc_dict": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1008,
                         1009,
                         1010,
                         1011,
                         1012
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.fc_names": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1023,
                         1024,
                         1025,
                         1026,
                         1027
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.fcs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1037,
                         1038,
                         1039,
                         1040,
                         1041
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase.fds_dict": {
-                    "executed_lines": [
-                        1050
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        1050
+                    ],
                     "excluded_lines": []
                 },
                 "GeoDatabase.fds_names": {
-                    "executed_lines": [
-                        1061
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        1061
+                    ],
                     "excluded_lines": []
                 },
                 "GeoDatabase.fds": {
-                    "executed_lines": [
-                        1072
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        1072
+                    ],
                     "excluded_lines": []
                 },
                 "GeoDatabase.save": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 9,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 9,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1085,
                         1086,
                         1087,
@@ -1610,53 +1616,53 @@
                         1094,
                         1095
                     ],
-                    "summary": {
-                        "covered_lines": 9,
-                        "num_statements": 9,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "buffer": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1121,
                         1122,
                         1123,
                         1124
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "clip": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1143,
                         1144
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "fc_to_gdf": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 7,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 7,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1168,
                         1169,
                         1171,
@@ -1665,19 +1671,19 @@
                         1174,
                         1176
                     ],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 7,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "gdf_to_fc": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 19,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 19,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1218,
                         1219,
                         1220,
@@ -1698,19 +1704,19 @@
                         1256,
                         1257
                     ],
-                    "summary": {
-                        "covered_lines": 19,
-                        "num_statements": 19,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "get_info": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 24,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 24,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1271,
                         1272,
                         1273,
@@ -1736,19 +1742,19 @@
                         1318,
                         1320
                     ],
-                    "summary": {
-                        "covered_lines": 24,
-                        "num_statements": 24,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "list_datasets": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 21,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 21,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1343,
                         1344,
                         1345,
@@ -1771,19 +1777,19 @@
                         1370,
                         1371
                     ],
-                    "summary": {
-                        "covered_lines": 21,
-                        "num_statements": 21,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "list_layers": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 10,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 10,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1386,
                         1387,
                         1388,
@@ -1795,19 +1801,19 @@
                         1395,
                         1396
                     ],
-                    "summary": {
-                        "covered_lines": 10,
-                        "num_statements": 10,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "list_rasters": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 18,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 18,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1414,
                         1415,
                         1416,
@@ -1827,39 +1833,42 @@
                         1438,
                         1439
                     ],
-                    "summary": {
-                        "covered_lines": 18,
-                        "num_statements": 18,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "overlay": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1467,
                         1468
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "raster_to_tif": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 17,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 17,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1495,
+                        1496,
                         1500,
                         1501,
+                        1502,
                         1503,
+                        1504,
                         1506,
                         1507,
                         1509,
@@ -1871,23 +1880,19 @@
                         1516,
                         1518
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 17,
-                        "percent_covered": 82.3529411764706,
-                        "percent_covered_display": "82",
-                        "missing_lines": 3,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        1496,
-                        1502,
-                        1504
-                    ],
                     "excluded_lines": []
                 },
                 "sanitize_gdf_geometry": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 81,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 81,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1553,
                         1554,
                         1556,
@@ -1970,15 +1975,6 @@
                         1664,
                         1669
                     ],
-                    "summary": {
-                        "covered_lines": 81,
-                        "num_statements": 81,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "": {
@@ -1999,20 +1995,33 @@
                         15,
                         16,
                         17,
-                        20,
+                        20
+                    ],
+                    "summary": {
+                        "covered_lines": 17,
+                        "num_statements": 108,
+                        "percent_covered": 15.74074074074074,
+                        "percent_covered_display": "16",
+                        "missing_lines": 91,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         22,
                         25,
                         26,
                         28,
                         29,
+                        30,
+                        31,
+                        32,
                         33,
                         34,
                         35,
+                        36,
                         41,
                         42,
                         43,
                         46,
-                        47,
                         54,
                         122,
                         141,
@@ -2040,7 +2049,6 @@
                         573,
                         601,
                         620,
-                        621,
                         629,
                         671,
                         686,
@@ -2058,7 +2066,6 @@
                         816,
                         817,
                         828,
-                        829,
                         838,
                         880,
                         898,
@@ -2091,26 +2098,21 @@
                         1472,
                         1521
                     ],
-                    "summary": {
-                        "covered_lines": 104,
-                        "num_statements": 108,
-                        "percent_covered": 96.29629629629629,
-                        "percent_covered_display": "96",
-                        "missing_lines": 4,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        30,
-                        31,
-                        32,
-                        36
-                    ],
                     "excluded_lines": []
                 }
             },
             "classes": {
                 "FeatureClass": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 161,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 161,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         75,
                         76,
                         79,
@@ -2273,19 +2275,19 @@
                         599,
                         617
                     ],
-                    "summary": {
-                        "covered_lines": 161,
-                        "num_statements": 161,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "FeatureDataset": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 45,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 45,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         652,
                         656,
                         657,
@@ -2332,19 +2334,19 @@
                         814,
                         825
                     ],
-                    "summary": {
-                        "covered_lines": 45,
-                        "num_statements": 45,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "GeoDatabase": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 82,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 82,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         857,
                         858,
                         860,
@@ -2428,15 +2430,6 @@
                         1094,
                         1095
                     ],
-                    "summary": {
-                        "covered_lines": 82,
-                        "num_statements": 82,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "": {
@@ -2457,20 +2450,33 @@
                         15,
                         16,
                         17,
-                        20,
+                        20
+                    ],
+                    "summary": {
+                        "covered_lines": 17,
+                        "num_statements": 313,
+                        "percent_covered": 5.431309904153355,
+                        "percent_covered_display": "5",
+                        "missing_lines": 296,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         22,
                         25,
                         26,
                         28,
                         29,
+                        30,
+                        31,
+                        32,
                         33,
                         34,
                         35,
+                        36,
                         41,
                         42,
                         43,
                         46,
-                        47,
                         54,
                         122,
                         141,
@@ -2498,7 +2504,6 @@
                         573,
                         601,
                         620,
-                        621,
                         629,
                         671,
                         686,
@@ -2516,7 +2521,6 @@
                         816,
                         817,
                         828,
-                        829,
                         838,
                         880,
                         898,
@@ -2655,9 +2659,12 @@
                         1468,
                         1472,
                         1495,
+                        1496,
                         1500,
                         1501,
+                        1502,
                         1503,
+                        1504,
                         1506,
                         1507,
                         1509,
@@ -2751,23 +2758,6 @@
                         1664,
                         1669
                     ],
-                    "summary": {
-                        "covered_lines": 306,
-                        "num_statements": 313,
-                        "percent_covered": 97.76357827476038,
-                        "percent_covered_display": "98",
-                        "missing_lines": 7,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        30,
-                        31,
-                        32,
-                        36,
-                        1496,
-                        1502,
-                        1504
-                    ],
                     "excluded_lines": []
                 }
             }
@@ -2785,7 +2775,17 @@
                 10,
                 11,
                 12,
-                14,
+                14
+            ],
+            "summary": {
+                "covered_lines": 12,
+                "num_statements": 683,
+                "percent_covered": 1.7569546120058566,
+                "percent_covered_display": "2",
+                "missing_lines": 671,
+                "excluded_lines": 0
+            },
+            "missing_lines": [
                 16,
                 19,
                 20,
@@ -2836,6 +2836,8 @@
                 92,
                 93,
                 94,
+                95,
+                96,
                 97,
                 98,
                 99,
@@ -3362,6 +3364,7 @@
                 921,
                 923,
                 924,
+                925,
                 927,
                 928,
                 929,
@@ -3455,122 +3458,118 @@
                 1122,
                 1131
             ],
-            "summary": {
-                "covered_lines": 680,
-                "num_statements": 683,
-                "percent_covered": 99.56076134699853,
-                "percent_covered_display": "99",
-                "missing_lines": 3,
-                "excluded_lines": 0
-            },
-            "missing_lines": [
-                95,
-                96,
-                925
-            ],
             "excluded_lines": [],
             "functions": {
                 "gdb_path": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         21,
                         22
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "gdf_points": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         27,
                         30,
                         35
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "fc_points": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         40,
                         41
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "fds_fc_points": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         46,
                         47,
                         53
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "gdf_polygons": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         58,
                         59,
                         60,
                         61
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "gdf_lines": {
-                    "executed_lines": [
-                        66
-                    ],
+                    "executed_lines": [],
                     "summary": {
-                        "covered_lines": 1,
+                        "covered_lines": 0,
                         "num_statements": 1,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 1,
                         "excluded_lines": 0
                     },
-                    "missing_lines": [],
+                    "missing_lines": [
+                        66
+                    ],
                     "excluded_lines": []
                 },
                 "ob_gdb": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 14,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 14,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         71,
                         72,
                         73,
@@ -3586,60 +3585,59 @@
                         85,
                         86
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 14,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "esri_gdb": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 9,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 9,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         91,
                         92,
                         93,
                         94,
+                        95,
+                        96,
                         97,
                         98,
                         99
                     ],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 9,
-                        "percent_covered": 77.77777777777777,
-                        "percent_covered_display": "78",
-                        "missing_lines": 2,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        95,
-                        96
-                    ],
                     "excluded_lines": []
                 },
                 "test_version": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         103,
                         104,
                         105
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "test_gdb_fixtures": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 9,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 9,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         109,
                         111,
                         112,
@@ -3650,19 +3648,19 @@
                         118,
                         119
                     ],
-                    "summary": {
-                        "covered_lines": 9,
-                        "num_statements": 9,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_instantiate_fc": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 14,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 14,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         124,
                         126,
                         128,
@@ -3678,73 +3676,73 @@
                         143,
                         144
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 14,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_instatiate_gdf": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         147,
                         148,
                         150,
                         151
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_instatiate_none": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         154,
                         155,
                         156
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_delitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         159,
                         160,
                         161,
                         162,
                         164
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_getitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 10,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 10,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         167,
                         168,
                         169,
@@ -3756,19 +3754,19 @@
                         175,
                         177
                     ],
-                    "summary": {
-                        "covered_lines": 10,
-                        "num_statements": 10,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_iter": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 8,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 8,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         180,
                         181,
                         182,
@@ -3778,35 +3776,35 @@
                         186,
                         187
                     ],
-                    "summary": {
-                        "covered_lines": 8,
-                        "num_statements": 8,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_len": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         190,
                         191
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_setitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 7,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 7,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         194,
                         195,
                         196,
@@ -3815,74 +3813,74 @@
                         200,
                         202
                     ],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 7,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_crs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         205,
                         207,
                         208,
                         210,
                         211
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_gdf": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         214,
                         215,
                         216
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_geom_type": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         219,
                         220,
                         221,
                         231,
                         232
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_geometry": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 6,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 6,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         235,
                         236,
                         237,
@@ -3890,19 +3888,19 @@
                         240,
                         241
                     ],
-                    "summary": {
-                        "covered_lines": 6,
-                        "num_statements": 6,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_append": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 14,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 14,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         244,
                         245,
                         246,
@@ -3918,19 +3916,19 @@
                         258,
                         259
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 14,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_calculate": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 10,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 10,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         262,
                         263,
                         269,
@@ -3942,73 +3940,73 @@
                         288,
                         289
                     ],
-                    "summary": {
-                        "covered_lines": 10,
-                        "num_statements": 10,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_clear": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         292,
                         293,
                         294
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_copy": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         297,
                         298,
                         299,
                         300
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_head": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         303,
                         304,
                         305,
                         306,
                         307
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_insert": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 34,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 34,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         310,
                         311,
                         312,
@@ -4044,35 +4042,35 @@
                         405,
                         406
                     ],
-                    "summary": {
-                        "covered_lines": 34,
-                        "num_statements": 34,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_list_fields": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         411,
                         412
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_save": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 7,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 7,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         421,
                         423,
                         429,
@@ -4081,35 +4079,35 @@
                         443,
                         444
                     ],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 7,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_show": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         447,
                         448
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_select_columns": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 13,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 13,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         451,
                         452,
                         453,
@@ -4124,19 +4122,19 @@
                         467,
                         468
                     ],
-                    "summary": {
-                        "covered_lines": 13,
-                        "num_statements": 13,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_select_rows": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 13,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 13,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         471,
                         472,
                         474,
@@ -4151,19 +4149,19 @@
                         485,
                         486
                     ],
-                    "summary": {
-                        "covered_lines": 13,
-                        "num_statements": 13,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureClass.test_sort": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 7,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 7,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         489,
                         490,
                         491,
@@ -4172,19 +4170,19 @@
                         494,
                         495
                     ],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 7,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_instantiate": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 9,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 9,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         500,
                         501,
                         502,
@@ -4195,19 +4193,19 @@
                         509,
                         510
                     ],
-                    "summary": {
-                        "covered_lines": 9,
-                        "num_statements": 9,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_delitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 6,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 6,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         513,
                         514,
                         515,
@@ -4215,74 +4213,74 @@
                         517,
                         518
                     ],
-                    "summary": {
-                        "covered_lines": 6,
-                        "num_statements": 6,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_fc_dict": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         521,
                         522,
                         523,
                         524,
                         525
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_fc_names": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         528,
                         529,
                         530,
                         531
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_fcs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         534,
                         535,
                         536,
                         537
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_getitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 8,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 8,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         540,
                         541,
                         542,
@@ -4292,54 +4290,54 @@
                         546,
                         547
                     ],
-                    "summary": {
-                        "covered_lines": 8,
-                        "num_statements": 8,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_iter": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         550,
                         551,
                         552,
                         553
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_len": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         556,
                         557,
                         558
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_setitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 15,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 15,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         561,
                         563,
                         565,
@@ -4356,38 +4354,38 @@
                         593,
                         594
                     ],
-                    "summary": {
-                        "covered_lines": 15,
-                        "num_statements": 15,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_feature_classes": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         597,
                         598,
                         599,
                         600,
                         601
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_crs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 9,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 9,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         604,
                         605,
                         606,
@@ -4398,36 +4396,36 @@
                         612,
                         613
                     ],
-                    "summary": {
-                        "covered_lines": 9,
-                        "num_statements": 9,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset.test_enforce_crs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         616,
                         617,
                         618
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_instantiate": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 7,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 7,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         623,
                         624,
                         626,
@@ -4436,19 +4434,19 @@
                         633,
                         634
                     ],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 7,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_delitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 11,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 11,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         637,
                         639,
                         640,
@@ -4461,123 +4459,123 @@
                         647,
                         649
                     ],
-                    "summary": {
-                        "covered_lines": 11,
-                        "num_statements": 11,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_fc_dict": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         652,
                         653,
                         654,
                         655
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_fc_names": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         658,
                         659,
                         660
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_fcs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         663,
                         664,
                         665
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_fds_dict": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         668,
                         669,
                         670,
                         671
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_fds_names": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         674,
                         675,
                         676
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_fds": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         679,
                         680,
                         681
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_getitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 14,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 14,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         684,
                         685,
                         686,
@@ -4593,68 +4591,68 @@
                         702,
                         703
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 14,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_hash": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         706,
                         707
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_iter": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 3,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 3,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         710,
                         711,
                         712
                     ],
-                    "summary": {
-                        "covered_lines": 3,
-                        "num_statements": 3,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_len": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 2,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 2,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         715,
                         716
                     ],
-                    "summary": {
-                        "covered_lines": 2,
-                        "num_statements": 2,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_setitem": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 8,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 8,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         719,
                         720,
                         721,
@@ -4664,55 +4662,55 @@
                         726,
                         728
                     ],
-                    "summary": {
-                        "covered_lines": 8,
-                        "num_statements": 8,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_feature_classes": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         731,
                         732,
                         733,
                         734
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_feature_datasets": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 4,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 4,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         737,
                         738,
                         739,
                         740
                     ],
-                    "summary": {
-                        "covered_lines": 4,
-                        "num_statements": 4,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase.test_save": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 11,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 11,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         743,
                         744,
                         745,
@@ -4725,76 +4723,76 @@
                         755,
                         756
                     ],
-                    "summary": {
-                        "covered_lines": 11,
-                        "num_statements": 11,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoprocessing.test_buffer": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         761,
                         762,
                         763,
                         764,
                         765
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoprocessing.test_clip": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         769,
                         770,
                         771,
                         772,
                         773
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoprocessing.test_overlay": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 5,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 5,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         777,
                         778,
                         779,
                         780,
                         781
                     ],
-                    "summary": {
-                        "covered_lines": 5,
-                        "num_statements": 5,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_fc_to_gdf": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 6,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 6,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         787,
                         788,
                         789,
@@ -4802,19 +4800,19 @@
                         791,
                         793
                     ],
-                    "summary": {
-                        "covered_lines": 6,
-                        "num_statements": 6,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_gdf_to_fc": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 19,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 19,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         796,
                         797,
                         798,
@@ -4835,19 +4833,19 @@
                         827,
                         829
                     ],
-                    "summary": {
-                        "covered_lines": 19,
-                        "num_statements": 19,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_get_info": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 14,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 14,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         837,
                         852,
                         853,
@@ -4863,19 +4861,19 @@
                         866,
                         867
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 14,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_list_datasets": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 16,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 16,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         870,
                         871,
                         872,
@@ -4893,19 +4891,19 @@
                         887,
                         888
                     ],
-                    "summary": {
-                        "covered_lines": 16,
-                        "num_statements": 16,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_list_layers": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 10,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 10,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         891,
                         892,
                         893,
@@ -4917,19 +4915,19 @@
                         901,
                         902
                     ],
-                    "summary": {
-                        "covered_lines": 10,
-                        "num_statements": 10,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_list_rasters": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 14,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 14,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         905,
                         906,
                         907,
@@ -4945,20 +4943,21 @@
                         920,
                         921
                     ],
-                    "summary": {
-                        "covered_lines": 14,
-                        "num_statements": 14,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions.test_raster_to_tif": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 9,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 9,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         924,
+                        925,
                         927,
                         928,
                         929,
@@ -4967,21 +4966,19 @@
                         942,
                         943
                     ],
-                    "summary": {
-                        "covered_lines": 8,
-                        "num_statements": 9,
-                        "percent_covered": 88.88888888888889,
-                        "percent_covered_display": "89",
-                        "missing_lines": 1,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        925
-                    ],
                     "excluded_lines": []
                 },
                 "TestUsage.test_add_fcs": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 15,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 15,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         953,
                         954,
                         955,
@@ -4998,19 +4995,19 @@
                         971,
                         972
                     ],
-                    "summary": {
-                        "covered_lines": 15,
-                        "num_statements": 15,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUsage.test_add_fds": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 21,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 21,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         975,
                         976,
                         977,
@@ -5033,19 +5030,19 @@
                         1001,
                         1003
                     ],
-                    "summary": {
-                        "covered_lines": 21,
-                        "num_statements": 21,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUsage.test_iters": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 19,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 19,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1006,
                         1008,
                         1009,
@@ -5066,19 +5063,19 @@
                         1028,
                         1029
                     ],
-                    "summary": {
-                        "covered_lines": 19,
-                        "num_statements": 19,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUsage.test_sanitize_gdf_geometry": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 25,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 25,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         1032,
                         1033,
                         1035,
@@ -5105,15 +5102,6 @@
                         1122,
                         1131
                     ],
-                    "summary": {
-                        "covered_lines": 25,
-                        "num_statements": 25,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "": {
@@ -5129,7 +5117,17 @@
                         10,
                         11,
                         12,
-                        14,
+                        14
+                    ],
+                    "summary": {
+                        "covered_lines": 12,
+                        "num_statements": 103,
+                        "percent_covered": 11.650485436893204,
+                        "percent_covered_display": "12",
+                        "missing_lines": 91,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         16,
                         19,
                         20,
@@ -5222,21 +5220,21 @@
                         1005,
                         1031
                     ],
-                    "summary": {
-                        "covered_lines": 103,
-                        "num_statements": 103,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 }
             },
             "classes": {
                 "TestFeatureClass": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 186,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 186,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         124,
                         126,
                         128,
@@ -5424,19 +5422,19 @@
                         494,
                         495
                     ],
-                    "summary": {
-                        "covered_lines": 186,
-                        "num_statements": 186,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestFeatureDataset": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 75,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 75,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         500,
                         501,
                         502,
@@ -5513,19 +5511,19 @@
                         617,
                         618
                     ],
-                    "summary": {
-                        "covered_lines": 75,
-                        "num_statements": 75,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoDatabase": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 86,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 86,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         623,
                         624,
                         626,
@@ -5613,19 +5611,19 @@
                         755,
                         756
                     ],
-                    "summary": {
-                        "covered_lines": 86,
-                        "num_statements": 86,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestGeoprocessing": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 15,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 15,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         761,
                         762,
                         763,
@@ -5642,19 +5640,19 @@
                         780,
                         781
                     ],
-                    "summary": {
-                        "covered_lines": 15,
-                        "num_statements": 15,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "TestUtilityFunctions": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 88,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 88,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         787,
                         788,
                         789,
@@ -5735,6 +5733,7 @@
                         920,
                         921,
                         924,
+                        925,
                         927,
                         928,
                         929,
@@ -5743,21 +5742,19 @@
                         942,
                         943
                     ],
-                    "summary": {
-                        "covered_lines": 87,
-                        "num_statements": 88,
-                        "percent_covered": 98.86363636363636,
-                        "percent_covered_display": "99",
-                        "missing_lines": 1,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        925
-                    ],
                     "excluded_lines": []
                 },
                 "TestUsage": {
-                    "executed_lines": [
+                    "executed_lines": [],
+                    "summary": {
+                        "covered_lines": 0,
+                        "num_statements": 80,
+                        "percent_covered": 0.0,
+                        "percent_covered_display": "0",
+                        "missing_lines": 80,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         953,
                         954,
                         955,
@@ -5839,15 +5836,6 @@
                         1122,
                         1131
                     ],
-                    "summary": {
-                        "covered_lines": 80,
-                        "num_statements": 80,
-                        "percent_covered": 100.0,
-                        "percent_covered_display": "100",
-                        "missing_lines": 0,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [],
                     "excluded_lines": []
                 },
                 "": {
@@ -5863,7 +5851,17 @@
                         10,
                         11,
                         12,
-                        14,
+                        14
+                    ],
+                    "summary": {
+                        "covered_lines": 12,
+                        "num_statements": 153,
+                        "percent_covered": 7.8431372549019605,
+                        "percent_covered_display": "8",
+                        "missing_lines": 141,
+                        "excluded_lines": 0
+                    },
+                    "missing_lines": [
                         16,
                         19,
                         20,
@@ -5914,6 +5912,8 @@
                         92,
                         93,
                         94,
+                        95,
+                        96,
                         97,
                         98,
                         99,
@@ -6004,29 +6004,17 @@
                         1005,
                         1031
                     ],
-                    "summary": {
-                        "covered_lines": 151,
-                        "num_statements": 153,
-                        "percent_covered": 98.69281045751634,
-                        "percent_covered_display": "99",
-                        "missing_lines": 2,
-                        "excluded_lines": 0
-                    },
-                    "missing_lines": [
-                        95,
-                        96
-                    ],
                     "excluded_lines": []
                 }
             }
         }
     },
     "totals": {
-        "covered_lines": 1275,
+        "covered_lines": 30,
         "num_statements": 1285,
-        "percent_covered": 99.22178988326849,
-        "percent_covered_display": "99",
-        "missing_lines": 10,
+        "percent_covered": 2.3346303501945527,
+        "percent_covered_display": "2",
+        "missing_lines": 1255,
         "excluded_lines": 0
     }
 }
