@@ -46,4 +46,4 @@ jobs:
         shell: bash -el {0}
         run: |
           conda activate test
-          python -m pytest -n auto ./tests/tests.py
+          python -m pytest ./tests/tests.py
