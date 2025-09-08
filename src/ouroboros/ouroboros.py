@@ -1549,6 +1549,9 @@ def sanitize_gdf_geometry(
       "MultiPolygon", None], geopandas.GeoDataFrame]
 
     :raises TypeError: If the input is not a GeoDataFrame or if the GeoDataFrame contains unsupported or too many geometry types
+    :rtype: tuple[Literal["Point", "MultiPoint", "LineString", "MultiLineString", "Polygon",
+      "MultiPolygon", None], geopandas.GeoDataFrame]
+
     """
     if not isinstance(gdf, gpd.GeoDataFrame):
         raise TypeError("Input must be a GeoDataFrame")
