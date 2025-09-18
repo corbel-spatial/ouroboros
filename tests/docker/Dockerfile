@@ -28,22 +28,21 @@ RUN pip3 install --upgrade pip --root-user-action ignore
 
 # install GDAL binaries
 FROM build4 AS build5
-RUN apt install -y gdal-bin libgdal-dev>=3.8 python3-gdal
+RUN apt install -y gdal-bin libgdal-dev python3-gdal
 
-# clone ouroboros source
+# install Python packages
 FROM build5 AS build6
-RUN git clone https://github.com/corbel-spatial/ouroboros.git
+RUN python3 -m pip install uv
+RUN GDAL_VERSION=$(apt info gdal-bin | grep -oE "Version: .*\+" | grep -oE "[0-9\.]{5,}") && \
+    uv pip install gdal==$GDAL_VERSION --system
 
-# install ouroboros from source
+# copy install/test script
 FROM build6 AS build7
-RUN cd ouroboros && \
-    python3 -m pip install . --group test gdal==3.8.4
+COPY test.sh test.sh
+RUN chmod +x test.sh
 
-# run tests on ouroboros
-FROM build7 AS build8
-RUN cd ouroboros && \
-    python3 -m pytest -vv tests/tests.py
+# on docker run: clone ouroboros and run tests
+CMD ["./test.sh"]
 
-# to test locally:
-# docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14
-# cd ouroboros && python3 -m pytest -vv tests/tests.py
+# to test:
+# docker pull corbelspatial/ouroboros:py3.14 && docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14

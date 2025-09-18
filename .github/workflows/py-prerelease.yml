@@ -3,12 +3,10 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
-    paths: [ ".github/workflows/py-prerelease.yml", "tests/Dockerfile" ]
+    paths: [ ".github/workflows/py-prerelease.yml", "tests/docker/Dockerfile" ]
 jobs:
   pull-and-test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: mosteo-actions/docker-run@v1
-      with:
-        image: "corbelspatial/ouroboros:py3.14"
-        command: python3 -c "import ouroboros"
+    - name: pull and test
+      run: docker run corbelspatial/ouroboros:py3.14
