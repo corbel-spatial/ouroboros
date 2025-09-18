@@ -5,10 +5,9 @@ authors = [{name = "Peter Von der Porten", email = "dev@corbelspatial.com"}]
 dynamic = []
 requires-python = ">=3.10"
 dependencies = [
-    "geopandas",
-    "matplotlib",
-    "pyarrow",
-    "xmltodict"
+    "geopandas>=1.1.0",
+    "matplotlib>=3.10.0",
+    "xmltodict>=1.0.0"
 ]
 description = "Towards more pythonic use of GeoDatabases"
 readme = "README.md"

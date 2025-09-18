@@ -59,6 +59,4 @@ ECHO %m% Set project source as an editable install %m%
 CALL %conda% run -n %env_name% conda develop .\src
 
 ECHO %m% Create venv without GDAL %m%
-IF NOT EXIST .venv CALL python -m venv .venv
-CALL .venv\Scripts\activate.bat
-CALL python -m pip install --upgrade -e . --group dev
+CALL %conda% run -n %env_name% uv sync --group dev
