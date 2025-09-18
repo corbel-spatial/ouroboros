@@ -7,7 +7,7 @@
           <list>
             <DockerEnvVarImpl>
               <option name="name" value="TEST_VERSION" />
-              <option name="value" value="3.14.0rc2" />
+              <option name="value" value="3.14.0rc3" />
             </DockerEnvVarImpl>
           </list>
         </option>

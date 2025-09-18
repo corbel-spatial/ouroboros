@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
-    paths: [ "src/**", ".github/workflows/py-prerelease.yml" ]
+    paths: [ ".github/workflows/py-prerelease.yml", "tests/Dockerfile" ]
 jobs:
   pull-and-test:
     runs-on: ubuntu-24.04

@@ -22,26 +22,28 @@ RUN cd cpython && \
     make test && \
     make install
 
-# install ouroboros dependencies
+# upgrade pip
 FROM build3 AS build4
-RUN apt install -y gdal-bin libgdal-dev>=3.8 python3-gdal
+RUN pip3 install --upgrade pip --root-user-action ignore
 
+# install GDAL binaries
 FROM build4 AS build5
-RUN pip3 install --upgrade pip --root-user-action ignore && \
-    python3 -m pip install geojson geopandas gdal==3.8.4
+RUN apt install -y gdal-bin libgdal-dev>=3.8 python3-gdal
 
 # clone ouroboros source
 FROM build5 AS build6
 RUN git clone https://github.com/corbel-spatial/ouroboros.git
 
-# build ouroboros
+# install ouroboros from source
 FROM build6 AS build7
 RUN cd ouroboros && \
-    python3 -m pip install . --group test
+    python3 -m pip install . --group test gdal==3.8.4
 
 # run tests on ouroboros
-# to run manually from Docker Hub: docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14
-# then enter the RUN command below
 FROM build7 AS build8
 RUN cd ouroboros && \
     python3 -m pytest -vv tests/tests.py
+
+# to test locally:
+# docker run -it --rm --name ouroboros-test corbelspatial/ouroboros:py3.14
+# cd ouroboros && python3 -m pytest -vv tests/tests.py
