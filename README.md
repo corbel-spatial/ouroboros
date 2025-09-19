@@ -77,5 +77,3 @@ little more joy and beauty to the task of wrangling spatial data.
 ## Notes
 
 - ⚠️ This project is under active development and things may change without notice. Feedback, suggestions, and questions are welcomed in the [Issues](https://github.com/corbel-spatial/ouroboros/issues) section.
-
-- Tested on Python 3.10, 3.11, 3.12, and 3.13 on the latest Windows, Linux, and macOS (version info [here](https://github.com/actions/runner-images)).
