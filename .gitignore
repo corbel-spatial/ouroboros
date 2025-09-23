@@ -131,3 +131,6 @@ cython_debug/
 *.lock
 *.tif
 *.xml
+# pixi environments
+.pixi/*
+!.pixi/config.toml
