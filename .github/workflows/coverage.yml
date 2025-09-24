@@ -1,3 +1,4 @@
+# https://github.com/marketplace/actions/setup-pixi
 name: Analyze Test Coverage
 on:
   workflow_dispatch:
@@ -5,28 +6,26 @@ on:
     branches: [ "main" ]
     paths: [ "src/**", ".github/workflows/coverage.yml" ]
 jobs:
-  build:
+  coverage:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [ "3.13" ]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install . --group test
-      - name: Analyze coverage
-        run: |
-          coverage run -m pytest ./tests/tests.py
-          coverage json -o ./docs/pytest_coverage.json --pretty-print
-      - name: Push changes
-        run: |
+          sparse-checkout: |
+            pixi.lock
+            pyproject.toml
+            README.md
+            src/ouroboros
+            tests
+          sparse-checkout-cone-mode: false
+      - uses: prefix-dev/setup-pixi@v0.9.1
+        with:
+          pixi-version: v0.55.0
+          cache: true
+      - name: asdf |
+        run: pixi run -e test-py313-conda coverage
+      - name: Push changes |
+        run: | 
           git config --local user.email "peter@corbelspatial.com"
           git config --local user.name "p-vdp"
           git add ./docs/pytest_coverage.json
