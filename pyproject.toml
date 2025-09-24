@@ -94,7 +94,6 @@ hatchling = "*"
 [tool.pixi.feature.test.pypi-dependencies]
 pytest = "*"
 pytest-xdist = "*"
-setuptools = "*"
 slipcover = "*"
 
 [tool.pixi.feature.test-pypi.pypi-dependencies]
