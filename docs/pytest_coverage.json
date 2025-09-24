@@ -2,12 +2,12 @@
     "meta": {
         "software": "slipcover",
         "version": "1.0.17",
-        "timestamp": "2025-09-23T19:36:48.925507",
+        "timestamp": "2025-09-24T02:56:15.478877",
         "branch_coverage": false,
         "show_contexts": false
     },
     "files": {
-        "tests\\tests.py": {
+        "tests/tests.py": {
             "executed_lines": [
                 1,
                 2,
@@ -847,7 +847,7 @@
                 "percent_covered": 99.1556091676719
             }
         },
-        "src\\ouroboros\\__init__.py": {
+        "src/ouroboros/__init__.py": {
             "executed_lines": [
                 1
             ],
@@ -858,7 +858,7 @@
                 "percent_covered": 100.0
             }
         },
-        "src\\ouroboros\\ouroboros.py": {
+        "src/ouroboros/ouroboros.py": {
             "executed_lines": [
                 1,
                 2,
