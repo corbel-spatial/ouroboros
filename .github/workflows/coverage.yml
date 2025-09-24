@@ -23,9 +23,9 @@ jobs:
         with:
           pixi-version: v0.55.0
           cache: true
-      - name: asdf |
+      - name: Run SlipCover
         run: pixi run -e test-py313-conda coverage
-      - name: Push changes |
+      - name: Push changes
         run: | 
           git config --local user.email "peter@corbelspatial.com"
           git config --local user.name "p-vdp"
