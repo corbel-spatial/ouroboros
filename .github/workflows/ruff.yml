@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
     paths: [ "src/**", ".github/workflows/ruff.yml" ]
 jobs:
-  coverage:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,4 +23,4 @@ jobs:
           pixi-version: v0.55.0
           cache: true
       - name: Run Ruff
-        run: pixi run -e test-py313-conda lint
+        run: pixi run -e dev lint
