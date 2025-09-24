@@ -1,4 +1,4 @@
-# https://github.com/marketplace/actions/setup-miniconda
+# https://github.com/marketplace/actions/setup-pixi
 name: Pytest - Linux
 on:
   workflow_dispatch:
@@ -6,44 +6,26 @@ on:
     branches: [ "main" ]
     paths: [ "src/**", ".github/workflows/pytest-linux.yml" ]
 jobs:
-  build:
+  pytest:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-    runs-on: ${{ matrix.os }}
+        environment: [ test-py310-pypi, test-py311-pypi, test-py312-pypi, test-py313-pypi,
+                       test-py310-conda, test-py311-conda, test-py312-conda, test-py313-conda,]
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
+            pixi.lock
             pyproject.toml
+            README.md
             src/ouroboros
             tests
           sparse-checkout-cone-mode: false
-      - name: Check paths
-        shell: bash -el {0}
-        run: |
-          pwd
-          ls -la
-          ls -la src/ouroboros
-          ls -la tests
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: prefix-dev/setup-pixi@v0.9.1
         with:
-          auto-update-conda: false
-          python-version: ${{ matrix.python-version }}
-      - name: Install conda dependencies
-        shell: bash -el {0}
-        run: |
-          conda activate test
-          conda install uv "gdal>=3.8" "libsqlite>=3.37" "sqlite>=3.37" -c conda-forge
-      - name: Install with uv pip
-        shell: bash -el {0}
-        run: |
-          conda activate test
-          uv pip install . --group test
-      - name: Test with pytest
-        shell: bash -el {0}
-        run: |
-          conda activate test
-          python -m pytest -n auto ./tests/tests.py
+          pixi-version: v0.55.0
+          cache: true
+          environments: ${{ matrix.environment }}
+      - run: pixi run -e ${{ matrix.environment }} test

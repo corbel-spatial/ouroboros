@@ -1,10 +1,10 @@
 # https://github.com/marketplace/actions/setup-pixi
-name: Analyze Test Coverage
+name: Ruff
 on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
-    paths: [ "src/**", ".github/workflows/coverage.yml" ]
+    paths: [ "src/**", ".github/workflows/ruff.yml" ]
 jobs:
   coverage:
     runs-on: ubuntu-latest
@@ -12,7 +12,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            docs/pytest_coverage.json
             pixi.lock
             pyproject.toml
             README.md
@@ -23,12 +22,5 @@ jobs:
         with:
           pixi-version: v0.55.0
           cache: true
-      - name: Run SlipCover
-        run: pixi run -e test-py313-conda coverage
-      - name: Push changes
-        run: | 
-          git config --local user.email "peter@corbelspatial.com"
-          git config --local user.name "p-vdp"
-          git add ./docs/pytest_coverage.json
-          git commit -m "GitHub Action: Analyze Test Coverage"
-          git push
+      - name: Run Ruff
+        run: pixi run -e test-py313-conda lint
