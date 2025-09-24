@@ -122,8 +122,7 @@ def test_gdb_fixtures(ob_gdb, esri_gdb):
 class TestFeatureClass:
     def test_instantiate_fc(self, fc_points, fds_fc_points):
         with pytest.raises(TypeError):
-            # noinspection PyTypeChecker
-            fc = ob.FeatureClass(0)
+            fc = ob.FeatureClass(0)  # noqa: F841
 
         fc1 = ob.FeatureClass(fc_points)
         assert isinstance(fc1.gdf, gpd.GeoDataFrame)
@@ -141,7 +140,7 @@ class TestFeatureClass:
             fc5 = ob.FeatureClass("test.gdb")
 
         with pytest.raises(FileNotFoundError):
-            fc5 = ob.FeatureClass("doesnotexist.gdb/test_fc")
+            fc5 = ob.FeatureClass("doesnotexist.gdb/test_fc")  # noqa: F841
 
     def test_instatiate_gdf(self):
         fc1 = ob.FeatureClass(gpd.GeoDataFrame(geometry=[shapely.Point(0, 1)]))
@@ -174,7 +173,7 @@ class TestFeatureClass:
         assert isinstance(fc1[10, 100:105, 200, 300:305], gpd.GeoDataFrame)
         with pytest.raises(KeyError):
             # noinspection PyTypeChecker
-            x = fc1["test"]
+            x = fc1["test"]  # noqa: F841
 
     def test_iter(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -465,7 +464,7 @@ class TestFeatureClass:
         assert len(cols5) == 1000
 
         with pytest.raises(KeyError):
-            bad_cols = fc1.select_columns(["bad"])
+            bad_cols = fc1.select_columns(["bad"])  # noqa: F841
 
     def test_select_rows(self, gdf_points):
         fc1 = ob.FeatureClass(gdf_points)
@@ -507,7 +506,9 @@ class TestFeatureDataset:
                 assert isinstance(fc, ob.FeatureClass)
 
         fds1 = ob.FeatureDataset(crs="EPSG:4326")
+        assert isinstance(fds1, ob.FeatureDataset)
         fds2 = ob.FeatureDataset(contents={"fc": ob.FeatureClass()})
+        assert isinstance(fds2, ob.FeatureDataset)
 
     def test_delitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
@@ -544,7 +545,7 @@ class TestFeatureDataset:
                 assert isinstance(fds[fc_name], ob.FeatureClass)
             assert isinstance(fds[0], ob.FeatureClass)
             with pytest.raises(IndexError):
-                f = fds[999]
+                f = fds[999]  # noqa: F841
 
     def test_iter(self, ob_gdb):
         gdb, gdb_path = ob_gdb
@@ -631,7 +632,7 @@ class TestGeoDatabase:
         assert len(gdb2.fc_dict) == 7
 
         with pytest.raises(FileNotFoundError):
-            gdb3 = ob.GeoDatabase("doesnotexist.gdb")
+            gdb3 = ob.GeoDatabase("doesnotexist.gdb")  # noqa: F841
 
     def test_delitem(self, ob_gdb):
         gdb, gdb_path = ob_gdb
@@ -697,7 +698,7 @@ class TestGeoDatabase:
 
         with pytest.raises(KeyError):
             # noinspection PyTypeChecker
-            f = gdb[list()]
+            f = gdb[list()]  # noqa: F841
 
         fc = gdb["test_points1"]
         assert isinstance(fc, ob.FeatureClass)
@@ -1021,7 +1022,6 @@ class TestUsage:
 
         this_fds = None
         for fds in gdb:
-            # noinspection PyTypeChecker
             this_fds = gdb[fds]
             break
         for fc_name, fc in this_fds.fc_dict.items():

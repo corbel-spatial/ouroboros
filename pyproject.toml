@@ -121,7 +121,7 @@ python = "3.13.*"
 
 [tool.pixi.feature.dev.tasks]
 build = "hatchling build"
-lint = "ruff check ./src ./tests --ignore F403"
+lint = "ruff check ./src ./tests"
 
 [tool.pixi.feature.test.tasks]
 coverage = "slipcover --json --pretty-print --out ./docs/pytest_coverage.json -m pytest ./tests/tests.py"
