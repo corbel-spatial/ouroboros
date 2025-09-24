@@ -23,6 +23,7 @@ jobs:
             src/ouroboros
             tests
           sparse-checkout-cone-mode: false
+      - run: brew install proj
       - uses: prefix-dev/setup-pixi@v0.9.1
         with:
           pixi-version: v0.55.0
