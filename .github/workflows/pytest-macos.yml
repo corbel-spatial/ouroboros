@@ -29,4 +29,3 @@ jobs:
           cache: true
           environments: ${{ matrix.environment }}
       - run: pixi run -e ${{ matrix.environment }} test
-  .py
