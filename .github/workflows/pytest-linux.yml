@@ -1,4 +1,4 @@
-# https://github.com/marketplace/actions/setup-miniconda
+# https://github.com/marketplace/actions/setup-pixi
 name: Pytest - Linux
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
     paths: [ "src/**", ".github/workflows/pytest-linux.yml" ]
 jobs:
-  build:
+  pytest:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
