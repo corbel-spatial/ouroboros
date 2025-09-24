@@ -1,0 +1,26 @@
+# https://github.com/marketplace/actions/setup-pixi
+name: Ruff
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths: [ "src/**", ".github/workflows/ruff.yml" ]
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            pixi.lock
+            pyproject.toml
+            README.md
+            src/ouroboros
+            tests
+          sparse-checkout-cone-mode: false
+      - uses: prefix-dev/setup-pixi@v0.9.1
+        with:
+          pixi-version: v0.55.0
+          cache: true
+      - name: Run Ruff
+        run: pixi run -e test-py313-conda lint
