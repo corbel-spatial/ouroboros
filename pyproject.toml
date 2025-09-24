@@ -72,6 +72,8 @@ test = ["test"]
 test-pypi = ["test-pypi", "test"]
 test-conda = ["test-conda", "test"]
 
+docs = ["test-pypi", "docs"]
+
 test-py310-pypi = ["py310", "test", "test-pypi"]
 test-py311-pypi = ["py311", "test", "test-pypi"]
 test-py312-pypi = ["py312", "test", "test-pypi"]
@@ -124,3 +126,15 @@ lint = "ruff check ./src ./tests --ignore F403"
 [tool.pixi.feature.test.tasks]
 coverage = "slipcover --json --pretty-print --out ./docs/pytest_coverage.json -m pytest ./tests/tests.py"
 test = "cd ./tests && pytest --no-header --force-short-summary -n auto ./tests.py"
+
+[tool.pixi.feature.docs.pypi-dependencies]
+jupyter = "*"
+myst-parser = "*"
+nbsphinx = "*"
+notebook = "*"
+sphinx = "*"
+sphinx-copybutton = "*"
+pydata-sphinx-theme = "*"
+
+[tool.pixi.feature.docs.tasks]
+docs = "./docs/make.bat html"
