@@ -19,6 +19,7 @@ jobs:
           sparse-checkout: |
             pixi.lock
             pyproject.toml
+            README.md
             src/ouroboros
             tests
           sparse-checkout-cone-mode: false
