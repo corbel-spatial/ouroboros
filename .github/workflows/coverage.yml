@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
+            docs/pytest_coverage.json
             pixi.lock
             pyproject.toml
             README.md
