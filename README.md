@@ -3,6 +3,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ouroboros-gis)](https://pypi.org/project/ouroboros-gis/)
 [![PyPI Downloads](https://static.pepy.tech/badge/ouroboros-gis/month)](https://pepy.tech/projects/ouroboros-gis)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=)](https://github.com/corbel-spatial/ouroboros/blob/main/LICENSE)
+[![Pixi Badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json)](https://pixi.sh)
 
 [![Actions Workflow Status: Test Python Prerelease](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/py-prerelease.yml?label=3.14-rc3
 )](https://github.com/corbel-spatial/ouroboros/actions/workflows/py-prerelease.yml)
@@ -10,7 +11,7 @@
 [![GitHub Actions Workflow Status: Windows](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-windows.yml?label=Windows)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-windows.yml)
 [![GitHub Actions Workflow Status: macOS](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/pytest-macos.yml?label=macOS)](https://github.com/corbel-spatial/ouroboros/actions/workflows/pytest-macos.yml)
 [![GitHub Actions Workflow Status: Black](https://img.shields.io/github/actions/workflow/status/corbel-spatial/ouroboros/ruff.yml?label=Ruff)](https://github.com/corbel-spatial/ouroboros/actions/workflows/ruff.yml)
-[![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcorbel-spatial%2Fouroboros%2Frefs%2Fheads%2Fmain%2Fdocs%2Fpytest_coverage.json&query=%24.summary.percent_covered&suffix=%25&label=Coverage&color=brightgreen)](https://github.com/corbel-spatial/ouroboros/actions/workflows/coverage.yml)
+[![Test Coverage: SlipCover](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcorbel-spatial%2Fouroboros%2Frefs%2Fheads%2Fmain%2Fdocs%2Fpytest_coverage.json&query=%24.summary.percent_covered_display&label=Coverage&color=brightgreen)](https://github.com/corbel-spatial/ouroboros/actions/workflows/coverage.yml)
 
 # ouroboros
 
