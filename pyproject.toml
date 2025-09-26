@@ -126,7 +126,7 @@ lint = "ruff check ./src ./tests"
 [tool.pixi.feature.test.tasks]
 coverage = """
     slipcover --json --pretty-print --out ./docs/pytest_coverage.json -m pytest ./tests/tests.py &&
-    python ./tools/slipcover_pct_covered_display.py ./docs/pytest_coverage.json
+    python tools/slipcover_pct_covered_display.py docs/pytest_coverage.json
     """
 
 test = "cd ./tests && pytest --no-header --force-short-summary -n auto ./tests.py"

@@ -15709,7 +15709,7 @@ packages:
 - pypi: ./
   name: ouroboros-gis
   version: 1.0.7
-  sha256: 0bc8375109d52b60eaa720c588d6c65d372b2ff05dd1d64ea2e875a431b53b7f
+  sha256: aa68ea3d60864614399957cd7451f5b0f6bf0374aac367f8e75e7beeb132d674
   requires_dist:
   - geopandas>=1.1.0
   - matplotlib>=3.10.0
