@@ -1,3 +1,6 @@
+# workaround until this PR gets merged
+# https://github.com/plasma-umass/slipcover/pull/67
+
 import json
 from sys import argv
 

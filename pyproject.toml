@@ -1,4 +1,5 @@
 [project]
+version = "1.0.7"
 name = "ouroboros-gis"
 authors = [{name = "Peter Von der Porten", email = "dev@corbelspatial.com"}]
 dynamic = []
@@ -27,7 +28,6 @@ dependencies = [
     "matplotlib>=3.10.0",
     "xmltodict>=1.0.0"
 ]
-version = "1.0.7"
 
 [project.optional-dependencies]
 raster = ["gdal>=3.8"]
@@ -59,86 +59,100 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
 [tool.pixi.dependencies]
-pixi-pycharm = "*"
+pixi-pycharm = "*"  # for IDE
 
 [tool.pixi.pypi-dependencies]
 ouroboros-gis = { path = ".", editable = true }
 
-[tool.pixi.environments]
-default = { solve-group = "default" }
-dev = { features = ["dev", "test", "test-conda"], solve-group = "default" }
-
-test = ["test"]
-test-pypi = ["test-pypi", "test"]
-test-conda = ["test-conda", "test"]
-
-docs = ["test-pypi", "docs"]
-
-test-py310-pypi = ["py310", "test", "test-pypi"]
-test-py311-pypi = ["py311", "test", "test-pypi"]
-test-py312-pypi = ["py312", "test", "test-pypi"]
-test-py313-pypi = ["py313", "test", "test-pypi"]
-
-test-py310-conda = ["py310", "test", "test-conda"]
-test-py311-conda = ["py311", "test", "test-conda"]
-test-py312-conda = ["py312", "test", "test-conda"]
-test-py313-conda = ["py313", "test", "test-conda"]
-
 [tool.pixi.feature.dev.dependencies]
+# IDE
 pandas-stubs = "*"
+# docs (should match docs/requirements.txt)
+jupyter = "*"
+myst-parser = "*"
+nbsphinx = "*"
+notebook = "*"
+pydata-sphinx-theme = "*"
+sphinx = "*"
+sphinx-copybutton = "*"
+# lint
 ruff = "*"
 
 [tool.pixi.feature.dev.pypi-dependencies]
+# build
 hatchling = "*"
-
-[tool.pixi.feature.test.pypi-dependencies]
-pytest = "*"
-pytest-xdist = "*"
+# coverage
 slipcover = "*"
 
-[tool.pixi.feature.test-pypi.pypi-dependencies]
-geopandas = "*"
-matplotlib = "*"
-xmltodict = "*"
+[tool.pixi.feature.dev.tasks]
+build = "hatchling build"
+_coverage = "slipcover --source src --json --pretty-print --out ./docs/pytest_coverage.json -m pytest"
+coverage = { cmd = "python tools/slipcover_pct_covered_display.py docs/pytest_coverage.json", depends-on = ["_coverage"] }
+docs = "./docs/make html"
+lint = "ruff check ./src ./tests"
+lint-format = "ruff format ./src ./tests"
+test = "pytest"
 
-[tool.pixi.feature.test-conda.dependencies]
+[tool.pixi.feature.dev.target.win-64.tasks]
+docs = "./docs/make.bat html"
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+pytest-xdist = "*"
+
+[tool.pixi.feature.conda-env.dependencies]
 gdal = "*"
 geopandas = "*"
 matplotlib = "*"
 xmltodict = "*"
 
-[tool.pixi.feature.py310.dependencies]
-python = "3.10.*"
+[tool.pixi.feature.pypi-env.pypi-dependencies]
+geopandas = "*"
+matplotlib = "*"
+xmltodict = "*"
 
-[tool.pixi.feature.py311.dependencies]
-python = "3.11.*"
+[tool.pixi.feature.py310-conda]
+dependencies = { python = "3.10.*" }
+tasks = { test-py310-conda = "pytest -n auto"}
 
-[tool.pixi.feature.py312.dependencies]
-python = "3.12.*"
+[tool.pixi.feature.py310-pypi]
+dependencies = { python = "3.10.*" }
+tasks = { test-py310-pypi = "pytest -n auto" }
 
-[tool.pixi.feature.py313.dependencies]
-python = "3.13.*"
+[tool.pixi.feature.py311-conda]
+dependencies = { python = "3.11.*" }
+tasks = { test-py311-conda = "pytest -n auto" }
 
-[tool.pixi.feature.dev.tasks]
-build = "hatchling build"
-lint = "ruff check ./src ./tests"
+[tool.pixi.feature.py311-pypi]
+dependencies = { python = "3.11.*" }
+tasks = { test-py311-pypi = "pytest -n auto" }
 
-[tool.pixi.feature.test.tasks]
-coverage = """
-    slipcover --json --pretty-print --out ./docs/pytest_coverage.json -m pytest ./tests/tests.py &&
-    python tools/slipcover_pct_covered_display.py docs/pytest_coverage.json
-    """
+[tool.pixi.feature.py312-conda]
+dependencies = { python = "3.12.*" }
+tasks = { test-py312-conda = "pytest -n auto" }
 
-test = "cd ./tests && pytest --no-header --force-short-summary -n auto ./tests.py"
+[tool.pixi.feature.py312-pypi]
+dependencies = { python = "3.12.*" }
+tasks = { test-py312-pypi = "pytest -n auto" }
 
-[tool.pixi.feature.docs.pypi-dependencies]
-jupyter = "*"
-myst-parser = "*"
-nbsphinx = "*"
-notebook = "*"
-sphinx = "*"
-sphinx-copybutton = "*"
-pydata-sphinx-theme = "*"
+[tool.pixi.feature.py313-conda]
+dependencies = { python = "3.13.*" }
+tasks = { test-py313-conda = "pytest -n auto" }
 
-[tool.pixi.feature.docs.tasks]
-docs = "./docs/make.bat html"
+[tool.pixi.feature.py313-pypi]
+dependencies = { python = "3.13.*" }
+tasks = { test-py313-pypi = "pytest -n auto" }
+
+[tool.pixi.environments]
+default = ["default"]
+dev = ["dev", "conda-env", "test"]
+conda-env = ["conda-env"]
+pypi-env = ["pypi-env"]
+py310-conda = ["py310-conda", "conda-env", "test"]
+py311-conda = ["py311-conda", "conda-env", "test"]
+py312-conda = ["py312-conda", "conda-env", "test"]
+py313-conda = ["py313-conda", "conda-env", "test"]
+py310-pypi = ["py310-pypi", "pypi-env", "test"]
+py311-pypi = ["py311-pypi", "pypi-env", "test"]
+py312-pypi = ["py312-pypi", "pypi-env", "test"]
+py313-pypi = ["py313-pypi", "pypi-env", "test"]
