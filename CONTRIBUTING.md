@@ -10,6 +10,7 @@ First, install the [Pixi](https://pixi.sh/latest/installation/) package manageme
 ```shell
 git clone https://github.com/corbel-spatial/ouroboros.git
 cd ouroboros
+pixi install
 pixi install -e dev
 ```
 
