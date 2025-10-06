@@ -1,0 +1,102 @@
+[workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[dependencies]
+pixi-pycharm = "*"  # for IDE
+
+[pypi-dependencies]
+ouroboros-gis = { path = ".", editable = true }
+
+[feature.dev.dependencies]
+# build
+hatchling = "*"
+# IDE
+pandas-stubs = "*"
+# docs (should match docs/requirements.txt)
+jupyter = "*"
+myst-parser = "*"
+nbsphinx = "*"
+notebook = "*"
+pydata-sphinx-theme = "*"
+sphinx = "*"
+sphinx-copybutton = "*"
+# lint
+ruff = "*"
+
+[feature.dev.pypi-dependencies]
+# coverage
+slipcover = "*"
+
+[feature.dev.tasks]
+build = "hatchling build"
+_coverage = "slipcover --source src --json --pretty-print --out ./docs/pytest_coverage.json -m pytest"
+coverage = { cmd = "python tools/slipcover_pct_covered_display.py docs/pytest_coverage.json", depends-on = ["_coverage"] }
+docs = "./docs/make html"
+lint = "ruff check ./src ./tests"
+lint-format = "ruff format ./src ./tests"
+test = "pytest"
+
+[feature.dev.target.win-64.tasks]
+docs = "./docs/make.bat html"
+
+[feature.test.dependencies]
+pytest = "*"
+pytest-xdist = "*"
+
+[feature.conda-env.dependencies]
+gdal = "*"
+geopandas = "*"
+matplotlib = "*"
+xmltodict = "*"
+
+[feature.pypi-env.pypi-dependencies]
+geopandas = "*"
+matplotlib = "*"
+xmltodict = "*"
+
+[feature.py310-conda]
+dependencies = { python = "3.10.*" }
+tasks = { test-py310-conda = "pytest -n auto" }
+
+[feature.py310-pypi]
+dependencies = { python = "3.10.*" }
+tasks = { test-py310-pypi = "pytest -n auto" }
+
+[feature.py311-conda]
+dependencies = { python = "3.11.*" }
+tasks = { test-py311-conda = "pytest -n auto" }
+
+[feature.py311-pypi]
+dependencies = { python = "3.11.*" }
+tasks = { test-py311-pypi = "pytest -n auto" }
+
+[feature.py312-conda]
+dependencies = { python = "3.12.*" }
+tasks = { test-py312-conda = "pytest -n auto" }
+
+[feature.py312-pypi]
+dependencies = { python = "3.12.*" }
+tasks = { test-py312-pypi = "pytest -n auto" }
+
+[feature.py313-conda]
+dependencies = { python = "3.13.*" }
+tasks = { test-py313-conda = "pytest -n auto" }
+
+[feature.py313-pypi]
+dependencies = { python = "3.13.*" }
+tasks = { test-py313-pypi = "pytest -n auto" }
+
+[environments]
+default = ["default"]
+dev = ["dev", "conda-env", "test"]
+conda-env = ["conda-env"]
+pypi-env = ["pypi-env"]
+py310-conda = ["py310-conda", "conda-env", "test"]
+py311-conda = ["py311-conda", "conda-env", "test"]
+py312-conda = ["py312-conda", "conda-env", "test"]
+py313-conda = ["py313-conda", "conda-env", "test"]
+py310-pypi = ["py310-pypi", "pypi-env", "test"]
+py311-pypi = ["py311-pypi", "pypi-env", "test"]
+py312-pypi = ["py312-pypi", "pypi-env", "test"]
+py313-pypi = ["py313-pypi", "pypi-env", "test"]
