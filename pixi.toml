@@ -3,57 +3,41 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
 [dependencies]
-pixi-pycharm = "*"  # for IDE
+python = ">=3.10,<3.15"
 
 [pypi-dependencies]
-ouroboros-gis = { path = ".", editable = true }
 
-[feature.dev.dependencies]
-# build
-hatchling = "*"
-# IDE
-pandas-stubs = "*"
-# docs (should match docs/requirements.txt)
-jupyter = "*"
-myst-parser = "*"
-nbsphinx = "*"
-notebook = "*"
-pydata-sphinx-theme = "*"
-sphinx = "*"
-sphinx-copybutton = "*"
-# lint
-ruff = "*"
+[feature.dev]
+dependencies = { python = "3.14.*", black = "*", pandas-stubs = "*", pixi-pycharm = "*" }
 
-[feature.dev.pypi-dependencies]
-# coverage
-slipcover = "*"
+[feature.coverage]
+pypi-dependencies = { pytest = "*", slipcover = { git = "https://github.com/plasma-umass/slipcover", branch = "main" }}
+tasks = { coverage = "slipcover --source src --json --pretty-print --out ./docs/pytest_coverage.json -m pytest" }
 
-[feature.dev.tasks]
-build = "hatchling build"
-_coverage = "slipcover --source src --json --pretty-print --out ./docs/pytest_coverage.json -m pytest"
-coverage = { cmd = "python tools/slipcover_pct_covered_display.py docs/pytest_coverage.json", depends-on = ["_coverage"] }
-docs = "./docs/make html"
-lint = "ruff check ./src ./tests"
-lint-format = "ruff format ./src ./tests"
-test = "pytest"
+[feature.build]
+dependencies = { hatchling = "*" }
+tasks = { build = "hatchling build" }
 
-[feature.dev.target.win-64.tasks]
-docs = "./docs/make.bat html"
+[feature.docs]
+# dependencies should match docs/requirements.txt
+dependencies = { jupyter = "*", myst-parser = "*", nbsphinx = "*", notebook = "*", pydata-sphinx-theme = "*", sphinx = "*", sphinx-copybutton = "*" }
+tasks = { docs = "./docs/make html" }
+target = { win-64 = { tasks = { docs = "./docs/make.bat html"} } }
 
-[feature.test.dependencies]
-pytest = "*"
-pytest-xdist = "*"
+[feature.lint]
+dependencies = { black = "*", ruff = "*" }
+tasks = { lint = "black --check ./src ./tests && ruff check ./src ./tests", lint-format = "black ./src ./tests && ruff format ./src ./tests"}
 
-[feature.conda-env.dependencies]
-gdal = "*"
-geopandas = "*"
-matplotlib = "*"
-xmltodict = "*"
+[feature.test]
+dependencies = { pytest = "*", pytest-xdist = "*"}
+tasks = { test = "pytest" }
 
-[feature.pypi-env.pypi-dependencies]
-geopandas = "*"
-matplotlib = "*"
-xmltodict = "*"
+[feature.conda-env]
+dependencies = { gdal = "*", geopandas = "*", matplotlib = "*", xmltodict = "*" }
+pypi-dependencies = { ouroboros-gis = { path = ".", editable = true } }
+
+[feature.pypi-env]
+pypi-dependencies = { ouroboros-gis = { path = ".", editable = true }, geopandas = "*", matplotlib = "*", xmltodict = "*" }
 
 [feature.py310-conda]
 dependencies = { python = "3.10.*" }
@@ -87,16 +71,31 @@ tasks = { test-py313-conda = "pytest -n auto" }
 dependencies = { python = "3.13.*" }
 tasks = { test-py313-pypi = "pytest -n auto" }
 
+[feature.py314-conda]
+dependencies = { python = "3.14.*" }
+tasks = { test-py314-conda = "pytest -n auto" }
+
+[feature.py314-pypi]
+dependencies = { python = "3.14.*" }
+tasks = { test-py314-pypi = "pytest -n auto" }
+
 [environments]
 default = ["default"]
-dev = ["dev", "conda-env", "test"]
+dev = ["dev", "conda-env", "docs", "build"]
+coverage = ["coverage", "conda-env"]
+docs = ["docs", "conda-env"]
+build = ["build", "conda-env"]
+lint = ["lint", "conda-env"]
+test = ["test", "conda-env"]
 conda-env = ["conda-env"]
 pypi-env = ["pypi-env"]
 py310-conda = ["py310-conda", "conda-env", "test"]
 py311-conda = ["py311-conda", "conda-env", "test"]
 py312-conda = ["py312-conda", "conda-env", "test"]
 py313-conda = ["py313-conda", "conda-env", "test"]
+py314-conda = ["py314-conda", "conda-env", "test"]
 py310-pypi = ["py310-pypi", "pypi-env", "test"]
 py311-pypi = ["py311-pypi", "pypi-env", "test"]
 py312-pypi = ["py312-pypi", "pypi-env", "test"]
 py313-pypi = ["py313-pypi", "pypi-env", "test"]
+py314-pypi = ["py314-pypi", "pypi-env", "test"]
