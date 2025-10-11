@@ -81,7 +81,7 @@ tasks = { test-py314-pypi = "pytest -n auto" }
 
 [environments]
 default = ["default"]
-dev = ["dev", "conda-env", "docs", "build"]
+dev = ["dev", "conda-env", "docs", "build", "test"]
 coverage = ["coverage", "conda-env"]
 docs = ["docs", "conda-env"]
 build = ["build", "conda-env"]
