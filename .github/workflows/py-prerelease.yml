@@ -3,10 +3,20 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
-    paths: [ ".github/workflows/py-prerelease.yml", "tests/docker/Dockerfile" ]
+    paths: [ "src/**" ]
 jobs:
-  pull-and-test:
+  test-on-prerelease:
     runs-on: ubuntu-latest
     steps:
-    - name: pull and test
-      run: docker run corbelspatial/ouroboros:py3.14
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            pyproject.toml
+            README.md
+            src
+            tests
+          sparse-checkout-cone-mode: false
+      - run: |
+          docker run --name tester --rm -id --mount type=bind,source=./,target=/root/checkout ghcr.io/corbel-spatial/here-be-dragons:next
+          docker exec -w /root/checkout tester uv pip install --system . pytest
+          docker exec -w /root/checkout tester pytest

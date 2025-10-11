@@ -2,7 +2,7 @@
     "meta": {
         "software": "slipcover",
         "version": "1.0.17",
-        "timestamp": "2025-10-03T23:53:13.431362",
+        "timestamp": "2025-10-11T16:31:10.223904",
         "branch_coverage": false,
         "show_contexts": false
     },
@@ -743,6 +743,6 @@
         "covered_lines": 701,
         "missing_lines": 9,
         "percent_covered": 98.73239436619718,
-        "percent_covered_display": "99%"
+        "percent_covered_display": "99"
     }
 }
