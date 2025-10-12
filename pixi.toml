@@ -30,14 +30,13 @@ tasks = { lint = "black --check ./src ./tests && ruff check ./src ./tests", lint
 
 [feature.test]
 dependencies = { pytest = "*", pytest-xdist = "*"}
-tasks = { test = "pytest" }
 
 [feature.conda-env]
-dependencies = { gdal = "*", geopandas = "*", matplotlib = "*", xmltodict = "*" }
+dependencies = { gdal = "*", geojson = "*", geopandas = "*", matplotlib = "*", pyarrow = "*", xmltodict = "*" }
 pypi-dependencies = { ouroboros-gis = { path = ".", editable = true } }
 
 [feature.pypi-env]
-pypi-dependencies = { ouroboros-gis = { path = ".", editable = true }, geopandas = "*", matplotlib = "*", xmltodict = "*" }
+pypi-dependencies = { ouroboros-gis = { path = ".", editable = true }, geojson = "*", geopandas = "*", matplotlib = "*", pyarrow = "*", xmltodict = "*" }
 
 [feature.py310-conda]
 dependencies = { python = "3.10.*" }
@@ -73,7 +72,7 @@ tasks = { test-py313-pypi = "pytest -n auto" }
 
 [feature.py314-conda]
 dependencies = { python = "3.14.*" }
-tasks = { test-py314-conda = "pytest -n auto" }
+tasks = { test-py314-conda = "pytest -n auto", test = "pytest" }
 
 [feature.py314-pypi]
 dependencies = { python = "3.14.*" }
