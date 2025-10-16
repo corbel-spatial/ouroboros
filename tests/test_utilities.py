@@ -215,6 +215,6 @@ def test_raster_to_tif(tmp_path, capsys, esri_gdb):
 
 
 def test_version():
-    version = ob.ouroboros.__version__
+    version = ob.__version__  # TODO
     assert isinstance(version, str)
     assert "." in version

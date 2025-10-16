@@ -1,14 +1,20 @@
 # Changelog
 
-## v2.0.0 (planned)
-
-- Prebuilt GDAL binaries for OpenFileGDB drivers included with package
-
 ## v1.1.0 (planned)
 
 - First stable release
 
-## v1.0.7 (latest)
+## v1.0.8 (latest)
+
+- Add export methods back to `FeatureClass`
+- Add CONTRIBUTING.md
+- Bump for Python 3.14 and prerelese testing for 3.15
+- Overhaul GitHub actions
+- Refactor dev environment to use Pixi and Ruff
+- Refactor some class getter methods into properties
+- Docs and example notebooks updates
+
+## v1.0.7
 
 - sanitize_gdf_geometry() enforces compatibility with feature class geometries
 - FeatureClass.show() displays a simple plot of the geometry
