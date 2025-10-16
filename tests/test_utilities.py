@@ -1,11 +1,46 @@
 import os
 
+import geojson
 import geopandas as gpd
 import pyogrio
 import pytest
 import shapely
 
 import ouroboros as ob
+
+
+def test_fc_to_json(tmp_path, ob_gdb):
+    gdb, gdb_path = ob_gdb
+    for fc_name, fc in gdb.fc_dict.items():
+        gjs = ob.fc_to_json(gdb_path, fc_name)
+        assert isinstance(gjs, geojson.FeatureCollection)
+
+    for fc_name, fc in gdb.fc_dict.items():
+        fp = str(tmp_path / fc_name) + ".geojson"
+        ob.fc_to_json(gdb_path, fc_name, fp, indent=2)
+
+        fp = str(tmp_path / fc_name)
+        ob.fc_to_json(gdb_path, fc_name, fp, indent=2)
+
+
+def test_fc_to_parquet(tmp_path, ob_gdb):
+    gdb, gdb_path = ob_gdb
+    for fc_name, fc in gdb.fc_dict.items():
+        fp = str(tmp_path / fc_name) + ".parquet"
+        ob.fc_to_parquet(gdb_path, fc_name, fp)
+
+        fp = str(tmp_path / fc_name)
+        ob.fc_to_parquet(gdb_path, fc_name, fp)
+
+
+def test_fc_to_shp(tmp_path, ob_gdb):
+    gdb, gdb_path = ob_gdb
+    for fc_name, fc in gdb.fc_dict.items():
+        fp = str(tmp_path / fc_name) + ".shp"
+        ob.fc_to_shp(gdb_path, fc_name, fp)
+
+        fp = str(tmp_path / fc_name)
+        ob.fc_to_shp(gdb_path, fc_name, fp)
 
 
 def test_fc_to_gdf(ob_gdb):

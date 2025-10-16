@@ -8,6 +8,7 @@ from importlib import metadata
 from typing import Any, Iterator, Sequence, Literal
 from uuid import uuid4
 
+import geojson
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -616,6 +617,35 @@ class FeatureClass(MutableSequence):
         """
         self._data.sort_values(by=field_name, ascending=ascending, inplace=True)
 
+    def to_json(
+        self, fp: str | os.PathLike = None, indent: None | int = None, **kwargs
+    ) -> None | geojson.FeatureCollection:
+        gjs = geojson.loads(self._data.to_json(**kwargs))
+
+        if fp:
+            if not fp.endswith(".json") or not fp.endswith(".geojson"):
+                fp += ".geojson"
+            with open(fp, "w") as f:
+                geojson.dump(gjs, f, indent=indent)
+            return None
+        else:
+            return gjs
+
+    def to_parquet(self, fp: str | os.PathLike, **kwargs) -> None:
+        if not fp.endswith(".parquet"):
+            fp += ".parquet"
+
+        self._data.to_parquet(fp, **kwargs)
+
+    def to_shp(self, fp: str | os.PathLike, **kwargs) -> None:
+        if not fp.endswith(".shp"):
+            fp += ".shp"
+
+        if "driver" in kwargs:
+            del kwargs["driver"]
+
+        self._data.to_file(fp, **kwargs)
+
 
 class FeatureDataset(MutableMapping):
     """
@@ -1174,6 +1204,58 @@ def fc_to_gdf(
     gdf = gdf.rename_axis("ObjectID")  # use ObjectID as dataframe index
 
     return gdf
+
+
+def fc_to_json(
+    gdb_path: os.PathLike | str,
+    fc_name: str,
+    fp: None | os.PathLike | str = None,
+    indent: None | int = None,
+    **kwargs: dict,
+) -> None | geojson.FeatureCollection:
+    """Wraps geopandas.GeoDataFrame.to_json()"""
+    gdf = fc_to_gdf(gdb_path=gdb_path, fc_name=fc_name)
+    gjs = geojson.loads(gdf.to_json(**kwargs))
+
+    if fp:
+        fp = str(fp)
+        if not fp.endswith(".geojson") or not fp.endswith(".json"):
+            fp += ".geojson"
+        with open(fp, "w") as f:
+            geojson.dump(gjs, f, indent=indent)
+        return None
+    else:
+        return gjs
+
+
+def fc_to_parquet(
+    gdb_path: os.PathLike | str, fc_name: str, fp: os.PathLike | str, **kwargs: dict
+):
+    """Wraps geopandas.GeoDataFrame.to_parquet()"""
+    gdf = fc_to_gdf(gdb_path=gdb_path, fc_name=fc_name)
+
+    if not fp.endswith(".parquet"):
+        fp += ".parquet"
+
+    gdf.to_parquet(fp, **kwargs)
+
+
+def fc_to_shp(
+    gdb_path: os.PathLike | str,
+    fc_name: str,
+    fp: None | os.PathLike | str,
+    **kwargs: dict,
+) -> None:
+    """Wraps geopandas.GeoDataFrame.to_file(filename, driver="ESRI Shapefile")"""
+    gdf = fc_to_gdf(gdb_path=gdb_path, fc_name=fc_name)
+
+    if not fp.endswith(".shp"):
+        fp += ".shp"
+
+    if "driver" in kwargs:
+        del kwargs["driver"]
+
+    gdf.to_file(fp, **kwargs)
 
 
 def gdf_to_fc(

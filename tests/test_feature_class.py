@@ -403,3 +403,33 @@ def test_sort(gdf_points):
     fc1.sort("sample1", ascending=False)
     case3 = fc1[0].iat[0, 0]
     assert case1 != case2 != case3
+
+
+def test_to_json(tmp_path, gdf_points):
+    fc1 = ob.FeatureClass(gdf_points)
+    fp = str(tmp_path / "pts.geojson")
+    fc1.to_json(fp, indent=2)
+
+    fc2 = ob.FeatureClass(gdf_points)
+    fp = str(tmp_path / "pts")
+    fc2.to_json(fp, indent=2)
+
+
+def test_to_shp(tmp_path, gdf_points):
+    fc1 = ob.FeatureClass(gdf_points)
+    fp = str(tmp_path / "pts.shp")
+    fc1.to_shp(fp)
+
+    fc2 = ob.FeatureClass(gdf_points)
+    fp = str(tmp_path / "pts")
+    fc2.to_shp(fp)
+
+
+def test_to_parquet(tmp_path, gdf_points):
+    fc1 = ob.FeatureClass(gdf_points)
+    fp = str(tmp_path / "pts.parquet")
+    fc1.to_parquet(fp)
+
+    fc2 = ob.FeatureClass(gdf_points)
+    fp = str(tmp_path / "pts")
+    fc2.to_parquet(fp)
