@@ -25738,8 +25738,8 @@ packages:
   timestamp: 1759424869069
 - pypi: ./
   name: ouroboros-gis
-  version: 1.0.7
-  sha256: da43964f6753c017e36d23116f23826ee308da79aceb77bfd92785315f3b5c6c
+  version: 1.0.8
+  sha256: 8caca445b2a42829ae60c7f957933ab4b4b33aaae6c045c1d027154624bf03b7
   requires_dist:
   - geojson
   - geopandas>=1.1.0
