@@ -116,10 +116,10 @@ def test_iters(ob_gdb):
 
 def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
     with pytest.raises(TypeError):
-        ob.sanitize_gdf_geometry(pd.DataFrame())  # noqa
+        ob.utils.sanitize_gdf_geometry(pd.DataFrame())  # noqa
 
     with pytest.raises(TypeError):
-        ob.sanitize_gdf_geometry(
+        ob.utils.sanitize_gdf_geometry(
             gpd.GeoDataFrame(
                 geometry=[
                     shapely.GeometryCollection(),
@@ -136,7 +136,7 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
             None,
         ]
     )
-    gdf1_geom_type, gdf1 = ob.sanitize_gdf_geometry(gdf1)
+    gdf1_geom_type, gdf1 = ob.utils.sanitize_gdf_geometry(gdf1)
     assert gdf1_geom_type == "MultiPoint"
 
     gdf2 = gpd.GeoDataFrame(
@@ -147,7 +147,7 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
             None,
         ]
     )
-    gdf2_geom_type, gdf2 = ob.sanitize_gdf_geometry(gdf2)
+    gdf2_geom_type, gdf2 = ob.utils.sanitize_gdf_geometry(gdf2)
     assert gdf2_geom_type == "MultiLineString"
 
     gdf3 = gpd.GeoDataFrame(
@@ -158,7 +158,7 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
             None,
         ]
     )
-    gdf3_geom_type, gdf3 = ob.sanitize_gdf_geometry(gdf3)
+    gdf3_geom_type, gdf3 = ob.utils.sanitize_gdf_geometry(gdf3)
     assert gdf3_geom_type == "MultiLineString"
 
     gdf4 = gpd.GeoDataFrame(
@@ -171,7 +171,7 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
             None,
         ]
     )
-    gdf4_geom_type, gdf4 = ob.sanitize_gdf_geometry(gdf4)
+    gdf4_geom_type, gdf4 = ob.utils.sanitize_gdf_geometry(gdf4)
     assert gdf4_geom_type == "MultiLineString"
 
     gdf5 = gpd.GeoDataFrame(
@@ -183,7 +183,7 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
             None,
         ]
     )
-    gdf5_geom_type, gdf5 = ob.sanitize_gdf_geometry(gdf5)
+    gdf5_geom_type, gdf5 = ob.utils.sanitize_gdf_geometry(gdf5)
     assert gdf5_geom_type == "LineString"
 
     gdf6 = gpd.GeoDataFrame(
@@ -201,7 +201,7 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
             None,
         ]
     )
-    gdf6_geom_type, gdf6 = ob.sanitize_gdf_geometry(gdf6)
+    gdf6_geom_type, gdf6 = ob.utils.sanitize_gdf_geometry(gdf6)
     assert gdf6_geom_type == "MultiPolygon"
 
     with pytest.raises(TypeError):
@@ -214,4 +214,4 @@ def test_sanitize_gdf_geometry(gdf_points, gdf_lines, gdf_polygons):
                 shapely.Point(),
             ]
         )
-        ob.sanitize_gdf_geometry(gdf7)
+        ob.utils.sanitize_gdf_geometry(gdf7)

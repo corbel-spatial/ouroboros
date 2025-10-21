@@ -39,14 +39,14 @@ def gdf_points():
 
 @pytest.fixture
 def fc_points(gdb_path, gdf_points):
-    ob.gdf_to_fc(gdf_points, gdb_path, "test_points")
+    ob.utils.gdf_to_fc(gdf_points, gdb_path, "test_points")
     return os.path.join(gdb_path, "test_points")
 
 
 @pytest.fixture
 def fds_fc_points(tmp_path, gdf_points):
     gdb_path = tmp_path / "fc_points.gdb"
-    ob.gdf_to_fc(
+    ob.utils.gdf_to_fc(
         gdf=gdf_points,
         gdb_path=gdb_path,
         fc_name="test_points",

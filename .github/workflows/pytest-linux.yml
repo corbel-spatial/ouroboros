@@ -14,8 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: [ test-py310-pypi, test-py311-pypi, test-py312-pypi, test-py313-pypi,
-                       test-py310-conda, test-py311-conda, test-py312-conda, test-py313-conda, test-py314-conda]
+        environment: [ test-conda, test-pypi ]
     steps:
       - uses: actions/checkout@v4
         with:

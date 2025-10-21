@@ -5,5 +5,5 @@ API
    :maxdepth: 2
 
    api/classes
-   api/tools
-   api/functions
+   api/geoprocessing
+   api/utilities
