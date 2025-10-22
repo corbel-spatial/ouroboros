@@ -1,3 +1,10 @@
+geojson
+geopandas
+matplotlib
+ouroboros-gis
+pyarrow
+xmltodict
+
 jupyter
 myst-parser
 nbsphinx
