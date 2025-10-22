@@ -1,21 +1,11 @@
-from ._utils import (
-    fc_to_gdf,
-    fc_to_json,
-    fc_to_parquet,
-    fc_to_shp,
-    gdf_to_fc,
-    get_info,
-    list_datasets,
-    list_layers,
-    list_rasters,
-    raster_to_tif,
-    sanitize_gdf_geometry,
-)
-
-from ._utils import gdal_version as _gdal_version
-
-
-@property
-def gdal_version() -> None | str:
-    """Return the version of GDAL imported by this package."""
-    return _gdal_version
+from ._utils import fc_to_gdf as fc_to_gdf
+from ._utils import fc_to_json as fc_to_json
+from ._utils import fc_to_parquet as fc_to_parquet
+from ._utils import fc_to_shp as fc_to_shp
+from ._utils import gdf_to_fc as gdf_to_fc
+from ._utils import get_info as get_info
+from ._utils import list_datasets as list_datasets
+from ._utils import list_layers as list_layers
+from ._utils import list_rasters as list_rasters
+from ._utils import raster_to_tif as raster_to_tif
+from ._utils import sanitize_gdf_geometry as sanitize_gdf_geometry

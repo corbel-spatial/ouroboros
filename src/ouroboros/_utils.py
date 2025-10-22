@@ -1,6 +1,7 @@
 import os
 import re
 import warnings
+from importlib.util import find_spec
 from typing import Literal
 
 import geojson
@@ -11,16 +12,12 @@ import shapely
 import xmltodict
 from pyogrio.errors import DataSourceError
 
-# Check for optional install of GDAL>=3.8 for raster support
-try:
-    from osgeo import gdal  # noqa # fmt: skip
+
+if find_spec("osgeo") is not None:
+    from osgeo import gdal
 
     gdal_version = gdal.__version__
-    if int(gdal_version.split(".")[0]) < 3 or int(gdal_version.split(".")[1]) < 8:
-        raise ImportError(
-            "GDAL version must be >=3.8, please upgrade to a newer version"
-        )
-except ModuleNotFoundError:
+else:
     gdal_version = None
 
 
