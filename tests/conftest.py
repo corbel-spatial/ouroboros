@@ -1,6 +1,7 @@
 import os
 import uuid
 import zipfile
+from importlib.util import find_spec
 from random import uniform
 
 import geopandas as gpd
@@ -99,3 +100,14 @@ def esri_gdb(tmp_path):
     zf = zipfile.ZipFile(gdb_path, "r")
     zf.extractall(tmp_path)
     return os.path.join(tmp_path, "test_data.gdb")
+
+
+@pytest.fixture
+def gdal_version():
+    if find_spec("osgeo") is not None:
+        from osgeo import gdal
+
+        gdal_version = gdal.__version__
+    else:
+        gdal_version = None
+    return gdal_version

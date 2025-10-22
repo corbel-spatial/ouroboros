@@ -186,12 +186,17 @@ def test_list_rasters(ob_gdb, esri_gdb):
             ob.utils.list_rasters(os.path.join("..", "pyproject.toml"))
 
 
-def test_raster_to_tif(tmp_path, capsys, esri_gdb):
-    if not ob.utils.gdal_version:
-        pytest.skip("GDAL is not installed")
+def test_raster_to_tif(tmp_path, capsys, esri_gdb, gdal_version):
+    if not gdal_version:
+        with pytest.raises(ImportError):
+            ob.utils.raster_to_tif(
+                gdb_path=esri_gdb,
+                raster_name="random_raster",
+                tif_path=None,
+            )
     else:
         with capsys.disabled():
-            print("\n\t*** GDAL installed:", ob.utils.gdal_version, "***")
+            print("\n\t*** GDAL installed:", gdal_version, "***")
         ob.utils.raster_to_tif(
             gdb_path=esri_gdb,
             raster_name="random_raster",

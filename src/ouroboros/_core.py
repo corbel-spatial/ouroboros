@@ -5,6 +5,7 @@ from collections.abc import MutableMapping, MutableSequence
 from typing import Any, Iterator, Sequence
 from uuid import uuid4
 from importlib.metadata import version
+from importlib.util import find_spec
 
 import geojson
 import geopandas as gpd
@@ -18,16 +19,12 @@ from . import _utils
 
 __version__ = version("ouroboros-gis")
 
-# Check for optional install of GDAL>=3.8 for raster support
-try:
-    from osgeo import gdal  # noqa # fmt: skip
+
+if find_spec("osgeo") is not None:
+    from osgeo import gdal
 
     gdal_version = gdal.__version__
-    if int(gdal_version.split(".")[0]) < 3 or int(gdal_version.split(".")[1]) < 8:
-        raise ImportError(
-            "GDAL version must be >=3.8, please upgrade to a newer version"
-        )
-except ModuleNotFoundError:
+else:
     gdal_version = None
 
 
