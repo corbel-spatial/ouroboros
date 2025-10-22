@@ -22,7 +22,7 @@ tasks = { build = "hatchling build" }
 # dependencies should match docs/requirements.txt
 dependencies = { jupyter = "*", myst-parser = "*", nbsphinx = "*", notebook = "*", pydata-sphinx-theme = "*", sphinx = "*", sphinx-copybutton = "*" }
 tasks = { docs = "./docs/make html" }
-target = { win-64 = { tasks = { docs = "./docs/make.bat html"} } }
+target = { win-64 = { tasks = { docs = ".\\docs\\make.bat html && .\\docs\\make.bat html && cmd /k start %cd%\\docs\\_build\\html\\index.html"} } }
 
 [feature.lint]
 dependencies = { black = "*", ruff = "*" }
@@ -36,6 +36,7 @@ dependencies = { gdal = "*", geojson = "*", geopandas = "*", matplotlib = "*", p
 pypi-dependencies = { ouroboros-gis = { path = ".", editable = true } }
 
 [feature.pypi-env]
+dependencies = { python = "<3.14" }  # TODO pyogrio is not yet avaialable from PyPI for 3.14
 pypi-dependencies = { ouroboros-gis = { path = ".", editable = true }, geojson = "*", geopandas = "*", matplotlib = "*", pyarrow = "*", xmltodict = "*" }
 
 [feature.py310-conda]
@@ -72,11 +73,44 @@ tasks = { test-py313-pypi = "pytest -n auto" }
 
 [feature.py314-conda]
 dependencies = { python = "3.14.*" }
-tasks = { test-py314-conda = "pytest -n auto", test = "pytest" }
+tasks = { test-py314-conda = "pytest -n auto", test = "pytest -vv" }
 
-[feature.py314-pypi]
-dependencies = { python = "3.14.*" }
-tasks = { test-py314-pypi = "pytest -n auto" }
+#[feature.py314-pypi]  # TODO pyogrio is not yet avaialable from PyPI for 3.14
+#dependencies = { python = "3.14.*" }
+#tasks = { test-py314-pypi = "pytest -n auto" }
+
+[tasks.test-conda]
+depends-on = [
+	{ task = "test-py310-conda" },
+	{ task = "test-py311-conda" },
+	{ task = "test-py312-conda" },
+	{ task = "test-py313-conda" },
+	{ task = "test-py314-conda" },
+]
+	
+[tasks.test-pypi]
+depends-on = [
+	{ task = "test-py310-pypi" },
+	{ task = "test-py311-pypi" },
+	{ task = "test-py312-pypi" },
+	{ task = "test-py313-pypi" },
+	#{ task = "test-py314-pypi" }  # TODO pyogrio is not yet avaialable from PyPI for 3.14
+]
+
+[tasks.test-all]
+depends-on = [
+	{ task = "test-conda" },
+	{ task = "test-pypi" },
+]
+
+[tasks.release]
+depends-on = [
+	{ task = "lint-format" },
+	{ task = "coverage" },
+	{ task = "test-all" },
+	{ task = "build", environment = "build" },
+	{ task = "docs", environment = "docs" },
+]
 
 [environments]
 default = ["default"]
@@ -97,4 +131,4 @@ py310-pypi = ["py310-pypi", "pypi-env", "test"]
 py311-pypi = ["py311-pypi", "pypi-env", "test"]
 py312-pypi = ["py312-pypi", "pypi-env", "test"]
 py313-pypi = ["py313-pypi", "pypi-env", "test"]
-py314-pypi = ["py314-pypi", "pypi-env", "test"]
+# py314-pypi = ["py314-pypi", "pypi-env", "test"]  # TODO pyogrio is not yet avaialable from PyPI for 3.14

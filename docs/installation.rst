@@ -11,7 +11,7 @@ Conda (recommended)
 
 In an active `conda <https://www.anaconda.com/docs/getting-started/getting-started>`__ environment::
 
-    conda install ourboros-gis -c conda-forge
+    conda install ourboros -c conda-forge
 
 
 Pip
@@ -39,7 +39,7 @@ To install in an ArcGIS Pro :code:`conda` environment:
 
 2. Create a new environment and install packages with this command::
 
-    conda create python=3.11 arcpy=3.5 ouroboros-gis -c esri -c conda-forge --name new_env
+    conda create python=3.11 arcpy=3.5 ouroboros -c esri -c conda-forge --name new_env
 
 3. Activate the new environment::
 
@@ -49,6 +49,3 @@ To install in an ArcGIS Pro :code:`conda` environment:
 
     new_env> python
     >>> import ouroboros as ob
-    >>> ob.ouroboros._gdal_installed
-    True
-

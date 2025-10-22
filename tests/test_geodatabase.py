@@ -142,14 +142,14 @@ def test_save(tmp_path, ob_gdb):
     gdb, gdb_path = ob_gdb
     out_path = tmp_path / "out.gdb"
     gdb.save(out_path, overwrite=False)
-    assert len(ob.list_layers(out_path)) > 0
+    assert len(ob.utils.list_layers(out_path)) > 0
 
     with pytest.raises(FileExistsError):
         gdb.save(out_path, overwrite=False)
 
     gdb.save(out_path, overwrite=True)
-    assert len(ob.list_layers(out_path)) > 0
+    assert len(ob.utils.list_layers(out_path)) > 0
 
     out_path2 = tmp_path / "out2"
     gdb.save(out_path2, overwrite=False)
-    assert len(ob.list_layers(str(out_path2) + ".gdb")) > 0
+    assert len(ob.utils.list_layers(str(out_path2) + ".gdb")) > 0
